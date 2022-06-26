@@ -1,19 +1,19 @@
-package com.ceos.bankids.dto.oauth;
+package com.ceos.bankids.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
-@ToString
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class KakaoTokenDTO {
+@Builder
+public class KakaoRequest {
 
     @NotNull(message = "accessToken may not be null")
     @JsonProperty("access_token")
@@ -22,5 +22,11 @@ public class KakaoTokenDTO {
     @NotNull(message = "refreshToken may not be null")
     @JsonProperty("refresh_token")
     private String refreshToken;
-    
+
+    @NotNull(message = "isKid may not be null")
+    private Boolean isKid;
+
+    private String period;
+
+    private Long allowance;
 }

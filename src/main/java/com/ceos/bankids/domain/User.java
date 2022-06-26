@@ -1,5 +1,6 @@
 package com.ceos.bankids.domain;
 
+import com.ceos.bankids.exception.BadRequestException;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -20,6 +22,7 @@ import lombok.Setter;
 @Table(name = "User")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = {"kids", "parents"})
 public class User extends AbstractTimestamp {
 
     @Id
@@ -57,16 +60,16 @@ public class User extends AbstractTimestamp {
         Boolean isKid
     ) {
         if (username == null) {
-            throw new RuntimeException("이름은 필수값입니다.");
+            throw new BadRequestException("이름은 필수값입니다.");
         }
         if (authenticationCode == null) {
-            throw new RuntimeException("인증 코드는 필수값입니다.");
+            throw new BadRequestException("인증 코드는 필수값입니다.");
         }
         if (provider == null) {
-            throw new RuntimeException("provider는 필수값입니다.");
+            throw new BadRequestException("provider는 필수값입니다.");
         }
         if (isKid == null) {
-            throw new RuntimeException("부모 자녀 구분은 필수값입니다.");
+            throw new BadRequestException("부모 자녀 구분은 필수값입니다.");
         }
 
         this.id = id;

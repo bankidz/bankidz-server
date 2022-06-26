@@ -1,12 +1,16 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.request.KakaoRequest;
+import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -32,6 +36,7 @@ public class KakaoController {
 
     private final UserRepository uRepo;
     private final KidRepository kRepo;
+    private final ParentRepository pRepo;
     private final WebClient webClient;
     @Value("${kakao.key}")
     private String KAKAO_KEY;
@@ -76,12 +81,12 @@ public class KakaoController {
     @PostMapping(value = "/register", produces = "application/json; charset=utf-8")
     @ResponseBody
     public CommonResponse<UserDTO> postKakaoRegister(
-        @Valid @RequestBody KakaoTokenDTO kakaoTokenDTO) {
+        @Valid @RequestBody KakaoRequest kakaoRequest) {
 
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
 
         KakaoUserDTO kakaoUserDTO = (KakaoUserDTO) webClient.post().uri(getUserURL)
-            .header("Authorization", "Bearer " + kakaoTokenDTO.getAccessToken())
+            .header("Authorization", "Bearer " + kakaoRequest.getAccessToken())
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError,
                 clientResponse -> Mono.error(new BadRequestException("잘못된 요청입니다.")))
@@ -99,9 +104,26 @@ public class KakaoController {
             .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
             .image(kakaoUserDTO.getKakaoAccount().getProfile().getImageUrl())
             .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-            .provider("kakao")
+            .provider("kakao").isKid(kakaoRequest.getIsKid())
             .build();
-        uRepo.save(newUser);
+        if (kakaoRequest.getIsKid()) {
+            Kid newKid = Kid.builder()
+                .period(kakaoRequest.getPeriod())
+                .allowance(kakaoRequest.getAllowance())
+                .user(newUser)
+                .build();
+            uRepo.save(newUser);
+            kRepo.save(newKid);
+        }
+        if (kakaoRequest.getIsKid() != null) {
+            Parent newParent = Parent.builder()
+                .educationLevel(0L)
+                .lifeLevel(0L)
+                .user(newUser)
+                .build();
+            uRepo.save(newUser);
+            pRepo.save(newParent);
+        }
 
         UserDTO newUserDTO = new UserDTO(newUser);
         return CommonResponse.onSuccess(newUserDTO);
