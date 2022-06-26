@@ -11,39 +11,38 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Kid")
+@Table(name = "Parent")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Kid extends AbstractTimestamp {
+public class Parent extends AbstractTimestamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 10)
-    private String period;
+    private Long educationLevel;
 
     @Column(nullable = false, length = 10)
-    private Long allowance;
+    private Long lifeLevel;
 
     @Builder
-    public Kid(
+    public Parent(
         Long id,
-        String period,
-        Long allowance
+        Long educationLevel,
+        Long lifeLevel
     ) {
-        if (period == null) {
+        if (educationLevel == null) {
             throw new RuntimeException("주기는 필수값입니다.");
         }
-        if (allowance == null) {
+        if (lifeLevel == null) {
             throw new RuntimeException("용돈은 필수값입니다.");
         }
         this.id = id;
-        this.period = period;
-        this.allowance = allowance;
+        this.educationLevel = educationLevel;
+        this.lifeLevel = lifeLevel;
     }
 }
