@@ -1,12 +1,13 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.domain.Kid;
-import com.ceos.bankids.dto.KidDTO;
+import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/kakao")
 @RequiredArgsConstructor
 public class KakaoController {
+
+    private final UserRepository uRepo;
     private final KidRepository kRepo;
     private final WebClient webClient;
     @Value("${kakao.key}")
@@ -61,18 +64,18 @@ public class KakaoController {
                 ParameterizedTypeReference.forType(KakaoUserDTO.class))
             .block();
 
-        Optional<Kid> kid = kRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
-        if (kid.isEmpty()) {
+        Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
+        if (user.isEmpty()) {
             return CommonResponse.onSuccess(kakaoTokenDTO);
         }
-        KidDTO kidDTO = new KidDTO(kid.get());
+        UserDTO userDTO = new UserDTO(user.get());
 
-        return CommonResponse.onSuccess(kidDTO);
+        return CommonResponse.onSuccess(userDTO);
     }
 
     @PostMapping(value = "/register", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<KidDTO> postKakaoRegister(
+    public CommonResponse<UserDTO> postKakaoRegister(
         @Valid @RequestBody KakaoTokenDTO kakaoTokenDTO) {
 
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
@@ -86,21 +89,21 @@ public class KakaoController {
                 ParameterizedTypeReference.forType(KakaoUserDTO.class))
             .block();
 
-        Optional<Kid> checkUser = kRepo.findByAuthenticationCode(
+        Optional<User> checkUser = uRepo.findByAuthenticationCode(
             kakaoUserDTO.getAuthenticationCode());
         if (checkUser.isPresent()) {
             return CommonResponse.onFailure(HttpStatus.BAD_REQUEST, "이미 존재하는 유저입니다.");
         }
 
-        Kid newKid = Kid.builder()
+        User newUser = User.builder()
             .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
             .image(kakaoUserDTO.getKakaoAccount().getProfile().getImageUrl())
             .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-            .provider("kakao").period(kakaoTokenDTO.getPeriod()).allowance(kakaoTokenDTO.getAllowance())
+            .provider("kakao")
             .build();
-        kRepo.save(newKid);
+        uRepo.save(newUser);
 
-        KidDTO newKidDTO = new KidDTO(newKid);
-        return CommonResponse.onSuccess(newKidDTO);
+        UserDTO newUserDTO = new UserDTO(newUser);
+        return CommonResponse.onSuccess(newUserDTO);
     }
 }

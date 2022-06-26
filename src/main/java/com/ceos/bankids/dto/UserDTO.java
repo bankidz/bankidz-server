@@ -1,6 +1,6 @@
 package com.ceos.bankids.dto;
 
-import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -8,12 +8,12 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class KidDTO {
+public class UserDTO {
     String username;
     String image;
 
-    public KidDTO(Kid kid) {
-        this.username = kid.getUsername();
-        this.image = kid.getImage();
+    public UserDTO(User user) {
+        this.username = user.getUsername();
+        this.image = user.getImage();
     }
 }

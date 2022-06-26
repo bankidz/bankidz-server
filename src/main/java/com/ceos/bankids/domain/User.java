@@ -20,7 +20,8 @@ import lombok.Setter;
 @Table(name = "User")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class User extends AbstractTimestamp{
+public class User extends AbstractTimestamp {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,7 +39,7 @@ public class User extends AbstractTimestamp{
     private String provider;
 
     @Column(nullable = false)
-    private Boolean is_kid;
+    private Boolean isKid;
 
     @OneToMany(mappedBy = "user")
     private List<Kid> kids;
@@ -53,7 +54,7 @@ public class User extends AbstractTimestamp{
         String image,
         String authenticationCode,
         String provider,
-        Boolean is_kid
+        Boolean isKid
     ) {
         if (username == null) {
             throw new RuntimeException("이름은 필수값입니다.");
@@ -64,7 +65,7 @@ public class User extends AbstractTimestamp{
         if (provider == null) {
             throw new RuntimeException("provider는 필수값입니다.");
         }
-        if (is_kid == null) {
+        if (isKid == null) {
             throw new RuntimeException("부모 자녀 구분은 필수값입니다.");
         }
 
@@ -73,6 +74,6 @@ public class User extends AbstractTimestamp{
         this.image = image;
         this.authenticationCode = authenticationCode;
         this.provider = provider;
-        this.is_kid = is_kid;
+        this.isKid = isKid;
     }
 }
