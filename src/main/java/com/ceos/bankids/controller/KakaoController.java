@@ -5,13 +5,15 @@ import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import com.ceos.bankids.service.JwtTokenServiceImpl;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,8 @@ public class KakaoController {
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
     private final WebClient webClient;
+    private final JwtTokenServiceImpl jwtTokenServiceImpl;
+
     @Value("${kakao.key}")
     private String KAKAO_KEY;
     @Value("${kakao.uri}")
@@ -71,16 +75,19 @@ public class KakaoController {
 
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isEmpty()) {
-            return CommonResponse.onSuccess(kakaoTokenDTO);
+            LoginDTO loginDTO = new LoginDTO(false,
+                jwtTokenServiceImpl.encodeKakaoToken(kakaoTokenDTO));
+            return CommonResponse.onSuccess(HttpStatus.OK, loginDTO);
+        } else {
+            TokenDTO tokenDTO = new TokenDTO(user.get());
+            LoginDTO loginDTO = new LoginDTO(true, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            return CommonResponse.onSuccess(HttpStatus.OK, loginDTO);
         }
-        UserDTO userDTO = new UserDTO(user.get());
-
-        return CommonResponse.onSuccess(userDTO);
     }
 
     @PostMapping(value = "/register", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<UserDTO> postKakaoRegister(
+    public CommonResponse<String> postKakaoRegister(
         @Valid @RequestBody KakaoRequest kakaoRequest) {
 
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
@@ -114,8 +121,7 @@ public class KakaoController {
                 .build();
             uRepo.save(newUser);
             kRepo.save(newKid);
-        }
-        if (kakaoRequest.getIsKid() != null) {
+        } else {
             Parent newParent = Parent.builder()
                 .educationLevel(0L)
                 .lifeLevel(0L)
@@ -125,7 +131,8 @@ public class KakaoController {
             pRepo.save(newParent);
         }
 
-        UserDTO newUserDTO = new UserDTO(newUser);
-        return CommonResponse.onSuccess(newUserDTO);
+        TokenDTO tokenDTO = new TokenDTO(newUser);
+        return CommonResponse.onSuccess(HttpStatus.CREATED,
+            jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
     }
 }
