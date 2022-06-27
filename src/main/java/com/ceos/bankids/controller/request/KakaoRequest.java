@@ -19,10 +19,6 @@ public class KakaoRequest {
     @JsonProperty("access_token")
     private String accessToken;
 
-    @NotNull(message = "refreshToken may not be null")
-    @JsonProperty("refresh_token")
-    private String refreshToken;
-
     @NotNull(message = "isKid may not be null")
     private Boolean isKid;
 

@@ -92,8 +92,10 @@ public class KakaoController {
 
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
 
+        String accessToken = jwtTokenServiceImpl.decodeKakaoToken(kakaoRequest.getAccessToken());
+
         KakaoUserDTO kakaoUserDTO = (KakaoUserDTO) webClient.post().uri(getUserURL)
-            .header("Authorization", "Bearer " + kakaoRequest.getAccessToken())
+            .header("Authorization", "Bearer " + accessToken)
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError,
                 clientResponse -> Mono.error(new BadRequestException("잘못된 요청입니다.")))

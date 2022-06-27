@@ -21,5 +21,5 @@ public interface JwtTokenService {
 
     public String encodeKakaoToken(KakaoTokenDTO kakaoTokenDTO);
 
-    public boolean decodeKakaoToken(String tokens);
+    public String decodeKakaoToken(String tokens);
 }

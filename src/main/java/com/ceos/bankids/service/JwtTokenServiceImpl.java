@@ -90,7 +90,6 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .setIssuer("bankids")
             .setIssuedAt(now)
             .setSubject(kakaoTokenDTO.getAccessToken())
-            .setSubject(kakaoTokenDTO.getRefreshToken())
             .setExpiration(new Date(now.getTime() + Duration.ofMinutes(4320).toMillis()))
             .signWith(SignatureAlgorithm.HS256,
                 Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
@@ -99,15 +98,15 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
     @Override
-    public boolean decodeKakaoToken(String token) {
+    public String decodeKakaoToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
                 .setSigningKey(Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
                     StandardCharsets.UTF_8))).parseClaimsJws(token);
-            System.out.println(claims);
-            return !claims.getBody().getExpiration().before(new Date());
+            return claims.getBody().getSubject();
         } catch (Exception e) {
-            return false;
+            System.out.println(e);
+            return "";
         }
     }
 }
