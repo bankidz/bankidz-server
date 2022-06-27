@@ -77,11 +77,11 @@ public class KakaoController {
         if (user.isEmpty()) {
             LoginDTO loginDTO = new LoginDTO(false,
                 jwtTokenServiceImpl.encodeKakaoToken(kakaoTokenDTO));
-            return CommonResponse.onSuccess(HttpStatus.OK, loginDTO);
+            return CommonResponse.onSuccess(loginDTO);
         } else {
             TokenDTO tokenDTO = new TokenDTO(user.get());
             LoginDTO loginDTO = new LoginDTO(true, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
-            return CommonResponse.onSuccess(HttpStatus.OK, loginDTO);
+            return CommonResponse.onSuccess(loginDTO);
         }
     }
 
@@ -134,7 +134,6 @@ public class KakaoController {
         }
 
         TokenDTO tokenDTO = new TokenDTO(newUser);
-        return CommonResponse.onSuccess(HttpStatus.CREATED,
-            jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+        return CommonResponse.onSuccess(jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
     }
 }

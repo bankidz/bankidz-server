@@ -17,8 +17,8 @@ public class CommonResponse<T> {
     T data;
 
 
-    public static <T> CommonResponse<T> onSuccess(HttpStatus statusCode, T data) {
-        return new CommonResponse<>(statusCode, null, data);
+    public static <T> CommonResponse<T> onSuccess(T data) {
+        return new CommonResponse<>(HttpStatus.OK, null, data);
     }
 
     public static CommonResponse onFailure(HttpStatus statusCode, String responseMessage) {
