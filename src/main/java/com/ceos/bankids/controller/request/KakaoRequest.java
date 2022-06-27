@@ -1,6 +1,5 @@
 package com.ceos.bankids.controller.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class KakaoRequest {
 
     @NotNull(message = "accessToken may not be null")
-    @JsonProperty("access_token")
     private String accessToken;
 
     @NotNull(message = "isKid may not be null")
