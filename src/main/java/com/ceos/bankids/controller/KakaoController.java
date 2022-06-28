@@ -111,7 +111,7 @@ public class KakaoController {
 
         User newUser = User.builder()
             .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
-            .image(kakaoUserDTO.getKakaoAccount().getProfile().getImageUrl())
+            .image(null) // 이후 default image 나오면 변경 필요
             .authenticationCode(kakaoUserDTO.getAuthenticationCode())
             .provider("kakao").isKid(kakaoRequest.getIsKid())
             .build();
