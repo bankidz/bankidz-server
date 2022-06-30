@@ -100,4 +100,5 @@ jobs:
           key: ${{ secrets.KEY_DEV }}
           script: |
             sudo docker pull sanbonai06/bankids-server-dev:dev
+            sudo docker run sanbonai06/bankids-server-dev:dev
 
