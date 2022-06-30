@@ -43,7 +43,9 @@ jobs:
       - name: Make application-dev.properties
         run: |
           touch ./src/main/resources/application-dev.properties
-          echo ${{ secrets.PROPERTIES_DEV }} > ./application-dev.properties
+          echo "$PROPERTIES_DEV" > ./application-dev.properties
+        env:
+          PROPERTIES_DEV: ${{ secrets.PROPERTIES_DEV }}
 
 
       - name: Build with Gradle
