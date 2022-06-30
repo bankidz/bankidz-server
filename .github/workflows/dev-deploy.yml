@@ -43,7 +43,7 @@ jobs:
       - name: Make application-dev.properties
         run: |
           touch ./src/main/resources/application-dev.properties
-          echo "$PROPERTIES_DEV" > ./src/main/resources/application-dev.properties
+          echo "$PROPERTIES_DEV" > ./src/main/resources/application.properties
         env:
           PROPERTIES_DEV: ${{ secrets.PROPERTIES_DEV }}
 
