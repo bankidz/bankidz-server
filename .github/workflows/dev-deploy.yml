@@ -89,5 +89,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            sudo docker pull sanbonai06/bankids-server-test
+            sudo docker pull sanbonai06/bankids-server-test:feature-deploy
 
