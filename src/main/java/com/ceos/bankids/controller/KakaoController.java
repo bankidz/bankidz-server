@@ -75,8 +75,7 @@ public class KakaoController {
 
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isEmpty()) {
-            LoginDTO loginDTO = new LoginDTO(false,
-                jwtTokenServiceImpl.encodeKakaoToken(kakaoTokenDTO));
+            LoginDTO loginDTO = new LoginDTO(false, null);
             return CommonResponse.onSuccess(loginDTO);
         } else {
             TokenDTO tokenDTO = new TokenDTO(user.get());
@@ -92,7 +91,7 @@ public class KakaoController {
 
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
 
-        String accessToken = jwtTokenServiceImpl.decodeKakaoToken(kakaoRequest.getAccessToken());
+        String accessToken = kakaoRequest.getAccessToken();
 
         KakaoUserDTO kakaoUserDTO = (KakaoUserDTO) webClient.post().uri(getUserURL)
             .header("Authorization", "Bearer " + accessToken)

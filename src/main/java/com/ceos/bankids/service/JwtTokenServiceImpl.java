@@ -1,7 +1,6 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.dto.TokenDTO;
-import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jws;
@@ -79,34 +78,5 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     @Override
     public String getToken(HttpServletRequest request) {
         return request.getHeader("X-AUTH-TOKEN");
-    }
-
-    @Override
-    public String encodeKakaoToken(KakaoTokenDTO kakaoTokenDTO) {
-        Date now = new Date();
-
-        return Jwts.builder()
-            .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-            .setIssuer("bankids")
-            .setIssuedAt(now)
-            .setSubject(kakaoTokenDTO.getAccessToken())
-            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(4320).toMillis()))
-            .signWith(SignatureAlgorithm.HS256,
-                Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
-                    StandardCharsets.UTF_8)))
-            .compact();
-    }
-
-    @Override
-    public String decodeKakaoToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parser()
-                .setSigningKey(Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
-                    StandardCharsets.UTF_8))).parseClaimsJws(token);
-            return claims.getBody().getSubject();
-        } catch (Exception e) {
-            System.out.println(e);
-            return "";
-        }
     }
 }

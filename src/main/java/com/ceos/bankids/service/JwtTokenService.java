@@ -1,7 +1,6 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.dto.TokenDTO;
-import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -18,8 +17,4 @@ public interface JwtTokenService {
     public boolean validateToken(String token);
 
     public String getToken(HttpServletRequest request);
-
-    public String encodeKakaoToken(KakaoTokenDTO kakaoTokenDTO);
-
-    public String decodeKakaoToken(String tokens);
 }
