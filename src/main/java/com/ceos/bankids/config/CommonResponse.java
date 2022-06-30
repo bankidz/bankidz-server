@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class CommonResponse<T> {
 
-    Integer statusCode;
-    String responseMessage;
+    Integer code;
+    String message;
     T data;
 
 
