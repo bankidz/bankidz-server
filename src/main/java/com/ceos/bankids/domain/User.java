@@ -32,8 +32,11 @@ public class User extends AbstractTimestamp {
     @Column(nullable = false, unique = true, length = 10)
     private String username;
 
-    @Column(columnDefinition = "TEXT")
-    private String image;
+    @Column(nullable = false)
+    private Boolean isFemale;
+
+    @Column(nullable = false)
+    private String birthday;
 
     @Column(name = "authentication_code", nullable = false, unique = true)
     private String authenticationCode;
@@ -54,13 +57,20 @@ public class User extends AbstractTimestamp {
     public User(
         Long id,
         String username,
-        String image,
+        Boolean isFemale,
+        String birthday,
         String authenticationCode,
         String provider,
         Boolean isKid
     ) {
         if (username == null) {
             throw new BadRequestException("이름은 필수값입니다.");
+        }
+        if (isFemale == null) {
+            throw new BadRequestException("성별은 필수값입니다.");
+        }
+        if (birthday == null) {
+            throw new BadRequestException("생년월일은 필수값입니다.");
         }
         if (authenticationCode == null) {
             throw new BadRequestException("인증 코드는 필수값입니다.");
@@ -74,7 +84,8 @@ public class User extends AbstractTimestamp {
 
         this.id = id;
         this.username = username;
-        this.image = image;
+        this.isFemale = isFemale;
+        this.birthday = birthday;
         this.authenticationCode = authenticationCode;
         this.provider = provider;
         this.isKid = isKid;
