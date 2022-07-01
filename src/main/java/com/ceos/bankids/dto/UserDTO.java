@@ -9,11 +9,10 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class UserDTO {
+
     String username;
-    String image;
 
     public UserDTO(User user) {
         this.username = user.getUsername();
-        this.image = user.getImage();
     }
 }

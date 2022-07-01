@@ -14,13 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class KakaoRequest {
 
-    @NotNull(message = "accessToken may not be null")
-    private String accessToken;
-
-    @NotNull(message = "isKid may not be null")
-    private Boolean isKid;
-
-    private String period;
-
-    private Long allowance;
+    @NotNull(message = "code may not be null")
+    private String code;
 }

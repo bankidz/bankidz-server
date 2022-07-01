@@ -2,19 +2,16 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.KakaoRequest;
-import com.ceos.bankids.domain.Kid;
-import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -25,7 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -37,8 +33,6 @@ import reactor.core.publisher.Mono;
 public class KakaoController {
 
     private final UserRepository uRepo;
-    private final KidRepository kRepo;
-    private final ParentRepository pRepo;
     private final WebClient webClient;
     private final JwtTokenServiceImpl jwtTokenServiceImpl;
 
@@ -49,11 +43,13 @@ public class KakaoController {
 
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse postKakaoLogin(@RequestParam("code") String code) {
+    public CommonResponse postKakaoLogin(@Valid @RequestBody KakaoRequest kakaoRequest,
+        HttpServletResponse response) {
 
         String getTokenURL =
             "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="
-                + KAKAO_KEY + "&redirect_uri=" + KAKAO_URI + "&code=" + code;
+                + KAKAO_KEY + "&redirect_uri=" + KAKAO_URI + "&code="
+                + kakaoRequest.getCode();
 
         KakaoTokenDTO kakaoTokenDTO = (KakaoTokenDTO) webClient.post().uri(getTokenURL).retrieve()
             .onStatus(HttpStatus::is4xxClientError,
@@ -74,65 +70,21 @@ public class KakaoController {
             .block();
 
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
-        if (user.isEmpty()) {
-            LoginDTO loginDTO = new LoginDTO(false, null);
-            return CommonResponse.onSuccess(loginDTO);
-        } else {
+        if (user.isPresent()) {
             TokenDTO tokenDTO = new TokenDTO(user.get());
             LoginDTO loginDTO = new LoginDTO(true, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return CommonResponse.onSuccess(loginDTO);
-        }
-    }
-
-    @PostMapping(value = "/register", produces = "application/json; charset=utf-8")
-    @ResponseBody
-    public CommonResponse<String> postKakaoRegister(
-        @Valid @RequestBody KakaoRequest kakaoRequest) {
-
-        String getUserURL = "https://kapi.kakao.com/v2/user/me";
-
-        String accessToken = kakaoRequest.getAccessToken();
-
-        KakaoUserDTO kakaoUserDTO = (KakaoUserDTO) webClient.post().uri(getUserURL)
-            .header("Authorization", "Bearer " + accessToken)
-            .retrieve()
-            .onStatus(HttpStatus::is4xxClientError,
-                clientResponse -> Mono.error(new BadRequestException("잘못된 요청입니다.")))
-            .bodyToMono(
-                ParameterizedTypeReference.forType(KakaoUserDTO.class))
-            .block();
-
-        Optional<User> checkUser = uRepo.findByAuthenticationCode(
-            kakaoUserDTO.getAuthenticationCode());
-        if (checkUser.isPresent()) {
-            return CommonResponse.onFailure(HttpStatus.BAD_REQUEST, "이미 존재하는 유저입니다.");
-        }
-
-        User newUser = User.builder()
-            .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
-            .image(null) // 이후 default image 나오면 변경 필요
-            .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-            .provider("kakao").isKid(kakaoRequest.getIsKid())
-            .build();
-        if (kakaoRequest.getIsKid()) {
-            Kid newKid = Kid.builder()
-                .period(kakaoRequest.getPeriod())
-                .allowance(kakaoRequest.getAllowance())
-                .user(newUser)
-                .build();
-            uRepo.save(newUser);
-            kRepo.save(newKid);
         } else {
-            Parent newParent = Parent.builder()
-                .educationLevel(0L)
-                .lifeLevel(0L)
-                .user(newUser)
+            User newUser = User.builder()
+                .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
+                .authenticationCode(kakaoUserDTO.getAuthenticationCode())
+                .provider("kakao").refreshToken("refreshToken")
                 .build();
             uRepo.save(newUser);
-            pRepo.save(newParent);
-        }
 
-        TokenDTO tokenDTO = new TokenDTO(newUser);
-        return CommonResponse.onSuccess(jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            TokenDTO tokenDTO = new TokenDTO(newUser);
+            LoginDTO loginDTO = new LoginDTO(false, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            return CommonResponse.onSuccess(loginDTO);
+        }
     }
 }

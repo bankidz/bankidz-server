@@ -13,10 +13,12 @@ public class TokenDTO {
     private Long id;
     private String username;
     private Boolean isKid;
+    private Boolean isFemale;
 
     public TokenDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.isKid = user.getIsKid();
+        this.isFemale = user.getIsFemale();
     }
 }
