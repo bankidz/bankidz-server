@@ -57,6 +57,7 @@ jobs:
         with:
           images: sanbonai06/bankids-server-dev
 
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -73,7 +74,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.docker_meta.outputs.tags }}
+          tags: latest
 
       - name: create remote directory
         uses: appleboy/ssh-action@master
@@ -99,6 +100,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY_DEV }}
           script: |
-            sudo docker pull sanbonai06/bankids-server-dev:dev
-            sudo docker run sanbonai06/bankids-server-dev:dev
+            sudo docker-compose -f ~/srv/ubuntu/docker-compose.yml pull
+            sudo docker-compose -f ~/srv/ubuntu/docker-compose.yml --build -d
 
