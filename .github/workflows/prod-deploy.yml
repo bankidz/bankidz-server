@@ -9,7 +9,7 @@ name: Docker push
 
 on:
   push:
-    branches: [main]
+    branches: [feature/deploy]
     tags: ["v*.*.*"]
 
 permissions:
