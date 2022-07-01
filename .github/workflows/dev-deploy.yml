@@ -74,7 +74,6 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: latest
 
       - name: create remote directory
         uses: appleboy/ssh-action@master
