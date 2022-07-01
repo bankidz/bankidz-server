@@ -42,7 +42,7 @@ jobs:
 
       - name: Make application-prod.properties
         run: |
-          touch ./src/main/resources/application-dev.properties
+          touch ./src/main/resources/application-prod.properties
           echo "$PROPERTIES_PROD" > ./src/main/resources/application-prod.properties
         env:
           PROPERTIES_DEV: ${{ secrets.PROPERTIES_PROD }}
