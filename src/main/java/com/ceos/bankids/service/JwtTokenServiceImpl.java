@@ -35,8 +35,22 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .setIssuer("bankids")
             .setIssuedAt(now)
             .setSubject(tokenDTO.getId().toString())
-            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(4320).toMillis()))
+            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(2880).toMillis()))
             .claim("id", tokenDTO.getId())
+            .claim("roles", "USER")
+            .signWith(SignatureAlgorithm.HS256,
+                Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
+                    StandardCharsets.UTF_8)))
+            .compact();
+    }
+
+    @Override
+    public String encodeJwtRefreshToken(Long id) {
+        Date now = new Date();
+        return Jwts.builder()
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(20160).toMillis()))
+            .claim("id", id)
             .claim("roles", "USER")
             .signWith(SignatureAlgorithm.HS256,
                 Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(

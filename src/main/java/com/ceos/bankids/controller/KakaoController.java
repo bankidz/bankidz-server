@@ -11,6 +11,7 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import java.util.Optional;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,15 +73,39 @@ public class KakaoController {
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
             TokenDTO tokenDTO = new TokenDTO(user.get());
+            Cookie cookie = new Cookie("refreshToken", user.get().getRefreshToken());
+
+            cookie.setMaxAge(14 * 24 * 60 * 60);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+
+            response.addCookie(cookie);
+
             LoginDTO loginDTO = new LoginDTO(true, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return CommonResponse.onSuccess(loginDTO);
         } else {
             User newUser = User.builder()
                 .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
+                .isFemale(true)
+                .birthday("")
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-                .provider("kakao").refreshToken("refreshToken")
+                .provider("kakao").refreshToken("")
                 .build();
             uRepo.save(newUser);
+
+            String refreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(newUser.getId());
+            newUser.setRefreshToken(refreshToken);
+            uRepo.save(newUser);
+
+            Cookie cookie = new Cookie("refreshToken", refreshToken);
+
+            cookie.setMaxAge(14 * 24 * 60 * 60);
+            cookie.setSecure(true);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+
+            response.addCookie(cookie);
 
             TokenDTO tokenDTO = new TokenDTO(newUser);
             LoginDTO loginDTO = new LoginDTO(false, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));

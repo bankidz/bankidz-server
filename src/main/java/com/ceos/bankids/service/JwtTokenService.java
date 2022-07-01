@@ -10,6 +10,8 @@ public interface JwtTokenService {
 
     public String encodeJwtToken(TokenDTO tokenDTO);
 
+    public String encodeJwtRefreshToken(Long id);
+
     public String getUserIdFromJwtToken(String token);
 
     public Authentication getAuthentication(String token);
