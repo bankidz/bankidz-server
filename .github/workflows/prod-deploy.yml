@@ -45,7 +45,7 @@ jobs:
           touch ./src/main/resources/application-prod.properties
           echo "$PROPERTIES_PROD" > ./src/main/resources/application-prod.properties
         env:
-          PROPERTIES_DEV: ${{ secrets.PROPERTIES_PROD }}
+          PROPERTIES_PROD: ${{ secrets.PROPERTIES_PROD }}
 
       - name: Build with Gradle
         run: ./gradlew build -x test
