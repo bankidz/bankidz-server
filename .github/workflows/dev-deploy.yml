@@ -10,7 +10,7 @@ name: Deploy to Dev
 on:
   push:
     branches:
-      - dev
+      - feature/deploy
 
 permissions:
   contents: read
