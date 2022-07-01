@@ -32,7 +32,7 @@ public class User extends AbstractTimestamp {
     @Column(nullable = false, unique = true, length = 10)
     private String username;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean isFemale;
 
     @Column(nullable = false)
@@ -44,7 +44,7 @@ public class User extends AbstractTimestamp {
     @Column(nullable = false, length = 10)
     private String provider;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean isKid;
 
     @Column(columnDefinition = "TEXT")

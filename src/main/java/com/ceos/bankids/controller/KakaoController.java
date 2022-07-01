@@ -87,8 +87,7 @@ public class KakaoController {
         } else {
             User newUser = User.builder()
                 .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
-                .isFemale(true)
-                .birthday("")
+                .birthday("") // 이후 구현 필요
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
                 .provider("kakao").refreshToken("")
                 .build();
