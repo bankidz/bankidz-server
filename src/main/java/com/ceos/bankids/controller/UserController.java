@@ -3,7 +3,7 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.UserTypeDTO;
+import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -39,7 +39,7 @@ public class UserController {
             user.get().setIsKid(userTypeRequest.getIsKid());
             uRepo.save(user.get());
 
-            UserTypeDTO userDTO = new UserTypeDTO(user.get());
+            UserDTO userDTO = new UserDTO(user.get());
             return CommonResponse.onSuccess(userDTO);
         }
     }

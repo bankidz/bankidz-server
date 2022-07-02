@@ -40,8 +40,11 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean isFemale;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 8)
     private String birthday;
+
+    @Column(nullable = false, length = 12)
+    private String phone;
 
     @Column(name = "authentication_code", nullable = false, unique = true)
     private String authenticationCode;
