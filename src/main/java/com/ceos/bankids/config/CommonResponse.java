@@ -12,16 +12,16 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class CommonResponse<T> {
 
-    HttpStatus statusCode;
-    String responseMessage;
+    Integer code;
+    String message;
     T data;
 
 
     public static <T> CommonResponse<T> onSuccess(T data) {
-        return new CommonResponse<>(HttpStatus.OK, null, data);
+        return new CommonResponse<>(HttpStatus.OK.value(), null, data);
     }
 
     public static CommonResponse onFailure(HttpStatus statusCode, String responseMessage) {
-        return new CommonResponse<>(statusCode, responseMessage, null);
+        return new CommonResponse<>(statusCode.value(), responseMessage, null);
     }
 }
