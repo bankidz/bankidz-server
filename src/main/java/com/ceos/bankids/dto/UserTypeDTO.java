@@ -8,11 +8,16 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class UserDTO {
+public class UserTypeDTO {
 
     String username;
+    Boolean isFemale;
+    Boolean isKid;
 
-    public UserDTO(User user) {
+
+    public UserTypeDTO(User user) {
         this.username = user.getUsername();
+        this.isFemale = user.getIsFemale();
+        this.isKid = user.getIsKid();
     }
 }

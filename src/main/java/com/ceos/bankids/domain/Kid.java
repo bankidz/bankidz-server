@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
@@ -28,10 +29,8 @@ public class Kid extends AbstractTimestamp {
     private Long id;
 
     @Column(nullable = false, length = 10)
-    private String period;
-
-    @Column(nullable = false, length = 10)
-    private Long allowance;
+    @ColumnDefault("0")
+    private Long savings;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -40,22 +39,17 @@ public class Kid extends AbstractTimestamp {
     @Builder
     public Kid(
         Long id,
-        String period,
-        Long allowance,
+        Long savings,
         User user
     ) {
-        if (period == null) {
-            throw new BadRequestException("주기는 필수값입니다.");
-        }
-        if (allowance == null) {
-            throw new BadRequestException("용돈은 필수값입니다.");
+        if (savings == null) {
+            throw new BadRequestException("총 저축액은 필수값입니다.");
         }
         if (user == null) {
             throw new BadRequestException("유저는 필수값입니다.");
         }
         this.id = id;
-        this.period = period;
-        this.allowance = allowance;
+        this.savings = savings;
         this.user = user;
     }
 }
