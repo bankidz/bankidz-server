@@ -11,8 +11,17 @@ import lombok.ToString;
 public class UserDTO {
 
     String username;
+    Boolean isFemale;
+    Boolean isKid;
+    String birthday;
+    String phone;
+
 
     public UserDTO(User user) {
         this.username = user.getUsername();
+        this.isFemale = user.getIsFemale();
+        this.isKid = user.getIsKid();
+        this.birthday = user.getBirthday();
+        this.phone = user.getPhone();
     }
 }
