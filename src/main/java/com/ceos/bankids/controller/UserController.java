@@ -2,8 +2,12 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.UserTypeRequest;
+import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserController {
 
     private final UserRepository uRepo;
+    private final KidRepository kRepo;
+    private final ParentRepository pRepo;
 
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
@@ -40,9 +46,21 @@ public class UserController {
             user.get().setIsKid(userTypeRequest.getIsKid());
             uRepo.save(user.get());
 
+            if (user.get().getIsKid()) {
+                Kid newKid = Kid.builder()
+                    .savings(0L)
+                    .user(user.get())
+                    .build();
+                kRepo.save(newKid);
+            } else {
+                Parent newParent = Parent.builder()
+                    .user(user.get())
+                    .build();
+                pRepo.save(newParent);
+            }
+
             UserDTO userDTO = new UserDTO(user.get());
             return CommonResponse.onSuccess(userDTO);
         }
     }
-
 }
