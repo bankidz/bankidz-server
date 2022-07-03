@@ -82,7 +82,8 @@ public class KakaoController {
 
             response.addCookie(cookie);
 
-            LoginDTO loginDTO = new LoginDTO(true, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            LoginDTO loginDTO = new LoginDTO(true, user.get().getIsKid(),
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return CommonResponse.onSuccess(loginDTO);
         } else {
             User newUser = User.builder()
@@ -107,7 +108,8 @@ public class KakaoController {
             response.addCookie(cookie);
 
             TokenDTO tokenDTO = new TokenDTO(newUser);
-            LoginDTO loginDTO = new LoginDTO(false, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            LoginDTO loginDTO = new LoginDTO(false, null,
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return CommonResponse.onSuccess(loginDTO);
         }
     }
