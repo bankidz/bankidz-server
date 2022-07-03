@@ -32,6 +32,7 @@ public class UserController {
 
         Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
+
         if (user.isEmpty()) {
             return CommonResponse.onFailure(HttpStatus.BAD_REQUEST, "존재하지 않는 유저입니다.");
         } else {
