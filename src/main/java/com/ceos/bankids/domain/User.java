@@ -78,9 +78,6 @@ public class User extends AbstractTimestamp implements UserDetails {
         if (username == null) {
             throw new BadRequestException("이름은 필수값입니다.");
         }
-        if (birthday == null) {
-            throw new BadRequestException("생년월일은 필수값입니다.");
-        }
         if (authenticationCode == null) {
             throw new BadRequestException("인증 코드는 필수값입니다.");
         }
