@@ -43,7 +43,7 @@ public class UserController {
     public CommonResponse patchUserType(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
 
-        Long userId = 14L;//authUser.getId();
+        Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
 
         if (user.isEmpty()) {

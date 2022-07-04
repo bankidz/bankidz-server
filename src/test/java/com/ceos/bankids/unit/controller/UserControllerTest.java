@@ -7,6 +7,7 @@ import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
@@ -91,7 +92,7 @@ public class UserControllerTest {
 
     @Test
     @DisplayName("인증 유저 없어서 패치 실패시, 에러 처리 되는지 확인")
-    public void testIfUserTypePatchFailWithoutValidUserThrowNullPointerException() {
+    public void testIfUserTypePatchFailWithoutValidUserThrowBadRequestException() {
         // given
         User user = User.builder()
             .id(1L)
@@ -116,11 +117,11 @@ public class UserControllerTest {
             mockKidRepository,
             mockParentRepository
         );
-        CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
         // then
-        Assertions.assertEquals(CommonResponse.onFailure("존재하지 않는 유저입니다."),
-            result);
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.patchUserType(user, userTypeRequest);
+        });
     }
 
     @Test
