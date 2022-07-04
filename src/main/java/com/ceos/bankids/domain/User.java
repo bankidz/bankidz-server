@@ -2,13 +2,8 @@ package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,6 +50,9 @@ public class User extends AbstractTimestamp {
 
     @OneToMany(mappedBy = "user")
     private List<Parent> parents;
+
+    @OneToMany(mappedBy = "user")
+    private List<Link_Challenge> link_challengeList;
 
     @Builder
     public User(
