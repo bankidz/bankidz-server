@@ -1,5 +1,6 @@
 package com.ceos.bankids.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -9,8 +10,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class LoginDTO {
 
+    @ApiModelProperty(example = "true")
     private Boolean isRegistered;
+    @ApiModelProperty(example = "true")
     private Boolean isKid;
+    @ApiModelProperty(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ~~~~")
     private String accessToken;
 
     public LoginDTO(Boolean isRegistered, Boolean isKid, String accessToken) {

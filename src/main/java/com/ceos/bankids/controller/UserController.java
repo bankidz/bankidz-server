@@ -11,8 +11,6 @@ import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +35,7 @@ public class UserController {
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
-    @ApiResponses({@ApiResponse(code = 200, message = "성공"),
-        @ApiResponse(code = 400, message = "존재하지 않는 유저입니다."),
-        @ApiResponse(code = 500, message = "서버 에러가 발생했습니다.")})
-    public CommonResponse patchUserType(@AuthenticationPrincipal User authUser,
+    public CommonResponse<UserDTO> patchUserType(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
 
         Long userId = authUser.getId();

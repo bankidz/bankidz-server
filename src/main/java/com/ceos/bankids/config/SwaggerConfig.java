@@ -38,8 +38,7 @@ public class SwaggerConfig {
             .apiInfo(swaggerInfo()).select()
             .apis(RequestHandlerSelectors.basePackage("com.ceos.bankids.controller"))
             .paths(PathSelectors.any())
-            .build()
-            .useDefaultResponseMessages(false);
+            .build();
     }
 
     private ApiInfo swaggerInfo() {
