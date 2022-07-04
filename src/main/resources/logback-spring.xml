@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+  <appender class="com.github.maricn.logback.SlackAppender" name="SLACK">
+    <colorCoding>true</colorCoding>
+    <iconEmoji>:pleading_face:</iconEmoji>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n &#10;</pattern>
+    </layout>
+    <username>BANKIDZ-Server-log</username>
+    <webhookUri>${WEBHOOK_URI}</webhookUri>
+  </appender>
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="Console">
+    <encoder>
+      <Pattern>%d %-5level %logger{35} - %msg%n</Pattern>
+    </encoder>
+  </appender>
+
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="ASYNC_SLACK">
+    <appender-ref ref="SLACK"/>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ERROR</level>
+    </filter>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="Console"/>
+    <appender-ref ref="ASYNC_SLACK"/>
+  </root>
+
+  <springProperty name="SLACK_WEBHOOK_URI" source="logging.slack.webhook-uri"/>
+</configuration>
