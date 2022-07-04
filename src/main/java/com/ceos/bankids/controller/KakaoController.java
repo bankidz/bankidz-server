@@ -10,6 +10,9 @@ import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +45,10 @@ public class KakaoController {
     @Value("${kakao.uri}")
     private String KAKAO_URI;
 
+    @ApiOperation(value = "카카오 로그인")
+    @ApiResponses({@ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 400, message = "잘못된 요청입니다."),
+        @ApiResponse(code = 500, message = "서버 에러가 발생했습니다.")})
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8")
     @ResponseBody
     public CommonResponse postKakaoLogin(@Valid @RequestBody KakaoRequest kakaoRequest,
