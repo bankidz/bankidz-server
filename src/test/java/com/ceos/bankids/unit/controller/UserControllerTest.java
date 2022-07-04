@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.http.HttpStatus;
 
 public class UserControllerTest {
 
@@ -120,7 +119,7 @@ public class UserControllerTest {
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
         // then
-        Assertions.assertEquals(CommonResponse.onFailure(HttpStatus.BAD_REQUEST, "존재하지 않는 유저입니다."),
+        Assertions.assertEquals(CommonResponse.onFailure("존재하지 않는 유저입니다."),
             result);
     }
 

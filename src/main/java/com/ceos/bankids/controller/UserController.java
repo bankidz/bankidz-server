@@ -13,7 +13,6 @@ import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,7 +39,7 @@ public class UserController {
         Optional<User> user = uRepo.findById(userId);
 
         if (user.isEmpty()) {
-            return CommonResponse.onFailure(HttpStatus.BAD_REQUEST, "존재하지 않는 유저입니다.");
+            return CommonResponse.onFailure("존재하지 않는 유저입니다.");
         } else {
             user.get().setIsFemale(userTypeRequest.getIsFemale());
             user.get().setIsKid(userTypeRequest.getIsKid());
