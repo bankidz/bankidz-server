@@ -1,6 +1,8 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.*;
 
@@ -10,6 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Setter
@@ -18,7 +23,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = {"kids", "parents"})
-public class User extends AbstractTimestamp {
+public class User extends AbstractTimestamp implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +35,13 @@ public class User extends AbstractTimestamp {
     @Column(columnDefinition = "tinyint(1) default 0")
     private Boolean isFemale;
 
-    @Column(nullable = false)
+    @Column(nullable = true, length = 8)
     private String birthday;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, length = 12, unique = true)
+    private String phone;
+
+    @Column(name = "authentication_code", nullable = false, unique = true)
     private String authenticationCode;
 
     @Column(nullable = false, length = 10)
@@ -68,9 +76,6 @@ public class User extends AbstractTimestamp {
         if (username == null) {
             throw new BadRequestException("이름은 필수값입니다.");
         }
-        if (birthday == null) {
-            throw new BadRequestException("생년월일은 필수값입니다.");
-        }
         if (authenticationCode == null) {
             throw new BadRequestException("인증 코드는 필수값입니다.");
         }
@@ -89,5 +94,35 @@ public class User extends AbstractTimestamp {
         this.provider = provider;
         this.isKid = isKid;
         this.refreshToken = refreshToken;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }

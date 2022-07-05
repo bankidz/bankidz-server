@@ -17,6 +17,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String[] SwaggerPatterns = {
+        "/swagger-resources/**",
+        "/swagger-ui/**",
+        "/v2/api-docs",
+        "/webjars/**"
+    };
     private final JwtTokenServiceImpl jwtTokenService;
 
     @Bean
@@ -33,7 +39,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
             .antMatchers("/health/**").permitAll()
+            .antMatchers(SwaggerPatterns).permitAll()
             .antMatchers("/kakao/**").permitAll()
+            .antMatchers("/user/refresh").permitAll()
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenService),

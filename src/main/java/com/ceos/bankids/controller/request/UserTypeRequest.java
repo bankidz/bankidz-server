@@ -13,9 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KakaoRequest {
+public class UserTypeRequest {
 
-    @ApiModelProperty(example = "erYw3skzA27NEcbri4hIu18MZ7PRKzhsvQB31JU-iyq1BWgzYv1xve8KpjV_24CwGx3PiwopyNgAAAGBxHM1jQ")
-    @NotNull(message = "code may not be null")
-    private String code;
+    @ApiModelProperty(example = "false")
+    @NotNull(message = "isFemale may not be null")
+    private Boolean isFemale;
+
+    @ApiModelProperty(example = "true")
+    @NotNull(message = "isKid may not be null")
+    private Boolean isKid;
 }

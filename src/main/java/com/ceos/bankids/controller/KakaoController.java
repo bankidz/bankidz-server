@@ -10,6 +10,7 @@ import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import io.swagger.annotations.ApiOperation;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -42,9 +43,10 @@ public class KakaoController {
     @Value("${kakao.uri}")
     private String KAKAO_URI;
 
+    @ApiOperation(value = "카카오 로그인")
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse postKakaoLogin(@Valid @RequestBody KakaoRequest kakaoRequest,
+    public CommonResponse<LoginDTO> postKakaoLogin(@Valid @RequestBody KakaoRequest kakaoRequest,
         HttpServletResponse response) {
 
         String getTokenURL =
@@ -82,12 +84,12 @@ public class KakaoController {
 
             response.addCookie(cookie);
 
-            LoginDTO loginDTO = new LoginDTO(true, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            LoginDTO loginDTO = new LoginDTO(true, user.get().getIsKid(),
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return CommonResponse.onSuccess(loginDTO);
         } else {
             User newUser = User.builder()
                 .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
-                .birthday("") // 이후 구현 필요
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
                 .provider("kakao").refreshToken("")
                 .build();
@@ -107,7 +109,8 @@ public class KakaoController {
             response.addCookie(cookie);
 
             TokenDTO tokenDTO = new TokenDTO(newUser);
-            LoginDTO loginDTO = new LoginDTO(false, jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+            LoginDTO loginDTO = new LoginDTO(false, null,
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return CommonResponse.onSuccess(loginDTO);
         }
     }
