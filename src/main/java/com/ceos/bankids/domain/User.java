@@ -4,13 +4,8 @@ import com.ceos.bankids.exception.BadRequestException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,7 +38,7 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(nullable = true, length = 8)
     private String birthday;
 
-    @Column(nullable = true, length = 12)
+    @Column(nullable = true, length = 12, unique = true)
     private String phone;
 
     @Column(name = "authentication_code", nullable = false, unique = true)
@@ -63,6 +58,9 @@ public class User extends AbstractTimestamp implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Parent> parents;
+
+    @OneToMany(mappedBy = "user")
+    private List<LinkChallenge> link_challengeList;
 
     @Builder
     public User(
