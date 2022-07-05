@@ -35,6 +35,7 @@ public class KakaoServiceImpl implements KakaoService {
     private String KAKAO_URI;
 
     @Override
+    @Transactional
     public KakaoTokenDTO getKakaoAccessToken(KakaoRequest kakaoRequest) {
         String getTokenURL =
             "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="
@@ -50,6 +51,7 @@ public class KakaoServiceImpl implements KakaoService {
     }
 
     @Override
+    @Transactional
     public KakaoUserDTO getKakaoUserCode(KakaoTokenDTO kakaoTokenDTO) {
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
 
@@ -64,6 +66,7 @@ public class KakaoServiceImpl implements KakaoService {
     }
 
     @Override
+    @Transactional
     public LoginDTO loginWithAuthenticationCode(KakaoUserDTO kakaoUserDTO,
         HttpServletResponse response) {
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());

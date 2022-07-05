@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = false)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository uRepo;
@@ -27,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final ParentRepository pRepo;
 
     @Override
+    @Transactional
     public UserDTO updateUserType(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
         Long userId = authUser.getId();
