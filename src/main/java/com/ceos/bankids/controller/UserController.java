@@ -6,14 +6,15 @@ import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import io.swagger.annotations.ApiOperation;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,16 +32,17 @@ public class UserController {
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
 
+    @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse patchUserType(@AuthenticationPrincipal User authUser,
+    public CommonResponse<UserDTO> patchUserType(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
 
         Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
 
         if (user.isEmpty()) {
-            return CommonResponse.onFailure(HttpStatus.BAD_REQUEST, "존재하지 않는 유저입니다.");
+            throw new BadRequestException("존재하지 않는 유저입니다.");
         } else {
             user.get().setIsFemale(userTypeRequest.getIsFemale());
             user.get().setIsKid(userTypeRequest.getIsKid());
