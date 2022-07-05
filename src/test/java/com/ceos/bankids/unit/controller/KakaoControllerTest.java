@@ -4,6 +4,7 @@ import com.ceos.bankids.controller.KakaoController;
 import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import com.ceos.bankids.service.KakaoServiceImpl;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -23,10 +24,13 @@ public class KakaoControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        KakaoController kakaoController = new KakaoController(
+        KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockUserRepository,
-            mockWebClient,
-            jwtTokenServiceImpl
+            jwtTokenServiceImpl,
+            mockWebClient
+        );
+        KakaoController kakaoController = new KakaoController(
+            kakaoService
         );
 
         // then
@@ -46,10 +50,13 @@ public class KakaoControllerTest {
         KakaoRequest kakaoRequest = new KakaoRequest("code");
 
         // when
-        KakaoController kakaoController = new KakaoController(
+        KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockUserRepository,
-            mockWebClient,
-            jwtTokenServiceImpl
+            jwtTokenServiceImpl,
+            mockWebClient
+        );
+        KakaoController kakaoController = new KakaoController(
+            kakaoService
         );
 
         // then

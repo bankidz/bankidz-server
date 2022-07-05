@@ -11,6 +11,7 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import com.ceos.bankids.service.UserServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -42,10 +43,13 @@ public class UserControllerTest {
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         // when
-        UserController userController = new UserController(
+        UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
             mockParentRepository
+        );
+        UserController userController = new UserController(
+            userService
         );
         CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
 
@@ -78,10 +82,13 @@ public class UserControllerTest {
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         // when
-        UserController userController = new UserController(
+        UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
             mockParentRepository
+        );
+        UserController userController = new UserController(
+            userService
         );
 
         // then
@@ -112,10 +119,13 @@ public class UserControllerTest {
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         // when
-        UserController userController = new UserController(
+        UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
             mockParentRepository
+        );
+        UserController userController = new UserController(
+            userService
         );
 
         // then
@@ -152,10 +162,13 @@ public class UserControllerTest {
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         // when
-        UserController userController = new UserController(
+        UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
             mockParentRepository
+        );
+        UserController userController = new UserController(
+            userService
         );
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
@@ -202,10 +215,13 @@ public class UserControllerTest {
         Mockito.when(mockParentRepository.save(parent)).thenReturn(parent);
 
         // when
-        UserController userController = new UserController(
+        UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
             mockParentRepository
+        );
+        UserController userController = new UserController(
+            userService
         );
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
