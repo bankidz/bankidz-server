@@ -10,7 +10,7 @@ name: Deploy to Dev
 on:
   push:
     branches:
-      - dev
+      - fix/nginx
 
 permissions:
   contents: read
@@ -101,6 +101,7 @@ jobs:
           key: ${{ secrets.KEY_DEV }}
           script: |
             sh ~/srv/ubuntu/config/scripts/deploy.sh
+            sudo docker image prune -a
             sudo docker-compose -f ~/srv/ubuntu/docker-compose.yml pull
             sudo docker-compose -f ~/srv/ubuntu/docker-compose.yml up --build -d
 

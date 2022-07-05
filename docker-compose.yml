@@ -3,7 +3,7 @@ version: "3"
 services:
 
   backend-dev:
-    image: sanbonai06/bankids-server-dev:dev
+    image: sanbonai06/bankids-server-dev:fix-nginx
     container_name: backend-dev
     hostname: backend-dev
     expose:
