@@ -55,7 +55,7 @@ public class Challenge extends AbstractTimestamp {
     private List<Progress> progresses;
 
     @OneToMany(mappedBy = "challenge")
-    private List<Link_Challenge> link_challengeList;
+    private List<LinkChallenge> linkChallengeList;
 
     @Builder
     public Challenge(

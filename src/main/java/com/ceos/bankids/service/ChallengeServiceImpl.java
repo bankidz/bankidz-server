@@ -49,7 +49,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 .targetItem(targetItem)
                 .build();
         challengeRepository.save(newChallenge);
-        System.out.println("newChallenge = " + newChallenge);
 //        Link_Challenge newLinkChallenge = Link_Challenge.builder()
 //                .challenge(newChallenge)
 //                .member("parent")

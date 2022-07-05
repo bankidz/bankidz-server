@@ -33,7 +33,7 @@ public class User extends AbstractTimestamp {
     @Column(nullable = false)
     private String birthday;
 
-    @Column(name = "authentication_code", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String authenticationCode;
 
     @Column(nullable = false, length = 10)
@@ -52,7 +52,7 @@ public class User extends AbstractTimestamp {
     private List<Parent> parents;
 
     @OneToMany(mappedBy = "user")
-    private List<Link_Challenge> link_challengeList;
+    private List<LinkChallenge> link_challengeList;
 
     @Builder
     public User(

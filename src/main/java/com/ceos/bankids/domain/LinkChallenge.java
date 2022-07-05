@@ -2,17 +2,16 @@ package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "link_challenge")
+@Table(name = "linkChallenge")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Link_Challenge extends AbstractTimestamp{
+public class LinkChallenge extends AbstractTimestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +29,7 @@ public class Link_Challenge extends AbstractTimestamp{
     private Challenge challenge;
 
     @Builder
-    public Link_Challenge(
+    public LinkChallenge(
         Long id,
         String member,
         User user,

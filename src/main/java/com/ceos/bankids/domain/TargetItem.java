@@ -31,7 +31,7 @@ public class TargetItem extends AbstractTimestamp{
         String itemName
     ) {
         if (itemName == null) {
-            throw new BadRequestException("아이템 이름은 필수입니다.");
+            throw new BadRequestException("아이템 이름은 필수값입니다.");
         }
 
         this.id = id;
