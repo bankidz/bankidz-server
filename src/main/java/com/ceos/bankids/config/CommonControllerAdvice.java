@@ -41,6 +41,7 @@ public class CommonControllerAdvice {
     public ResponseEntity onException(Exception exception, @AuthenticationPrincipal User user,
         HttpServletRequest request) {
         getExceptionStackTrace(exception, user, request);
+        exception.printStackTrace();
         return new ResponseEntity<>(CommonResponse.onFailure("서버 에러가 발생했습니다."), null,
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
