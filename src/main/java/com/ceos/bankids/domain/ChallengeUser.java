@@ -8,10 +8,10 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "linkChallenge")
+@Table(name = "challengeUser")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class LinkChallenge extends AbstractTimestamp{
+public class ChallengeUser extends AbstractTimestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class LinkChallenge extends AbstractTimestamp{
     private Challenge challenge;
 
     @Builder
-    public LinkChallenge(
+    public ChallengeUser(
         Long id,
         String member,
         User user,
