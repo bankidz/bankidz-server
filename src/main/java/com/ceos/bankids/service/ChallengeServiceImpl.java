@@ -34,9 +34,9 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
         String category = challengeRequest.getCategory();
-        String itemName = challengeRequest.getItemName();
+        String name = challengeRequest.getItemName();
         ChallengeCategory challengeCategory = challengeCategoryRepository.findByCategory(category);
-        TargetItem targetItem = targetItemRepository.findByItemName(itemName);
+        TargetItem targetItem = targetItemRepository.findByName(name);
         if (targetItem == null) {
             throw new BadRequestException("목표 아이템 입력이 잘 못 되었습니다.");
         }

@@ -28,7 +28,7 @@ public class TargetItem extends AbstractTimestamp {
     private Long id;
 
     @Column(nullable = false)
-    private String itemName;
+    private String name;
 
     @OneToMany(mappedBy = "targetItem")
     private List<Challenge> challengeList;
@@ -36,13 +36,13 @@ public class TargetItem extends AbstractTimestamp {
     @Builder
     public TargetItem(
         Long id,
-        String itemName
+        String name
     ) {
-        if (itemName == null) {
+        if (name == null) {
             throw new BadRequestException("아이템 이름은 필수값입니다.");
         }
 
         this.id = id;
-        this.itemName = itemName;
+        this.name = name;
     }
 }

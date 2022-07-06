@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TargetItemRepository extends JpaRepository<TargetItem, Long> {
 
-    public TargetItem findByItemName(String itemName);
+    public TargetItem findByName(String itemName);
 }

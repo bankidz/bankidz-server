@@ -64,7 +64,7 @@ public class Challenge extends AbstractTimestamp {
     private ChallengeCategory challengeCategory;
 
     @OneToMany(mappedBy = "challenge")
-    private List<Progress> progresses;
+    private List<Progress> progressList;
 
     @OneToMany(mappedBy = "challenge")
     private List<ChallengeUser> challengeUserList;
