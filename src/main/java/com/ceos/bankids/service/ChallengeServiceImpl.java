@@ -8,11 +8,13 @@ import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.NotFoundException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,17 +66,39 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Transactional
     @Override
-    public ChallengeDTO detailChallenge(Long challengeId) {
+    public ChallengeDTO detailChallenge(User user, Long challengeId) {
         Optional<ChallengeUser> challengeUserRow = challengeUserRepository.findByChallengeId(
             challengeId);
+        System.out.println(user.getId());
         if (challengeUserRow.isPresent()) {
             ChallengeUser challengeUser = challengeUserRow.get();
+            if (!Objects.equals(challengeUser.getUser().getId(), user.getId())) {
+                throw new ForbiddenException("권한이 없습니다.");
+            }
             Challenge findChallenge = challengeUser.getChallenge();
             return new ChallengeDTO((findChallenge));
         } else {
             throw new NotFoundException("챌린지가 없습니다.");
         }
+    }
 
+    @Transactional
+    @Override
+    public ChallengeDTO deleteChallenge(User user, Long challengeId) {
+        Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
+            challengeId);
+        if (deleteChallengeUserRow.isPresent()) {
+            ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
+            Challenge deleteChallenge = deleteChallengeUser.getChallenge();
+            if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
+                throw new ForbiddenException("권한이 없습니다.");
+            }
+            challengeUserRepository.delete(deleteChallengeUser);
+            challengeRepository.delete(deleteChallenge);
+            return null;
+        } else {
+            throw new NotFoundException("챌린지가 없습니다.");
+        }
     }
 }
 
