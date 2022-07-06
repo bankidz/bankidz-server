@@ -1,6 +1,7 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
@@ -26,6 +28,10 @@ public class Parent extends AbstractTimestamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 10)
+    @ColumnDefault("0")
+    private Long savings;
+
     @OneToOne
     @JoinColumn(name = "userId", nullable = false)
     private User user;
@@ -33,12 +39,14 @@ public class Parent extends AbstractTimestamp {
     @Builder
     public Parent(
         Long id,
+        Long savings,
         User user
     ) {
         if (user == null) {
             throw new BadRequestException("유저는 필수값입니다.");
         }
         this.id = id;
+        this.savings = savings;
         this.user = user;
     }
 }

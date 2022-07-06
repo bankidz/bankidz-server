@@ -33,21 +33,24 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = uRepo.findById(userId);
         if (user.isEmpty()) {
             throw new BadRequestException("존재하지 않는 유저입니다.");
+        } else if (user.get().getIsFemale() != null) {
+            throw new BadRequestException("이미 유저 타입을 선택한 유저입니다.");
         } else {
             user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());
             user.get().setIsKid(userTypeRequest.getIsKid());
             uRepo.save(user.get());
 
-            if (user.get().getIsKid()) {
+            if (user.get().getIsKid() == true) {
                 Kid newKid = Kid.builder()
                     .savings(0L)
                     .user(user.get())
                     .level(1L)
                     .build();
                 kRepo.save(newKid);
-            } else {
+            } else if (user.get().getIsKid() == false) {
                 Parent newParent = Parent.builder()
+                    .savings(0L)
                     .user(user.get())
                     .build();
                 pRepo.save(newParent);

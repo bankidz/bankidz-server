@@ -105,8 +105,6 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.provider = provider;
         this.isKid = isKid;
         this.refreshToken = refreshToken;
-        this.parent = parent;
-        this.kid = kid;
     }
 
     @Override

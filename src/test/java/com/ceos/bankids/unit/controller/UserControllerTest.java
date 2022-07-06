@@ -140,6 +140,7 @@ public class UserControllerTest {
         Kid kid = Kid.builder()
             .savings(0L)
             .user(user)
+            .level(1L)
             .build();
         UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -191,8 +192,9 @@ public class UserControllerTest {
             .build();
         Parent parent = Parent.builder()
             .user(user)
+            .savings(0L)
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", true, false);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -214,8 +216,8 @@ public class UserControllerTest {
 
         // then
         user.setBirthday("19990521");
-        user.setIsFemale(false);
-        user.setIsKid(true);
+        user.setIsFemale(true);
+        user.setIsKid(false);
         UserDTO userDTO = new UserDTO(user);
 
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
@@ -227,5 +229,41 @@ public class UserControllerTest {
         Assertions.assertEquals(parent, pCaptor.getValue());
 
         Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
+    }
+
+    @Test
+    @DisplayName("이미 타입을 선택한 유저 접근시, 에러 처리 되는지 확인")
+    public void testIfUserTypePatchFailWhenAlreadyRegisteredThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(false)
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(null));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.patchUserType(user, userTypeRequest);
+        });
     }
 }
