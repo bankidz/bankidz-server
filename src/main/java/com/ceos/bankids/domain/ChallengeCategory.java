@@ -1,9 +1,7 @@
 package com.ceos.bankids.domain;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.ceos.bankids.exception.BadRequestException;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -23,7 +21,20 @@ public class ChallengeCategory extends AbstractTimestamp{
     @Column(nullable = false, unique = true)
     private String category;
 
-    @OneToMany (mappedBy = "challengeCategory")
+    @OneToMany(mappedBy = "challengeCategory")
     private List<Challenge> challenges;
+
+    @Builder
+    public ChallengeCategory(
+            Long id,
+            String category
+    ) {
+        if (category == null) {
+            throw new BadRequestException("카테고리 이름은 필수값입니다.");
+        }
+
+        this.id = id;
+        this.category = category;
+    }
 
 }

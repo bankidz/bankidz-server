@@ -66,7 +66,7 @@ public class User extends AbstractTimestamp implements UserDetails {
     private Parent parent;
 
     @OneToMany(mappedBy = "user")
-    private List<LinkChallenge> link_challengeList;
+    private List<ChallengeUser> challengeUserList;
 
     @OneToMany(mappedBy = "user")
     private List<FamilyUser> familyUserList;
