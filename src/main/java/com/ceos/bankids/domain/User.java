@@ -4,8 +4,14 @@ import com.ceos.bankids.exception.BadRequestException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +38,7 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(nullable = false, unique = true, length = 10)
     private String username;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
+    @Column(nullable = true)
     private Boolean isFemale;
 
     @Column(nullable = true, length = 8)
@@ -47,20 +53,23 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(nullable = false, length = 10)
     private String provider;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
+    @Column(nullable = true)
     private Boolean isKid;
 
     @Column(columnDefinition = "TEXT")
     private String refreshToken;
 
-    @OneToMany(mappedBy = "user")
-    private List<Kid> kids;
+    @OneToOne(mappedBy = "user")
+    private Kid kid;
 
-    @OneToMany(mappedBy = "user")
-    private List<Parent> parents;
+    @OneToOne(mappedBy = "user")
+    private Parent parent;
 
     @OneToMany(mappedBy = "user")
     private List<LinkChallenge> link_challengeList;
+
+    @OneToMany(mappedBy = "user")
+    private List<FamilyUser> familyUserList;
 
     @Builder
     public User(
@@ -71,7 +80,9 @@ public class User extends AbstractTimestamp implements UserDetails {
         String authenticationCode,
         String provider,
         Boolean isKid,
-        String refreshToken
+        String refreshToken,
+        Parent parent,
+        Kid kid
     ) {
         if (username == null) {
             throw new BadRequestException("이름은 필수값입니다.");
@@ -94,6 +105,8 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.provider = provider;
         this.isKid = isKid;
         this.refreshToken = refreshToken;
+        this.parent = parent;
+        this.kid = kid;
     }
 
     @Override
