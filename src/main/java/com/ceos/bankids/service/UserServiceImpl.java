@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             throw new BadRequestException("존재하지 않는 유저입니다.");
         } else {
+            user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());
             user.get().setIsKid(userTypeRequest.getIsKid());
             uRepo.save(user.get());
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
                     .build();
                 kRepo.save(newKid);
             } else {
+                System.out.println("PARENT!!!");
                 Parent newParent = Parent.builder()
                     .user(user.get())
                     .build();

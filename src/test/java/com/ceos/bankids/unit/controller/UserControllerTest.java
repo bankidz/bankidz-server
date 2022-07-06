@@ -28,14 +28,11 @@ public class UserControllerTest {
         User user = User.builder()
             .id(1L)
             .username("user1")
-            .isFemale(true)
-            .birthday("19990521")
             .authenticationCode("code")
             .provider("kakao")
-            .isKid(true)
             .refreshToken("token")
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest(false, false);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -54,8 +51,9 @@ public class UserControllerTest {
         CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
 
         // then
-        user.setIsKid(false);
+        user.setBirthday("19990521");
         user.setIsFemale(false);
+        user.setIsKid(true);
         UserDTO userDTO = new UserDTO(user);
         Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
     }
@@ -67,14 +65,11 @@ public class UserControllerTest {
         User user = User.builder()
             .id(1L)
             .username("user1")
-            .isFemale(true)
-            .birthday("19990521")
             .authenticationCode("code")
             .provider("kakao")
-            .isKid(true)
             .refreshToken("token")
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest(false, false);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -104,14 +99,11 @@ public class UserControllerTest {
         User user = User.builder()
             .id(1L)
             .username("user1")
-            .isFemale(true)
-            .birthday("19990521")
             .authenticationCode("code")
             .provider("kakao")
-            .isKid(true)
             .refreshToken("token")
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest(false, false);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(null));
@@ -141,18 +133,15 @@ public class UserControllerTest {
         User user = User.builder()
             .id(1L)
             .username("user1")
-            .isFemale(true)
-            .birthday("19990521")
             .authenticationCode("code")
             .provider("kakao")
-            .isKid(true)
             .refreshToken("token")
             .build();
         Kid kid = Kid.builder()
             .savings(0L)
             .user(user)
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest(false, true);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -173,6 +162,7 @@ public class UserControllerTest {
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
         // then
+        user.setBirthday("19990521");
         user.setIsFemale(false);
         user.setIsKid(true);
         UserDTO userDTO = new UserDTO(user);
@@ -195,17 +185,14 @@ public class UserControllerTest {
         User user = User.builder()
             .id(1L)
             .username("user1")
-            .isFemale(true)
-            .birthday("19990521")
             .authenticationCode("code")
             .provider("kakao")
-            .isKid(true)
             .refreshToken("token")
             .build();
         Parent parent = Parent.builder()
             .user(user)
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest(true, false);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -226,8 +213,9 @@ public class UserControllerTest {
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
         // then
-        user.setIsFemale(true);
-        user.setIsKid(false);
+        user.setBirthday("19990521");
+        user.setIsFemale(false);
+        user.setIsKid(true);
         UserDTO userDTO = new UserDTO(user);
 
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);

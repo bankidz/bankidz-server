@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserTypeRequest {
 
+    @ApiModelProperty(example = "19990521")
+    @NotNull(message = "birthday may not be null")
+    private String birthday;
+
     @ApiModelProperty(example = "false")
     @NotNull(message = "isFemale may not be null")
     private Boolean isFemale;
