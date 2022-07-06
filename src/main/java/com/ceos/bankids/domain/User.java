@@ -28,7 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "User")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"kids", "parents"})
+@ToString(exclude = {"challengeUserList", "challengeUserList"})
 public class User extends AbstractTimestamp implements UserDetails {
 
     @Id

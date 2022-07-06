@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -21,6 +22,7 @@ import lombok.Setter;
 @Table(name = "ChallengeCategory")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = "challengeList")
 public class ChallengeCategory extends AbstractTimestamp {
 
     @Id

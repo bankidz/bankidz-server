@@ -43,10 +43,10 @@ public class UserServiceImpl implements UserService {
                 Kid newKid = Kid.builder()
                     .savings(0L)
                     .user(user.get())
+                    .level(1L)
                     .build();
                 kRepo.save(newKid);
             } else {
-                System.out.println("PARENT!!!");
                 Parent newParent = Parent.builder()
                     .user(user.get())
                     .build();
