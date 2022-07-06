@@ -72,6 +72,11 @@ public class KakaoServiceImpl implements KakaoService {
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
             TokenDTO tokenDTO = new TokenDTO(user.get());
+
+            String refreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.get().getId());
+            user.get().setRefreshToken(refreshToken);
+            uRepo.save(user.get());
+
             Cookie cookie = new Cookie("refreshToken", user.get().getRefreshToken());
 
             cookie.setMaxAge(14 * 24 * 60 * 60);
