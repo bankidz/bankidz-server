@@ -60,7 +60,7 @@ public class ChallengeControllerTest {
 
         TargetItem newTargetItem = TargetItem.builder()
             .id(1L)
-            .itemName("전자제품")
+            .name("전자제품")
             .build();
 
         Challenge newChallenge = Challenge.builder()
@@ -79,7 +79,7 @@ public class ChallengeControllerTest {
             .thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
             .thenReturn(Optional.ofNullable(newChallenge));
-        Mockito.when(mockTargetItemRepository.findByItemName(newTargetItem.getItemName()))
+        Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
             .thenReturn(newTargetItem);
         Mockito.when(
                 mockChallengeCategoryRepository.findByCategory(newChallengeCategory.getCategory()))
@@ -142,7 +142,7 @@ public class ChallengeControllerTest {
 
         TargetItem newTargetItem = TargetItem.builder()
             .id(1L)
-            .itemName("전자제품")
+            .name("전자제품")
             .build();
 
         Challenge newChallenge = Challenge.builder()
@@ -167,7 +167,7 @@ public class ChallengeControllerTest {
             .thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
             .thenReturn(Optional.ofNullable(newChallenge));
-        Mockito.when(mockTargetItemRepository.findByItemName(newTargetItem.getItemName()))
+        Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
             .thenReturn(newTargetItem);
         Mockito.when(
                 mockChallengeCategoryRepository.findByCategory(newChallengeCategory.getCategory()))
@@ -238,7 +238,7 @@ public class ChallengeControllerTest {
 
         TargetItem newTargetItem = TargetItem.builder()
             .id(1L)
-            .itemName("전자제품")
+            .name("전자제품")
             .build();
 
         Challenge newChallenge = Challenge.builder()
@@ -263,7 +263,7 @@ public class ChallengeControllerTest {
             .thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
             .thenReturn(Optional.ofNullable(newChallenge));
-        Mockito.when(mockTargetItemRepository.findByItemName(newTargetItem.getItemName()))
+        Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
             .thenReturn(newTargetItem);
         Mockito.when(
                 mockChallengeCategoryRepository.findByCategory(newChallengeCategory.getCategory()))
@@ -333,7 +333,7 @@ public class ChallengeControllerTest {
 
         TargetItem newTargetItem = TargetItem.builder()
             .id(1L)
-            .itemName("전자제품")
+            .name("전자제품")
             .build();
 
         Challenge newChallenge = Challenge.builder()
@@ -363,6 +363,6 @@ public class ChallengeControllerTest {
         Assertions.assertThrows(BadRequestException.class, () -> {
             challengeController.postChallenge(newUser, challengeRequest, mockBindingResult);
         });
-        
+
     }
 }

@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,28 +17,38 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Parent")
+@Table(name = "FamilyUser")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Parent extends AbstractTimestamp {
+public class FamilyUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "familyId", nullable = false)
+    private Family family;
+
     @Builder
-    public Parent(
+    public FamilyUser(
         Long id,
-        User user
+        User user,
+        Family family
     ) {
         if (user == null) {
-            throw new BadRequestException("유저는 필수값입니다.");
+            throw new BadRequestException("챌린지 참여 유저는 필수값입니다.");
         }
+        if (family == null) {
+            throw new BadRequestException("가족 정보는 필수값입니다.");
+        }
+
         this.id = id;
         this.user = user;
+        this.family = family;
     }
 }

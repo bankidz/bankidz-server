@@ -1,12 +1,24 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import lombok.*;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
-
-import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
@@ -52,10 +64,13 @@ public class Challenge extends AbstractTimestamp {
     private ChallengeCategory challengeCategory;
 
     @OneToMany(mappedBy = "challenge")
-    private List<Progress> progresses;
+    private List<Progress> progressList;
 
     @OneToMany(mappedBy = "challenge")
     private List<ChallengeUser> challengeUserList;
+
+    @OneToOne(mappedBy = "challenge")
+    private Comment comment;
 
     @Builder
     public Challenge(
@@ -68,7 +83,8 @@ public class Challenge extends AbstractTimestamp {
         Long status,
         Long interestRate,
         ChallengeCategory challengeCategory,
-        TargetItem targetItem
+        TargetItem targetItem,
+        Comment comment
     ) {
         if (title == null) {
             throw new BadRequestException("돈길 제목은 필수값입니다.");
@@ -105,5 +121,6 @@ public class Challenge extends AbstractTimestamp {
         this.interestRate = interestRate;
         this.challengeCategory = challengeCategory;
         this.targetItem = targetItem;
+        this.comment = comment;
     }
 }
