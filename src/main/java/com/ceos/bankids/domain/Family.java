@@ -1,12 +1,13 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,28 +18,30 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Parent")
+@Table(name = "Family")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Parent extends AbstractTimestamp {
+public class Family {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private String code;
+
+    @OneToMany(mappedBy = "user")
+    private List<FamilyUser> familyUserList;
 
     @Builder
-    public Parent(
+    public Family(
         Long id,
-        User user
+        String code
     ) {
-        if (user == null) {
-            throw new BadRequestException("유저는 필수값입니다.");
+        if (code == null) {
+            throw new BadRequestException("가족코드는 필수값입니다.");
         }
         this.id = id;
-        this.user = user;
+        this.code = code;
     }
 }

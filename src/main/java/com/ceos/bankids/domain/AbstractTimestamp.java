@@ -14,11 +14,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(value = {AuditingEntityListener.class})
 public class AbstractTimestamp {
 
-    @Column(name = "created_at", nullable = false)
+    @Column(nullable = false)
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(nullable = false)
     @UpdateTimestamp
     private Timestamp updatedAt;
 }

@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -32,8 +32,12 @@ public class Kid extends AbstractTimestamp {
     @ColumnDefault("0")
     private Long savings;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @Column(nullable = false, length = 5)
+    @ColumnDefault("1")
+    private Long level;
+
+    @OneToOne
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Builder

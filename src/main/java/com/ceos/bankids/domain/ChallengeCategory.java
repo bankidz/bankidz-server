@@ -1,10 +1,19 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -12,7 +21,7 @@ import java.util.List;
 @Table(name = "ChallengeCategory")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class ChallengeCategory extends AbstractTimestamp{
+public class ChallengeCategory extends AbstractTimestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +31,12 @@ public class ChallengeCategory extends AbstractTimestamp{
     private String category;
 
     @OneToMany(mappedBy = "challengeCategory")
-    private List<Challenge> challenges;
+    private List<Challenge> challengeList;
 
     @Builder
     public ChallengeCategory(
-            Long id,
-            String category
+        Long id,
+        String category
     ) {
         if (category == null) {
             throw new BadRequestException("카테고리 이름은 필수값입니다.");
