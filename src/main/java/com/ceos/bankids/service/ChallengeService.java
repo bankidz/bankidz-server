@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ChallengeService {
 
-    public ChallengeDTO createChallenge(ChallengeRequest challengeRequest);
+    public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest);
+
+    public ChallengeDTO detailChallenge(Long challengeId);
 
 }

@@ -16,7 +16,6 @@ public class TargetItem extends AbstractTimestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "targetItemId")
     private Long id;
 
     @Column(nullable = false)
