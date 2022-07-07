@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +41,17 @@ public class ChallengeController {
     public CommonResponse<ChallengeDTO> getChallenge(@AuthenticationPrincipal User authUser,
         @PathVariable Long challengeId) {
 
-        ChallengeDTO challengeDTO = challengeService.detailChallenge(challengeId);
+        ChallengeDTO challengeDTO = challengeService.detailChallenge(authUser, challengeId);
+
+        return CommonResponse.onSuccess(challengeDTO);
+    }
+
+    @ApiOperation(value = "돈길 포기하기")
+    @DeleteMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<ChallengeDTO> deleteChallenge(@AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        ChallengeDTO challengeDTO = challengeService.deleteChallenge(authUser, challengeId);
 
         return CommonResponse.onSuccess(challengeDTO);
     }
