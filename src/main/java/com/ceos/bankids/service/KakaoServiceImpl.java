@@ -69,9 +69,8 @@ public class KakaoServiceImpl implements KakaoService {
         HttpServletResponse response) {
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            String accessToken = userService.issueNewTokens(user.get(), null, response);
+            LoginDTO loginDTO = userService.issueNewTokens(user.get(), null, true, response);
 
-            LoginDTO loginDTO = new LoginDTO(true, user.get().getIsKid(), accessToken);
             return loginDTO;
         } else {
             User newUser = User.builder()
@@ -81,9 +80,8 @@ public class KakaoServiceImpl implements KakaoService {
                 .build();
             uRepo.save(newUser);
 
-            String accessToken = userService.issueNewTokens(newUser, null, response);
+            LoginDTO loginDTO = userService.issueNewTokens(newUser, null, false, response);
 
-            LoginDTO loginDTO = new LoginDTO(false, null, accessToken);
             return loginDTO;
         }
     }

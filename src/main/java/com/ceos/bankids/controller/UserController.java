@@ -3,6 +3,7 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -41,11 +42,12 @@ public class UserController {
     @ApiOperation(value = "토큰 리프레시")
     @GetMapping(value = "/refresh", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<String> refreshUserToken(@AuthenticationPrincipal User authUser,
+    public CommonResponse<LoginDTO> refreshUserToken(@AuthenticationPrincipal User authUser,
         @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
 
-        String accessToken = userService.issueNewTokens(authUser, refreshToken, response);
+        LoginDTO loginDTO = userService.issueNewTokens(authUser, refreshToken, true, response);
 
-        return CommonResponse.onSuccess(accessToken);
+        return CommonResponse.onSuccess(loginDTO);
     }
+
 }

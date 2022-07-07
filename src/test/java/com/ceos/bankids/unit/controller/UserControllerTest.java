@@ -6,6 +6,7 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
@@ -14,6 +15,7 @@ import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -278,5 +280,49 @@ public class UserControllerTest {
         Assertions.assertThrows(BadRequestException.class, () -> {
             userController.patchUserType(user, userTypeRequest);
         });
+    }
+
+    @Test
+    @DisplayName("유저 토큰과 쿠키 정상 입력 시, 성공 결과 반환하는지 확인")
+    public void testIfTokenRefreshSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(false)
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(null));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        TokenDTO tokenDTO = new TokenDTO(user);
+        Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
+        Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        CommonResponse result = userController.refreshUserToken(user, "rT", response);
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
     }
 }

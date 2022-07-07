@@ -4,6 +4,7 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -66,13 +67,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String issueNewTokens(User user, String prevRefreshToken,
+    public LoginDTO issueNewTokens(User user, String prevRefreshToken, Boolean isRegistered,
         HttpServletResponse response) {
-        TokenDTO tokenDTO = new TokenDTO(user);
-
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
         uRepo.save(user);
+
+        TokenDTO tokenDTO = new TokenDTO(user);
 
         Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
 
@@ -83,6 +84,8 @@ public class UserServiceImpl implements UserService {
 
         response.addCookie(cookie);
 
-        return jwtTokenServiceImpl.encodeJwtToken(tokenDTO);
+        LoginDTO loginDTO = new LoginDTO(isRegistered, user.getIsKid(),
+            jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+        return loginDTO;
     }
 }
