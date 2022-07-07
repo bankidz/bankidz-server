@@ -6,6 +6,7 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -323,6 +324,7 @@ public class UserControllerTest {
         CommonResponse result = userController.refreshUserToken(user, "rT", response);
 
         // then
-        Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
+        LoginDTO loginDTO = new LoginDTO(true, false, "aT");
+        Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
     }
 }
