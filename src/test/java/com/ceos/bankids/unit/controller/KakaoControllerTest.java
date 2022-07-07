@@ -3,8 +3,8 @@ package com.ceos.bankids.unit.controller;
 import com.ceos.bankids.controller.KakaoController;
 import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.repository.UserRepository;
-import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KakaoServiceImpl;
+import com.ceos.bankids.service.UserServiceImpl;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,13 +21,13 @@ public class KakaoControllerTest {
         HttpServletResponse response = null;
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         WebClient mockWebClient = Mockito.mock(WebClient.class);
-        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
 
         // when
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockUserRepository,
-            jwtTokenServiceImpl,
-            mockWebClient
+            mockWebClient,
+            mockUserService
         );
         KakaoController kakaoController = new KakaoController(
             kakaoService
@@ -46,14 +46,14 @@ public class KakaoControllerTest {
         HttpServletResponse response = null;
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         WebClient mockWebClient = Mockito.mock(WebClient.class);
-        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
         KakaoRequest kakaoRequest = new KakaoRequest("code");
 
         // when
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockUserRepository,
-            jwtTokenServiceImpl,
-            mockWebClient
+            mockWebClient,
+            mockUserService
         );
         KakaoController kakaoController = new KakaoController(
             kakaoService

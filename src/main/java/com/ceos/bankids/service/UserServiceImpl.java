@@ -4,12 +4,15 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository uRepo;
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
+    private final JwtTokenServiceImpl jwtTokenServiceImpl;
 
     @Override
     @Transactional
@@ -58,5 +62,27 @@ public class UserServiceImpl implements UserService {
             UserDTO userDTO = new UserDTO(user.get());
             return userDTO;
         }
+    }
+
+    @Override
+    @Transactional
+    public String issueNewTokens(User user, String prevRefreshToken,
+        HttpServletResponse response) {
+        TokenDTO tokenDTO = new TokenDTO(user);
+
+        String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
+        user.setRefreshToken(newRefreshToken);
+        uRepo.save(user);
+
+        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
+
+        cookie.setMaxAge(14 * 24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
+        return jwtTokenServiceImpl.encodeJwtToken(tokenDTO);
     }
 }
