@@ -4,12 +4,16 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository uRepo;
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
+    private final JwtTokenServiceImpl jwtTokenServiceImpl;
 
     @Override
     @Transactional
@@ -33,19 +38,24 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = uRepo.findById(userId);
         if (user.isEmpty()) {
             throw new BadRequestException("존재하지 않는 유저입니다.");
+        } else if (user.get().getIsFemale() != null) {
+            throw new BadRequestException("이미 유저 타입을 선택한 유저입니다.");
         } else {
+            user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());
             user.get().setIsKid(userTypeRequest.getIsKid());
             uRepo.save(user.get());
 
-            if (user.get().getIsKid()) {
+            if (user.get().getIsKid() == true) {
                 Kid newKid = Kid.builder()
                     .savings(0L)
                     .user(user.get())
+                    .level(1L)
                     .build();
                 kRepo.save(newKid);
             } else {
                 Parent newParent = Parent.builder()
+                    .savings(0L)
                     .user(user.get())
                     .build();
                 pRepo.save(newParent);
@@ -53,5 +63,29 @@ public class UserServiceImpl implements UserService {
             UserDTO userDTO = new UserDTO(user.get());
             return userDTO;
         }
+    }
+
+    @Override
+    @Transactional
+    public LoginDTO issueNewTokens(User user, Boolean isRegistered,
+        HttpServletResponse response) {
+        String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
+        user.setRefreshToken(newRefreshToken);
+        uRepo.save(user);
+
+        TokenDTO tokenDTO = new TokenDTO(user);
+
+        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
+
+        cookie.setMaxAge(14 * 24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
+        LoginDTO loginDTO = new LoginDTO(isRegistered, user.getIsKid(),
+            jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+        return loginDTO;
     }
 }

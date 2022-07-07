@@ -44,6 +44,7 @@ public class Kid extends AbstractTimestamp {
     public Kid(
         Long id,
         Long savings,
+        Long level,
         User user
     ) {
         if (savings == null) {
@@ -54,6 +55,7 @@ public class Kid extends AbstractTimestamp {
         }
         this.id = id;
         this.savings = savings;
+        this.level = level;
         this.user = user;
     }
 }

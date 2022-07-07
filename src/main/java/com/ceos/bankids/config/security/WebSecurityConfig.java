@@ -41,7 +41,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/health/**").permitAll()
             .antMatchers(SwaggerPatterns).permitAll()
             .antMatchers("/kakao/**").permitAll()
-//            .antMatchers("/auth/kakao/**").permitAll()
             .antMatchers("/user/refresh").permitAll()
             .anyRequest().authenticated()
             .and()
@@ -60,6 +59,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("https://bankids.click");
+        configuration.addAllowedOrigin("https://bankidz.com");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

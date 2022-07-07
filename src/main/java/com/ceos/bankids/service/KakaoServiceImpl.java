@@ -3,13 +3,11 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
-import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Optional;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +24,8 @@ import reactor.core.publisher.Mono;
 public class KakaoServiceImpl implements KakaoService {
 
     private final UserRepository uRepo;
-    private final JwtTokenServiceImpl jwtTokenServiceImpl;
     private final WebClient webClient;
+    private final UserServiceImpl userService;
 
     @Value("${kakao.key}")
     private String KAKAO_KEY;
@@ -71,18 +69,8 @@ public class KakaoServiceImpl implements KakaoService {
         HttpServletResponse response) {
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            TokenDTO tokenDTO = new TokenDTO(user.get());
-            Cookie cookie = new Cookie("refreshToken", user.get().getRefreshToken());
+            LoginDTO loginDTO = userService.issueNewTokens(user.get(), true, response);
 
-            cookie.setMaxAge(14 * 24 * 60 * 60);
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-
-            response.addCookie(cookie);
-
-            LoginDTO loginDTO = new LoginDTO(true, user.get().getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return loginDTO;
         } else {
             User newUser = User.builder()
@@ -92,22 +80,8 @@ public class KakaoServiceImpl implements KakaoService {
                 .build();
             uRepo.save(newUser);
 
-            String refreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(newUser.getId());
-            newUser.setRefreshToken(refreshToken);
-            uRepo.save(newUser);
+            LoginDTO loginDTO = userService.issueNewTokens(newUser, false, response);
 
-            Cookie cookie = new Cookie("refreshToken", refreshToken);
-
-            cookie.setMaxAge(14 * 24 * 60 * 60);
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-
-            response.addCookie(cookie);
-
-            TokenDTO tokenDTO = new TokenDTO(newUser);
-            LoginDTO loginDTO = new LoginDTO(false, null,
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
             return loginDTO;
         }
     }

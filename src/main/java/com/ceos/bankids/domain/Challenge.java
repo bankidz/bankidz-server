@@ -17,6 +17,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -27,6 +28,7 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @DynamicInsert
+@ToString(exclude = {"progressList", "challengeUserList"})
 public class Challenge extends AbstractTimestamp {
 
     @Id
