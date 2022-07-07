@@ -6,6 +6,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,5 +55,15 @@ public class ChallengeController {
         ChallengeDTO challengeDTO = challengeService.deleteChallenge(authUser, challengeId);
 
         return CommonResponse.onSuccess(challengeDTO);
+    }
+
+    @ApiOperation(value = "돈길 리스트 가져오기")
+    @GetMapping(produces = "application/json; charset=utf-8")
+    public CommonResponse<List<ChallengeDTO>> getListChallenge(
+        @AuthenticationPrincipal User authUser) {
+
+        List<ChallengeDTO> challengeList = challengeService.readChallenge(authUser);
+
+        return CommonResponse.onSuccess(challengeList);
     }
 }
