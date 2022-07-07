@@ -65,6 +65,44 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("유저 정보 이미 있어 실패시, 에러 처리 되는지 확인")
+    public void testIfUserTypePatchFailWhenAlreadyPatchedThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.patchUserType(user, userTypeRequest);
+        });
+    }
+
+    @Test
     @DisplayName("body 없어서 패치 실패시, 에러 처리 되는지 확인")
     public void testIfUserTypePatchFailWithoutArgumentsThrowNullPointerException() {
         // given

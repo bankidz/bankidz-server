@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
                     .level(1L)
                     .build();
                 kRepo.save(newKid);
-            } else if (user.get().getIsKid() == false) {
+            } else {
                 Parent newParent = Parent.builder()
                     .savings(0L)
                     .user(user.get())
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, String prevRefreshToken, Boolean isRegistered,
+    public LoginDTO issueNewTokens(User user, Boolean isRegistered,
         HttpServletResponse response) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);

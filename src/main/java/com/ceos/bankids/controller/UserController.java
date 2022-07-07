@@ -45,7 +45,7 @@ public class UserController {
     public CommonResponse<LoginDTO> refreshUserToken(@AuthenticationPrincipal User authUser,
         @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
 
-        LoginDTO loginDTO = userService.issueNewTokens(authUser, refreshToken, true, response);
+        LoginDTO loginDTO = userService.issueNewTokens(authUser, true, response);
 
         return CommonResponse.onSuccess(loginDTO);
     }
