@@ -16,6 +16,7 @@ import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,6 +111,19 @@ public class ChallengeServiceImpl implements ChallengeService {
         } else {
             throw new NotFoundException("챌린지가 없습니다.");
         }
+    }
+
+    @Transactional
+    @Override
+    public List<ChallengeDTO> readChallenge(User user) {
+
+        List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
+            user.getId());
+        List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+        for (ChallengeUser r : challengeUserRow) {
+            challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+        }
+        return challengeDTOList;
     }
 }
 
