@@ -11,6 +11,7 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -38,12 +39,14 @@ public class UserControllerTest {
             .thenReturn(Optional.ofNullable(user));
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
-            mockParentRepository
+            mockParentRepository,
+            jwtTokenServiceImpl
         );
         UserController userController = new UserController(
             userService
@@ -75,12 +78,14 @@ public class UserControllerTest {
             .thenReturn(Optional.ofNullable(user));
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
-            mockParentRepository
+            mockParentRepository,
+            jwtTokenServiceImpl
         );
         UserController userController = new UserController(
             userService
@@ -109,12 +114,14 @@ public class UserControllerTest {
             .thenReturn(Optional.ofNullable(null));
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
-            mockParentRepository
+            mockParentRepository,
+            jwtTokenServiceImpl
         );
         UserController userController = new UserController(
             userService
@@ -150,12 +157,14 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         Mockito.when(mockKidRepository.save(kid)).thenReturn(kid);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
-            mockParentRepository
+            mockParentRepository,
+            jwtTokenServiceImpl
         );
         UserController userController = new UserController(
             userService
@@ -202,12 +211,14 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         Mockito.when(mockParentRepository.save(parent)).thenReturn(parent);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
-            mockParentRepository
+            mockParentRepository,
+            jwtTokenServiceImpl
         );
         UserController userController = new UserController(
             userService
@@ -250,12 +261,14 @@ public class UserControllerTest {
             .thenReturn(Optional.ofNullable(null));
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
             mockKidRepository,
-            mockParentRepository
+            mockParentRepository,
+            jwtTokenServiceImpl
         );
         UserController userController = new UserController(
             userService
