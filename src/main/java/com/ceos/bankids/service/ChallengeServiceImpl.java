@@ -115,13 +115,19 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Transactional
     @Override
-    public List<ChallengeDTO> readChallenge(User user) {
+    public List<ChallengeDTO> readChallenge(User user, String status) {
 
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
-            challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            if (status.equals("accept") && r.getChallenge().getStatus() == 2L) {
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            } else if ((status.equals("pending") || status.equals("reject"))
+                && r.getChallenge().getStatus() != 2L) {
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            }
+
         }
         return challengeDTOList;
     }

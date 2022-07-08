@@ -1,13 +1,14 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.Progress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import java.sql.Timestamp;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.sql.Timestamp;
 
 
 @Getter
@@ -43,6 +44,8 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "1")
     private Long status;
 
+    private List<Progress> progressList;
+
     public ChallengeDTO(Challenge challenge) {
         this.id = challenge.getId();
         this.title = challenge.getTitle();
@@ -53,5 +56,6 @@ public class ChallengeDTO {
         this.weeks = challenge.getWeeks();
         this.createdAt = challenge.getCreatedAt();
         this.status = challenge.getStatus();
+        this.progressList = challenge.getProgressList();
     }
 }

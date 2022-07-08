@@ -792,7 +792,7 @@ public class ChallengeControllerTest {
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        CommonResponse result = challengeController.getListChallenge(newUser);
+        CommonResponse result = challengeController.getListChallenge(newUser, "pending");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -836,7 +836,7 @@ public class ChallengeControllerTest {
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        CommonResponse result = challengeController.getListChallenge(newUser);
+        CommonResponse result = challengeController.getListChallenge(newUser, "pending");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
