@@ -28,10 +28,9 @@ public class FamilyServiceImpl implements FamilyService {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
 
         if (familyUser.isPresent()) {
-            String code = familyUser.get().getFamily().getCode();
             List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(
-                familyUser.get().getFamily().getId());
-            FamilyDTO familyDTO = new FamilyDTO(code, familyUserDTOList);
+                familyUser.get().getFamily());
+            FamilyDTO familyDTO = new FamilyDTO(familyUser.get().getFamily(), familyUserDTOList);
 
             return familyDTO;
         } else {
@@ -47,8 +46,8 @@ public class FamilyServiceImpl implements FamilyService {
                 .build();
             fuRepo.save(newFamilyUser);
 
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily.getId());
-            FamilyDTO familyDTO = new FamilyDTO(newFamilyCode, familyUserDTOList);
+            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily);
+            FamilyDTO familyDTO = new FamilyDTO(newFamily, familyUserDTOList);
 
             return familyDTO;
         }
@@ -56,8 +55,8 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public List<FamilyUserDTO> getFamilyUserList(Long familyId) {
-        List<FamilyUser> familyUser = fuRepo.findByFamilyId(familyId);
+    public List<FamilyUserDTO> getFamilyUserList(Family family) {
+        List<FamilyUser> familyUser = fuRepo.findByFamily(family);
 
         List<FamilyUserDTO> userDTOList = familyUser.stream().map(FamilyUser::getUser)
             .map(FamilyUserDTO::new)
