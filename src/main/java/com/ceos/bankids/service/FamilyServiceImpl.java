@@ -5,6 +5,7 @@ import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import java.util.List;
@@ -28,6 +29,10 @@ public class FamilyServiceImpl implements FamilyService {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
 
         if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.isEmpty()) {
+                throw new BadRequestException("삭제된 가족입니다.");
+            }
             List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(
                 familyUser.get().getFamily());
             FamilyDTO familyDTO = new FamilyDTO(familyUser.get().getFamily(), familyUserDTOList);

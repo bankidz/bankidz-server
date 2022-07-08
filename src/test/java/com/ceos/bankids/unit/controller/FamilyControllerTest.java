@@ -7,6 +7,7 @@ import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.service.FamilyServiceImpl;
@@ -21,6 +22,57 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 public class FamilyControllerTest {
+
+    @Test
+    @DisplayName("기존 가족 있으나, 삭제되었을 때 에러 처리 하는지 확인")
+    public void testIfFamilyExistButDeletedThenThrowBadRequestException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+        User user2 = User.builder()
+            .id(2L)
+            .username("user2")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+        Family family = Family.builder().id(1L).code("code").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
+        FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
+        List<FamilyUser> familyUserList = new ArrayList<FamilyUser>();
+        familyUserList.add(familyUser1);
+        familyUserList.add(familyUser2);
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L)).thenReturn(
+            Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.postNewFamily(user1);
+        });
+    }
 
     @Test
     @DisplayName("기존 가족 있을 때, 가족 정보 반환하는지 확인")
@@ -56,6 +108,7 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L)).thenReturn(
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
