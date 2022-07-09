@@ -37,7 +37,10 @@ public class ProgressServiceImpl implements ProgressService {
             }
         });
         if (progress.isPresent()) {
-            progress.ifPresent(p -> p.setIsAchieved(true));
+            progress.ifPresent(p -> {
+                p.setIsAchieved(true);
+                progressRepository.save(p);
+            });
             return new ProgressDTO(progress.get());
         } else {
             throw new BadRequestException("존재하지 않는 프로그레스 입니다.");
