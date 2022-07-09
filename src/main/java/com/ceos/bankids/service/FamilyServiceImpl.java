@@ -8,6 +8,7 @@ import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FamilyUserDTO> getFamilyUserList(Family family) {
         List<FamilyUser> familyUser = fuRepo.findByFamily(family);
 
@@ -68,5 +69,23 @@ public class FamilyServiceImpl implements FamilyService {
             .collect(Collectors.toList());
 
         return userDTOList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FamilyDTO getFamily(User user) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.isEmpty()) {
+                throw new BadRequestException("삭제된 가족입니다.");
+            }
+            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get());
+            FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
+            return familyDTO;
+        } else {
+            FamilyDTO familyDTO = new FamilyDTO(new Family(), new ArrayList<>());
+            return familyDTO;
+        }
     }
 }
