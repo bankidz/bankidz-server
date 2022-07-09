@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -60,9 +61,9 @@ public class ChallengeController {
     @ApiOperation(value = "돈길 리스트 가져오기")
     @GetMapping(produces = "application/json; charset=utf-8")
     public CommonResponse<List<ChallengeDTO>> getListChallenge(
-        @AuthenticationPrincipal User authUser) {
+        @AuthenticationPrincipal User authUser, @RequestParam String status) {
 
-        List<ChallengeDTO> challengeList = challengeService.readChallenge(authUser);
+        List<ChallengeDTO> challengeList = challengeService.readChallenge(authUser, status);
 
         return CommonResponse.onSuccess(challengeList);
     }

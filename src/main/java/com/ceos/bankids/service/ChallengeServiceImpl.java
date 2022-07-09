@@ -60,6 +60,13 @@ public class ChallengeServiceImpl implements ChallengeService {
             .status(1L).interestRate(challengeRequest.getInterestRate())
             .challengeCategory(challengeCategory).targetItem(targetItem).build();
         challengeRepository.save(newChallenge);
+
+        for (int i = 0; i < challengeRequest.getWeeks(); i++) {
+            Progress newProgress = Progress.builder().weeks(Long.valueOf(i)).challenge(newChallenge)
+                .isAchieved(false).build();
+            progressRepository.save(newProgress);
+        }
+
         //ChallengeUser에 등록
         //ToDo: 자식-부모 매핑되면 부모도 같이 등록시키기
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
@@ -101,6 +108,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
             if ((long) progressList.size() == 1 || progressList.isEmpty()) {
+                progressRepository.deleteAll(progressList);
                 challengeUserRepository.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
             } else {
@@ -115,13 +123,19 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Transactional
     @Override
-    public List<ChallengeDTO> readChallenge(User user) {
+    public List<ChallengeDTO> readChallenge(User user, String status) {
 
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
-            challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            if (status.equals("accept") && r.getChallenge().getStatus() == 2L) {
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            } else if ((status.equals("pending") || status.equals("reject"))
+                && r.getChallenge().getStatus() != 2L) {
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            }
+
         }
         return challengeDTOList;
     }

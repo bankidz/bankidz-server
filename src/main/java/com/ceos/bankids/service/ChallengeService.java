@@ -15,6 +15,6 @@ public interface ChallengeService {
 
     public ChallengeDTO deleteChallenge(User user, Long challengeId);
 
-    public List<ChallengeDTO> readChallenge(User user);
+    public List<ChallengeDTO> readChallenge(User user, String status);
 
 }

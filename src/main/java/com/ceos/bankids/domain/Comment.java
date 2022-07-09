@@ -1,6 +1,7 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
+    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "challengeId", nullable = false)
     private Challenge challenge;
