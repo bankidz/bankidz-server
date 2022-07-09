@@ -1,6 +1,7 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.Comment;
 import com.ceos.bankids.domain.Progress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -46,6 +47,8 @@ public class ChallengeDTO {
 
     private List<Progress> progressList;
 
+    private Comment comment;
+
     public ChallengeDTO(Challenge challenge) {
         this.id = challenge.getId();
         this.title = challenge.getTitle();
@@ -57,5 +60,6 @@ public class ChallengeDTO {
         this.createdAt = challenge.getCreatedAt();
         this.status = challenge.getStatus();
         this.progressList = challenge.getProgressList();
+        this.comment = challenge.getComment();
     }
 }

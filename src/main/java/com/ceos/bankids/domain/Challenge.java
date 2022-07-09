@@ -74,6 +74,7 @@ public class Challenge extends AbstractTimestamp {
     @OneToMany(mappedBy = "challenge")
     private List<ChallengeUser> challengeUserList;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "challenge")
     private Comment comment;
 

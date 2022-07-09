@@ -161,6 +161,76 @@ public class ChallengeControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 생성 시, 챌린지에 걸리는 progress 정상 생성 테스트")
+    public void testMakeProgress() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
+            5000L, 1000L, 5L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        List<Progress> progressList = new ArrayList<>();
+        for (int i = 0; i < challengeRequest.getWeeks(); i++) {
+            Progress newProgress = Progress.builder().challenge(newChallenge).isAchieved(false)
+                .weeks(Long.valueOf(i)).build();
+            progressList.add(newProgress);
+        }
+
+        Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
+        Mockito.when(mockChallengeRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(newChallenge));
+        Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
+            .thenReturn(newTargetItem);
+        Mockito.when(
+                mockChallengeCategoryRepository.findByCategory(newChallengeCategory.getCategory()))
+            .thenReturn(newChallengeCategory);
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
+            .thenReturn(newChallengeUser);
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser));
+        Mockito.when(mockProgressRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(progressList);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+        CommonResponse result = challengeController.postChallenge(newUser, challengeRequest,
+            mockBindingResult);
+
+        //then
+        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTO), result);
+    }
+
+    @Test
     @DisplayName("챌린지 생성 시, 목표 아이템 입력 400 에러 테스트")
     public void testIfMakeChallengeTargetItemBadRequestErr() {
 
