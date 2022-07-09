@@ -22,10 +22,11 @@ public class FamilyController {
 
     @PostMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<FamilyDTO> postNewFamily(@AuthenticationPrincipal User authUser) {
+    public CommonResponse<FamilyDTO> postFamily(@AuthenticationPrincipal User authUser) {
 
         FamilyDTO familyDTO = familyService.postNewFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
     }
+
 }

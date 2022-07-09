@@ -70,7 +70,7 @@ public class FamilyControllerTest {
 
         // then
         Assertions.assertThrows(BadRequestException.class, () -> {
-            familyController.postNewFamily(user1);
+            familyController.postFamily(user1);
         });
     }
 
@@ -118,7 +118,7 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService
         );
-        CommonResponse<FamilyDTO> result = familyController.postNewFamily(user1);
+        CommonResponse<FamilyDTO> result = familyController.postFamily(user1);
 
         // then
         List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
@@ -160,7 +160,7 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService
         );
-        CommonResponse<FamilyDTO> result = familyController.postNewFamily(user1);
+        CommonResponse<FamilyDTO> result = familyController.postFamily(user1);
         String code = result.getData().getCode();
         family.setCode(code);
 
