@@ -762,7 +762,7 @@ public class ChallengeControllerTest {
         Challenge newChallenge1 = Challenge.builder().title(challengeRequest1.getTitle())
             .isAchieved(false).totalPrice(challengeRequest1.getTotalPrice())
             .weekPrice(challengeRequest1.getWeekPrice()).weeks(challengeRequest1.getWeeks())
-            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
             .interestRate(challengeRequest1.getInterestRate()).build();
 
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
@@ -793,15 +793,25 @@ public class ChallengeControllerTest {
             mockProgressRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse result = challengeController.getListChallenge(newUser, "pending");
+        CommonResponse result1 = challengeController.getListChallenge(newUser, "accept");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+        List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
         for (ChallengeUser r : challengeUserList) {
-            challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            if (r.getChallenge().getStatus() != 2L) {
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+
+            } else {
+                challengeDTOList1.add(new ChallengeDTO(r.getChallenge()));
+            }
         }
 
         Assertions.assertEquals(CommonResponse.onSuccess(challengeDTOList).getData(),
             result.getData());
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTOList1).getData(),
+            result1.getData());
+
     }
 
     @Test
