@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,4 +30,12 @@ public class FamilyController {
         return CommonResponse.onSuccess(familyDTO);
     }
 
+    @GetMapping(value = "", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<FamilyDTO> getFamily(@AuthenticationPrincipal User authUser) {
+
+        FamilyDTO familyDTO = familyService.getFamily(authUser);
+
+        return CommonResponse.onSuccess(familyDTO);
+    }
 }

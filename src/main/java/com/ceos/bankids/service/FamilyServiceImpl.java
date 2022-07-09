@@ -8,6 +8,7 @@ import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FamilyUserDTO> getFamilyUserList(Family family) {
         List<FamilyUser> familyUser = fuRepo.findByFamily(family);
 
@@ -68,5 +69,21 @@ public class FamilyServiceImpl implements FamilyService {
             .collect(Collectors.toList());
 
         return userDTOList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FamilyDTO getFamily(User user) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isPresent()) {
+            Family family = familyUser.get().getFamily();
+            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family);
+            FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+            return familyDTO;
+        } else {
+            Family family = new Family();
+            FamilyDTO familyDTO = new FamilyDTO(family, new ArrayList<>());
+            return familyDTO;
+        }
     }
 }
