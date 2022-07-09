@@ -76,13 +76,15 @@ public class FamilyServiceImpl implements FamilyService {
     public FamilyDTO getFamily(User user) {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
         if (familyUser.isPresent()) {
-            Family family = familyUser.get().getFamily();
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family);
-            FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.isEmpty()) {
+                throw new BadRequestException("삭제된 가족입니다.");
+            }
+            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get());
+            FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
             return familyDTO;
         } else {
-            Family family = new Family();
-            FamilyDTO familyDTO = new FamilyDTO(family, new ArrayList<>());
+            FamilyDTO familyDTO = new FamilyDTO(new Family(), new ArrayList<>());
             return familyDTO;
         }
     }
