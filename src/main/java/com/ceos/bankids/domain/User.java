@@ -77,6 +77,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         String username,
         Boolean isFemale,
         String birthday,
+        String phone,
         String authenticationCode,
         String provider,
         Boolean isKid,
@@ -101,6 +102,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.username = username;
         this.isFemale = isFemale;
         this.birthday = birthday;
+        this.phone = phone;
         this.authenticationCode = authenticationCode;
         this.provider = provider;
         this.isKid = isKid;
