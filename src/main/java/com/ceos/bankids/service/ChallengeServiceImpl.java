@@ -4,16 +4,19 @@ import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.NotFoundException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
+import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final TargetItemRepository targetItemRepository;
     private final ChallengeUserRepository challengeUserRepository;
     private final ProgressRepository progressRepository;
+    private final FamilyUserRepository familyUserRepository;
 
     @Transactional
     @Override
@@ -138,6 +142,30 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         }
         return challengeDTOList;
+    }
+
+    @Transactional
+    @Override
+    public List<KidChallengeListDTO> readKidChallenge(User user) {
+
+        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
+        List<KidChallengeListDTO> kidChallengeListDTOList = new ArrayList<>();
+        familyUser.ifPresent(c -> {
+            List<FamilyUser> familyUserList = familyUserRepository.findByFamily(c.getFamily());
+            familyUserList.forEach(familyUser1 -> {
+                List<ChallengeDTO> challengeList = new ArrayList<>();
+                if (familyUser1.getUser().getIsKid()) {
+                    List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
+                        familyUser1.getUser().getId());
+                    challengeUserList.forEach(challengeUser -> {
+                        challengeList.add(new ChallengeDTO(challengeUser.getChallenge()));
+                    });
+                    kidChallengeListDTOList.add(
+                        new KidChallengeListDTO(familyUser1.getUser(), challengeList));
+                }
+            });
+        });
+        return kidChallengeListDTOList;
     }
 }
 

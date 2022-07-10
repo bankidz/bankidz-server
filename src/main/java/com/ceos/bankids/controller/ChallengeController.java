@@ -4,6 +4,7 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -66,5 +67,15 @@ public class ChallengeController {
         List<ChallengeDTO> challengeList = challengeService.readChallenge(authUser, status);
 
         return CommonResponse.onSuccess(challengeList);
+    }
+
+    @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
+    @GetMapping(value = "/kid", produces = "application/json; charset=utf-8")
+    public CommonResponse<List<KidChallengeListDTO>> getListKidChallenge(
+        @AuthenticationPrincipal User authUser) {
+
+        List<KidChallengeListDTO> kidChallengeList = challengeService.readKidChallenge(authUser);
+
+        return CommonResponse.onSuccess(kidChallengeList);
     }
 }

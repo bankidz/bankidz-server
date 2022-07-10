@@ -31,6 +31,7 @@ public class ChallengeUser extends AbstractTimestamp {
     @Column(nullable = false)
     private String member;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

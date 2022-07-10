@@ -1,6 +1,7 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +33,7 @@ public class TargetItem extends AbstractTimestamp {
     @Column(nullable = false)
     private String name;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "targetItem")
     private List<Challenge> challengeList;
 
