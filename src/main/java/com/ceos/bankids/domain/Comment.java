@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
@@ -36,11 +37,17 @@ public class Comment {
     @JoinColumn(name = "challengeId", nullable = false)
     private Challenge challenge;
 
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
+
     @Builder
     public Comment(
         Long id,
         String content,
-        Challenge challenge
+        Challenge challenge,
+        User user
     ) {
         if (content == null) {
             throw new BadRequestException("내용은 필수값입니다.");
@@ -48,8 +55,12 @@ public class Comment {
         if (challenge == null) {
             throw new BadRequestException("챌린지는 필수값입니다.");
         }
+        if (user == null) {
+            throw new BadRequestException("유저는 필수값입니다.");
+        }
         this.id = id;
         this.content = content;
         this.challenge = challenge;
+        this.user = user;
     }
 }
