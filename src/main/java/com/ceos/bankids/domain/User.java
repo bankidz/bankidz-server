@@ -70,8 +70,13 @@ public class User extends AbstractTimestamp implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<ChallengeUser> challengeUserList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<FamilyUser> familyUserList;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<Comment> commentList;
 
     @Builder
     public User(

@@ -45,6 +45,7 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "1")
     private Long status;
 
+    @ApiModelProperty(example = "true")
     private List<Progress> progressList;
 
     private Comment comment;

@@ -16,6 +16,7 @@ import com.ceos.bankids.exception.NotFoundException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
+import com.ceos.bankids.repository.CommentRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
@@ -47,6 +48,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
         //given
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
@@ -78,7 +80,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse result = challengeController.postChallenge(newUser, challengeRequest,
             mockBindingResult);
@@ -106,6 +108,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
@@ -144,7 +147,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse result = challengeController.postChallenge(newUser, challengeRequest,
             mockBindingResult);
@@ -176,6 +179,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
@@ -223,7 +227,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse result = challengeController.postChallenge(newUser, challengeRequest,
             mockBindingResult);
@@ -247,6 +251,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "선물", "에어팟 사기", 30L,
@@ -273,7 +278,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -295,6 +300,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("형제와 경쟁 하기", "전자제품", "에어팟 사기", 30L,
@@ -322,7 +328,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -345,6 +351,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
@@ -372,7 +379,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -395,6 +402,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -432,7 +440,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse result = challengeController.getChallenge(newUser, challengeId);
@@ -462,6 +470,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -492,7 +501,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -517,6 +526,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -550,7 +560,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -573,6 +583,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -613,7 +624,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse result = challengeController.deleteChallenge(newUser, challengeId);
@@ -645,6 +656,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -675,7 +687,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -700,6 +712,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -736,7 +749,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -759,6 +772,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -792,7 +806,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -815,6 +829,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
             150000L, 10000L, 15L);
@@ -867,7 +882,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse result = challengeController.getListChallenge(newUser, "pending");
         CommonResponse result1 = challengeController.getListChallenge(newUser, "accept");
@@ -904,6 +919,7 @@ public class ChallengeControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -921,7 +937,7 @@ public class ChallengeControllerTest {
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
-            mockProgressRepository, mockFmailyUserRepository);
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse result = challengeController.getListChallenge(newUser, "pending");
 

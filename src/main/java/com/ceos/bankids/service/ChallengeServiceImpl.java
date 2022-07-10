@@ -1,9 +1,11 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.controller.request.ChallengeRequest;
+import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.Comment;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
@@ -16,6 +18,7 @@ import com.ceos.bankids.exception.NotFoundException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
+import com.ceos.bankids.repository.CommentRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
@@ -40,6 +43,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeUserRepository challengeUserRepository;
     private final ProgressRepository progressRepository;
     private final FamilyUserRepository familyUserRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     @Override
@@ -167,5 +171,41 @@ public class ChallengeServiceImpl implements ChallengeService {
         });
         return kidChallengeListDTOList;
     }
+
+    @Transactional
+    @Override
+    public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
+        KidChallengeRequest kidChallengeRequest) {
+
+        ChallengeUser findChallengeUser = challengeUserRepository.findByChallengeId(challengeId)
+            .orElseThrow(() -> new BadRequestException("존재하지 않는 돈길입니다."));
+        User cUser = findChallengeUser.getUser();
+        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(cUser.getId());
+        Optional<FamilyUser> familyUser1 = familyUserRepository.findByUserId(user.getId());
+        familyUser.ifPresent(f -> {
+            familyUser1.ifPresent(f1 -> {
+                if (f.getFamily() != f1.getFamily() || user.getIsKid()) {
+                    throw new ForbiddenException("권한이 없습니다.");
+                }
+            });
+        });
+        Challenge challenge = findChallengeUser.getChallenge();
+        if (challenge.getStatus() != 1L) {
+            throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
+        }
+        if (kidChallengeRequest.getAccept()) {
+            challenge.setStatus(2L);
+            challengeRepository.save(challenge);
+        } else {
+            Comment newComment = Comment.builder().challenge(challenge).content(
+                kidChallengeRequest.getComment()).user(user).build();
+            challenge.setStatus(0L);
+            commentRepository.save(newComment);
+            challenge.setComment(newComment);
+            challengeRepository.save(challenge);
+        }
+        return new ChallengeDTO(challengeRepository.findById(challengeId).get());
+    }
+
 }
 
