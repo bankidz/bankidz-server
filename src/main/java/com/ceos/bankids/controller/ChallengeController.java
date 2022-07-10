@@ -77,7 +77,7 @@ public class ChallengeController {
         @AuthenticationPrincipal User authUser) {
 
         List<KidChallengeListDTO> kidChallengeList = challengeService.readKidChallenge(authUser);
-
+        
         return CommonResponse.onSuccess(kidChallengeList);
     }
 

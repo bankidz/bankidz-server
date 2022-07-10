@@ -1,5 +1,6 @@
 package com.ceos.bankids.controller.request;
 
+import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +17,10 @@ import lombok.Setter;
 @Builder
 public class KidChallengeRequest {
 
+    @ApiModelProperty(example = "false")
     @NotNull(message = "돈길 수락 여부를 입력해주세요")
     private Boolean accept;
 
+    @ApiModelProperty(example = "아쉽구나...")
     private String comment;
 }

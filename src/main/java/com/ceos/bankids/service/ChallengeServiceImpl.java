@@ -169,6 +169,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 }
             });
         });
+
         return kidChallengeListDTOList;
     }
 
@@ -204,6 +205,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             challenge.setComment(newComment);
             challengeRepository.save(challenge);
         }
+
         return new ChallengeDTO(challengeRepository.findById(challengeId).get());
     }
 
