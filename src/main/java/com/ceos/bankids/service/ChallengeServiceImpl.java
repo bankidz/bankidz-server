@@ -69,12 +69,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             .challengeCategory(challengeCategory).targetItem(targetItem).build();
         challengeRepository.save(newChallenge);
 
-        for (int i = 0; i < challengeRequest.getWeeks(); i++) {
-            Progress newProgress = Progress.builder().weeks(Long.valueOf(i)).challenge(newChallenge)
-                .isAchieved(false).build();
-            progressRepository.save(newProgress);
-        }
-
         //ChallengeUser에 등록
         //ToDo: 자식-부모 매핑되면 부모도 같이 등록시키기
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
@@ -197,6 +191,12 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (kidChallengeRequest.getAccept()) {
             challenge.setStatus(2L);
             challengeRepository.save(challenge);
+            for (int i = 1; i <= challenge.getWeeks(); i++) {
+                Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
+                    .challenge(challenge)
+                    .isAchieved(false).build();
+                progressRepository.save(newProgress);
+            }
         } else {
             Comment newComment = Comment.builder().challenge(challenge).content(
                 kidChallengeRequest.getComment()).user(user).build();
