@@ -51,7 +51,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         Boolean isMom = challengeRequest.getIsMom();
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(ForbiddenException::new);
+            .orElseThrow(() -> new ForbiddenException("가족이 없는 유저는 돈길을 생성 할 수 없습니다."));
         User contractUser = familyUserRepository.findByFamily(familyUser.getFamily())
             .stream()
             .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
