@@ -48,10 +48,20 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Transactional
     @Override
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
+
+        Boolean isMom = challengeRequest.getIsMom();
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(ForbiddenException::new);
+        User contractUser = familyUserRepository.findByFamily(familyUser.getFamily())
+            .stream()
+            .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
+            .orElseThrow(() -> new BadRequestException("해당 부모가 없습니다.")).getUser();
+
         String category = challengeRequest.getCategory();
         String name = challengeRequest.getItemName();
         ChallengeCategory challengeCategory = challengeCategoryRepository.findByCategory(category);
         TargetItem targetItem = targetItemRepository.findByName(name);
+
         if (targetItem == null) {
             throw new BadRequestException("목표 아이템 입력이 잘 못 되었습니다.");
         }
@@ -63,14 +73,13 @@ public class ChallengeServiceImpl implements ChallengeService {
             throw new BadRequestException("주차수가 목표 금액 / 주당 금액의 값과 다릅니다.");
         }
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(contractUser)
             .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .status(1L).interestRate(challengeRequest.getInterestRate())
             .challengeCategory(challengeCategory).targetItem(targetItem).build();
         challengeRepository.save(newChallenge);
 
-        //ChallengeUser에 등록
-        //ToDo: 자식-부모 매핑되면 부모도 같이 등록시키기
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
             .member("parent").user(user).build();
         challengeUserRepository.save(newChallengeUser);

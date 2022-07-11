@@ -41,11 +41,17 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
 
-        ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
             150000L, 10000L, 15L);
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
 
         ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
             .category("이자율 받기").build();
@@ -53,6 +59,7 @@ public class ProgressControllerTest {
         TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
             .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
@@ -118,7 +125,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
 
-        ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
             150000L, 10000L, 15L);
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
@@ -128,12 +136,18 @@ public class ProgressControllerTest {
             .authenticationCode("code1").provider("kakao").isKid(true).refreshToken("token1")
             .build();
 
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
         ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
             .category("이자율 받기").build();
 
         TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
             .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
@@ -189,11 +203,17 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
 
-        ChallengeRequest challengeRequest = new ChallengeRequest("이자율 받기", "전자제품", "에어팟 사기", 30L,
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
             150000L, 10000L, 15L);
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
 
         ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
             .category("이자율 받기").build();
@@ -201,6 +221,7 @@ public class ProgressControllerTest {
         TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
             .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)

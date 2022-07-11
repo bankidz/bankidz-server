@@ -1,12 +1,16 @@
 package com.ceos.bankids.controller.request;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -15,6 +19,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 public class ChallengeRequest {
+
+    @ApiModelProperty(example = "false")
+    @NotNull(message = "계약 대상의 성별은 필수값입니다.")
+    private Boolean isMom;
 
     @ApiModelProperty(example = "이자율 받기")
     @NotBlank(message = "돈길의 카테고리를 입력해주세요")
@@ -34,7 +42,10 @@ public class ChallengeRequest {
 
     @ApiModelProperty(example = "150000")
     @NotNull(message = "돈길의 목표 금액을 입력해주세요")
+    @Min(value = 1500, message = "목표 금액이 너무 적습니다.")
+    @Max(value = 500000, message = "목표 금액이 너무 높습니다.")
     private Long totalPrice;
+
 
     @ApiModelProperty(example = "3000")
     @NotNull(message = "돈길의 주당 금액을 입력해주세요")
