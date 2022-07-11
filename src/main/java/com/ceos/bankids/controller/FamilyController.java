@@ -4,6 +4,7 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ public class FamilyController {
 
     private final FamilyServiceImpl familyService;
 
+    @ApiOperation(value = "가족 생성하기")
     @PostMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
     public CommonResponse<FamilyDTO> postFamily(@AuthenticationPrincipal User authUser) {
@@ -30,6 +32,7 @@ public class FamilyController {
         return CommonResponse.onSuccess(familyDTO);
     }
 
+    @ApiOperation(value = "가족 정보 조회하기")
     @GetMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
     public CommonResponse<FamilyDTO> getFamily(@AuthenticationPrincipal User authUser) {
