@@ -69,13 +69,18 @@ public class Challenge extends AbstractTimestamp {
     @JoinColumn(name = "challengeCategoryId", nullable = false)
     private ChallengeCategory challengeCategory;
 
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "contractUserId", nullable = false)
+    private User contractUser;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "challenge")
     private List<Progress> progressList;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "challenge")
-    private List<ChallengeUser> challengeUserList;
+    @OneToOne(mappedBy = "challenge")
+    private ChallengeUser challengeUser;
 
     @JsonManagedReference
     @OneToOne(mappedBy = "challenge")
@@ -92,6 +97,7 @@ public class Challenge extends AbstractTimestamp {
         Long status,
         Long interestRate,
         ChallengeCategory challengeCategory,
+        User contractUser,
         TargetItem targetItem,
         Comment comment
     ) {
@@ -116,6 +122,9 @@ public class Challenge extends AbstractTimestamp {
         if (challengeCategory == null) {
             throw new BadRequestException("카테고리는 필수값입니다.");
         }
+        if (contractUser == null) {
+            throw new BadRequestException("계약 대상 유저는 필수값입니다.");
+        }
         if (targetItem == null) {
             throw new BadRequestException("목표 아이템은 필수값입니다.");
         }
@@ -129,6 +138,7 @@ public class Challenge extends AbstractTimestamp {
         this.status = status;
         this.interestRate = interestRate;
         this.challengeCategory = challengeCategory;
+        this.contractUser = contractUser;
         this.targetItem = targetItem;
         this.comment = comment;
     }

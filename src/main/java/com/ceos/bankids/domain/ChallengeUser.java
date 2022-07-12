@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -37,7 +38,7 @@ public class ChallengeUser extends AbstractTimestamp {
     private User user;
 
     @JsonBackReference
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "challengeId", nullable = false)
     private Challenge challenge;
 
