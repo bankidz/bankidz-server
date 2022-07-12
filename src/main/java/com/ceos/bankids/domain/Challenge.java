@@ -80,7 +80,7 @@ public class Challenge extends AbstractTimestamp {
 
     @JsonManagedReference
     @OneToOne(mappedBy = "challenge")
-    private ChallengeUser challengeUSer;
+    private ChallengeUser challengeUser;
 
     @JsonManagedReference
     @OneToOne(mappedBy = "challenge")
