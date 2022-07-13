@@ -18,7 +18,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,7 +30,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @DynamicUpdate
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"challengeUserList", "challengeUserList"})
 public class User extends AbstractTimestamp implements UserDetails {
 
     @Id
