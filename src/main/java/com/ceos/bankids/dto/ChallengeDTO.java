@@ -2,7 +2,6 @@ package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Comment;
-import com.ceos.bankids.domain.Progress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import java.sql.Timestamp;
@@ -49,11 +48,11 @@ public class ChallengeDTO {
     private Long status;
 
     @ApiModelProperty(example = "true")
-    private List<Progress> progressList;
+    private List<ProgressDTO> progressList;
 
     private Comment comment;
 
-    public ChallengeDTO(Challenge challenge) {
+    public ChallengeDTO(Challenge challenge, List<ProgressDTO> progressDTOList, Comment comment) {
         this.id = challenge.getId();
         this.isMom = challenge.getContractUser().getIsFemale();
         this.title = challenge.getTitle();
@@ -64,7 +63,7 @@ public class ChallengeDTO {
         this.weeks = challenge.getWeeks();
         this.createdAt = challenge.getCreatedAt();
         this.status = challenge.getStatus();
-        this.progressList = challenge.getProgressList();
-        this.comment = challenge.getComment();
+        this.progressList = progressDTOList;
+        this.comment = comment;
     }
 }

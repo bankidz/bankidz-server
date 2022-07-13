@@ -16,12 +16,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "Comment")
 @NoArgsConstructor
+@DynamicUpdate
 @EqualsAndHashCode(of = "id")
 public class Comment {
 

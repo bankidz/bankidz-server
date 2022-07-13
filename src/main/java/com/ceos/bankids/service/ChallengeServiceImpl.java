@@ -12,6 +12,7 @@ import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.NotFoundException;
@@ -84,7 +85,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .member("parent").user(user).build();
         challengeUserRepository.save(newChallengeUser);
 
-        return new ChallengeDTO(newChallenge);
+        return new ChallengeDTO(newChallenge, null, null);
     }
 
     @Transactional
@@ -92,14 +93,22 @@ public class ChallengeServiceImpl implements ChallengeService {
     public ChallengeDTO detailChallenge(User user, Long challengeId) {
         Optional<ChallengeUser> challengeUserRow = challengeUserRepository.findByChallengeId(
             challengeId);
-        System.out.println(user.getId());
         if (challengeUserRow.isPresent()) {
             ChallengeUser challengeUser = challengeUserRow.get();
             if (!Objects.equals(challengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("권한이 없습니다.");
             }
             Challenge findChallenge = challengeUser.getChallenge();
-            return new ChallengeDTO((findChallenge));
+            List<ProgressDTO> progressDTOList = new ArrayList<>();
+            if (findChallenge.getStatus() == 2L) {
+                findChallenge.getProgressList()
+                    .forEach(progress -> progressDTOList.add(new ProgressDTO(progress)));
+                return new ChallengeDTO(findChallenge, progressDTOList, null);
+            } else if (findChallenge.getStatus() == 0L) {
+                return new ChallengeDTO(findChallenge, null, findChallenge.getComment());
+            } else {
+                return new ChallengeDTO(findChallenge, null, null);
+            }
         } else {
             throw new NotFoundException("챌린지가 없습니다.");
         }
@@ -113,7 +122,6 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (deleteChallengeUserRow.isPresent()) {
             ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
             Challenge deleteChallenge = deleteChallengeUser.getChallenge();
-            Long deleteChallengeId = deleteChallenge.getId();
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("권한이 없습니다.");
             }
@@ -125,7 +133,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else {
                 throw new BadRequestException("생성한지 일주일이 지난 돈길은 포기가 불가능합니다.");
             }
-
             return null;
         } else {
             throw new NotFoundException("챌린지가 없습니다.");
@@ -141,12 +148,16 @@ public class ChallengeServiceImpl implements ChallengeService {
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
             if (status.equals("accept") && r.getChallenge().getStatus() == 2L) {
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+                List<ProgressDTO> progressDTOList = new ArrayList<>();
+                r.getChallenge().getProgressList()
+                    .forEach(progress -> progressDTOList.add(new ProgressDTO(progress)));
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+                    r.getChallenge().getComment()));
             } else if ((status.equals("pending") || status.equals("reject"))
                 && r.getChallenge().getStatus() != 2L) {
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
+                    r.getChallenge().getComment()));
             }
-
         }
         return challengeDTOList;
     }
@@ -165,7 +176,18 @@ public class ChallengeServiceImpl implements ChallengeService {
                     List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
                         familyUser1.getUser().getId());
                     challengeUserList.forEach(challengeUser -> {
-                        challengeList.add(new ChallengeDTO(challengeUser.getChallenge()));
+                        List<ProgressDTO> progressDTOList = new ArrayList<>();
+                        Long status = challengeUser.getChallenge().getStatus();
+                        if (status == 2L) {
+                            System.out.println(challengeUser.getChallenge().getProgressList());
+                            System.out.println(challengeUser.getChallenge().getId());
+                            challengeUser.getChallenge().getProgressList()
+                                .forEach(
+                                    progress -> progressDTOList.add(new ProgressDTO(progress)));
+                        }
+                        challengeList.add(
+                            new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
+                                challengeUser.getChallenge().getComment()));
                     });
                     kidChallengeListDTOList.add(
                         new KidChallengeListDTO(familyUser1.getUser(), challengeList));
@@ -194,6 +216,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             });
         });
         Challenge challenge = findChallengeUser.getChallenge();
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
         if (challenge.getStatus() != 1L) {
             throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
         }
@@ -204,6 +227,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
                     .challenge(challenge)
                     .isAchieved(false).build();
+                progressDTOList.add(new ProgressDTO(newProgress));
                 progressRepository.save(newProgress);
             }
         } else {
@@ -213,9 +237,9 @@ public class ChallengeServiceImpl implements ChallengeService {
             commentRepository.save(newComment);
             challenge.setComment(newComment);
             challengeRepository.save(challenge);
+            progressDTOList = null;
         }
-
-        return new ChallengeDTO(challengeRepository.findById(challengeId).get());
+        return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
 }

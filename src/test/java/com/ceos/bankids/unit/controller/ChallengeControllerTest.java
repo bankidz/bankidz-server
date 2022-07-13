@@ -15,6 +15,7 @@ import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.NotFoundException;
@@ -120,7 +121,7 @@ public class ChallengeControllerTest {
             mockBindingResult);
 
         //then
-        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge);
+        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge, null, null);
         ArgumentCaptor<Challenge> cCaptor = ArgumentCaptor.forClass(Challenge.class);
         Mockito.verify(mockChallengeRepository, Mockito.times(1)).save(cCaptor.capture());
 
@@ -207,7 +208,7 @@ public class ChallengeControllerTest {
             mockBindingResult);
 
         //then
-        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge);
+        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge, null, null);
         ArgumentCaptor<Challenge> cCaptor = ArgumentCaptor.forClass(Challenge.class);
         ArgumentCaptor<ChallengeUser> cuCaptor = ArgumentCaptor.forClass(ChallengeUser.class);
         Mockito.verify(mockChallengeRepository, Mockito.times(1)).save(cCaptor.capture());
@@ -584,6 +585,10 @@ public class ChallengeControllerTest {
             30L,
             150000L, 10000L, 15L);
 
+        ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "아이펜슬 사기",
+            30L,
+            150000L, 10000L, 15L);
+
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
 
@@ -597,15 +602,56 @@ public class ChallengeControllerTest {
 
         TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
 
-        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(newParent)
             .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
 
+        Challenge newChallenge1 = Challenge.builder().id(2L).title(challengeRequest1.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest1.getTotalPrice())
+            .weekPrice(challengeRequest1.getWeekPrice()).weeks(challengeRequest1.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest1.getInterestRate()).build();
+
+        Challenge newChallenge2 = Challenge.builder().id(3L).title("드라이기 사기")
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest1.getTotalPrice())
+            .weekPrice(challengeRequest1.getWeekPrice()).weeks(challengeRequest1.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
+            .interestRate(challengeRequest1.getInterestRate()).build();
+
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
             .member("parent").user(newUser).build();
+
+        ChallengeUser newChallengeUser1 = ChallengeUser.builder().challenge(newChallenge1)
+            .member("parent").user(newUser).build();
+
+        ChallengeUser newChallengeUser2 = ChallengeUser.builder().challenge(newChallenge2)
+            .member("parent").user(newUser).build();
+
+        List<ChallengeUser> challengeUserList = new ArrayList<>();
+        challengeUserList.add(newChallengeUser);
+        challengeUserList.add(newChallengeUser1);
+        challengeUserList.add(newChallengeUser2);
+
+        Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
+            .challenge(newChallenge1).build();
+
+        Comment newComment = Comment.builder().id(1L).content("아쉽다").challenge(newChallenge2)
+            .user(newParent).build();
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        progressDTOList.add(new ProgressDTO(newProgress));
+
+        newChallenge1.setProgressList(progressList);
+
+        newChallenge2.setComment(newComment);
 
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
@@ -619,6 +665,10 @@ public class ChallengeControllerTest {
             .thenReturn(newChallengeUser);
         Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
             .thenReturn(Optional.ofNullable(newChallengeUser));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge1.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser1));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge2.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser2));
 
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
@@ -626,18 +676,22 @@ public class ChallengeControllerTest {
             mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
+        Long challengeId1 = newChallenge1.getId();
+        Long challengeId2 = newChallenge2.getId();
         CommonResponse result = challengeController.getChallenge(newUser, challengeId);
+        CommonResponse result1 = challengeController.getChallenge(newUser, challengeId1);
+        CommonResponse result2 = challengeController.getChallenge(newUser, challengeId2);
 
         //then
-        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge);
-        ArgumentCaptor<Long> cuCaptor = ArgumentCaptor.forClass(Long.class);
-
-        Mockito.verify(mockChallengeUserRepository, Mockito.times(1))
-            .findByChallengeId(cuCaptor.capture());
-
-        Assertions.assertEquals(newChallenge.getId(), cuCaptor.getValue());
+        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge, null, null);
+        ChallengeDTO challengeDTO1 = new ChallengeDTO(newChallenge1, progressDTOList, null);
+        ChallengeDTO challengeDTO2 = new ChallengeDTO(newChallenge2, null, newComment);
 
         Assertions.assertEquals(CommonResponse.onSuccess(challengeDTO), result);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTO1), result1);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTO2), result2);
     }
 
     @Test
@@ -696,8 +750,6 @@ public class ChallengeControllerTest {
         Long challengeId = newChallenge.getId();
 
         //then
-        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge);
-
         Assertions.assertThrows(ForbiddenException.class, () -> {
             challengeController.getChallenge(newUser2, challengeId);
         });
@@ -745,12 +797,6 @@ public class ChallengeControllerTest {
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
             .member("parent").user(newUser1).build();
 
-        Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
-            .challenge(newChallenge).build();
-
-        Progress newProgress2 = Progress.builder().id(2L).weeks(2L).isAchieved(true)
-            .challenge(newChallenge).build();
-
         Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
             .thenReturn(Optional.ofNullable(newChallengeUser));
 
@@ -759,7 +805,6 @@ public class ChallengeControllerTest {
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        Long challengeId = newChallenge.getId();
 
         //then
         Assertions.assertThrows(NotFoundException.class, () -> {
@@ -903,8 +948,6 @@ public class ChallengeControllerTest {
         Long challengeId = newChallenge.getId();
 
         //then
-        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge);
-
         Assertions.assertThrows(ForbiddenException.class, () -> {
             challengeController.deleteChallenge(newUser2, challengeId);
         });
@@ -1102,7 +1145,15 @@ public class ChallengeControllerTest {
         challengeUserList.add(newChallengeUser1);
 
         Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
-            .challenge(newChallenge).build();
+            .challenge(newChallenge1).build();
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        progressDTOList.add(new ProgressDTO(newProgress));
+
+        newChallenge1.setProgressList(progressList);
 
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.save(newChallenge1)).thenReturn(newChallenge1);
@@ -1126,10 +1177,10 @@ public class ChallengeControllerTest {
         List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
         for (ChallengeUser r : challengeUserList) {
             if (r.getChallenge().getStatus() != 2L) {
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null, null));
 
             } else {
-                challengeDTOList1.add(new ChallengeDTO(r.getChallenge()));
+                challengeDTOList1.add(new ChallengeDTO(r.getChallenge(), progressDTOList, null));
             }
         }
 
@@ -1178,7 +1229,7 @@ public class ChallengeControllerTest {
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserList) {
-            challengeDTOList.add(new ChallengeDTO(r.getChallenge()));
+            challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null, null));
         }
 
         Assertions.assertEquals(CommonResponse.onSuccess(challengeDTOList).getData(),
@@ -1250,8 +1301,23 @@ public class ChallengeControllerTest {
         FamilyUser newFamilyUser1 = FamilyUser.builder().id(2L)
             .family(newFamily).user(newUser).build();
 
+        Progress newProgress = Progress.builder().id(1L).challenge(newChallenge1).isAchieved(false)
+            .weeks(1L).build();
+
+        Progress newProgress1 = Progress.builder().id(2L).challenge(newChallenge1).isAchieved(false)
+            .weeks(2L).build();
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+        progressList.add(newProgress1);
+
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        progressDTOList.add(new ProgressDTO(newProgress));
+        progressDTOList.add(new ProgressDTO(newProgress1));
+
+        newChallenge1.setProgressList(progressList);
+
         List<ChallengeUser> challengeUserList = new ArrayList<>();
-        challengeUserList.add(newChallengeUser);
         challengeUserList.add(newChallengeUser1);
 
         List<FamilyUser> familyUserList = new ArrayList<>();
@@ -1260,7 +1326,8 @@ public class ChallengeControllerTest {
 
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         challengeUserList.forEach(challengeUser -> {
-            challengeDTOList.add(new ChallengeDTO(challengeUser.getChallenge()));
+            challengeDTOList.add(new ChallengeDTO(challengeUser.getChallenge(),
+                progressDTOList, null));
         });
 
         Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
@@ -1361,6 +1428,14 @@ public class ChallengeControllerTest {
         FamilyUser newFamilyUser1 = FamilyUser.builder().id(2L)
             .family(newFamily).user(newUser).build();
 
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        for (int i = 1; i <= newChallenge.getWeeks(); i++) {
+            Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
+                .challenge(newChallenge)
+                .isAchieved(false).build();
+            progressDTOList.add(new ProgressDTO(newProgress));
+        }
+
         List<ChallengeUser> challengeUserList = new ArrayList<>();
         challengeUserList.add(newChallengeUser);
 
@@ -1404,8 +1479,8 @@ public class ChallengeControllerTest {
         newChallenge.setStatus(2L);
         newChallenge1.setStatus(0L);
         newChallenge1.setComment(newComment);
-        ChallengeDTO successChallengeDTO = new ChallengeDTO(newChallenge);
-        ChallengeDTO falseChallengeDTO = new ChallengeDTO(newChallenge1);
+        ChallengeDTO successChallengeDTO = new ChallengeDTO(newChallenge, progressDTOList, null);
+        ChallengeDTO falseChallengeDTO = new ChallengeDTO(newChallenge1, null, newComment);
         Assertions.assertEquals(CommonResponse.onSuccess(successChallengeDTO), successResult);
         Assertions.assertEquals(CommonResponse.onSuccess(falseChallengeDTO), falseResult);
 
