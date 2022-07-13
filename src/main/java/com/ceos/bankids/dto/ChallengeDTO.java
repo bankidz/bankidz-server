@@ -20,6 +20,9 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "1")
     private Long id;
 
+    @ApiModelProperty(example = "true")
+    private Boolean isMom;
+
     @ApiModelProperty(example = "에어팟 사기")
     private String title;
 
@@ -45,12 +48,14 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "1")
     private Long status;
 
+    @ApiModelProperty(example = "true")
     private List<Progress> progressList;
 
     private Comment comment;
 
     public ChallengeDTO(Challenge challenge) {
         this.id = challenge.getId();
+        this.isMom = challenge.getContractUser().getIsFemale();
         this.title = challenge.getTitle();
         this.isAchieved = challenge.getIsAchieved();
         this.interestRate = challenge.getInterestRate();

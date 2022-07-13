@@ -1,6 +1,7 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -66,11 +67,17 @@ public class User extends AbstractTimestamp implements UserDetails {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Parent parent;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<ChallengeUser> challengeUserList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<FamilyUser> familyUserList;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<Comment> commentList;
 
     @Builder
     public User(
