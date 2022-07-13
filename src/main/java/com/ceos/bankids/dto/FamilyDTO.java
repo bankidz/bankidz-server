@@ -18,7 +18,7 @@ public class FamilyDTO {
     private Long id;
     @ApiModelProperty(example = "asdfas")
     private String code;
-    @ApiModelProperty(example = "true")
+    @ApiModelProperty(example = "[]")
     private List<FamilyUserDTO> familyUserList;
 
 
