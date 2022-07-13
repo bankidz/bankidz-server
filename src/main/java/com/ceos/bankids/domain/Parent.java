@@ -15,12 +15,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "Parent")
 @NoArgsConstructor
+@DynamicUpdate
 @EqualsAndHashCode(of = "id")
 public class Parent extends AbstractTimestamp {
 
