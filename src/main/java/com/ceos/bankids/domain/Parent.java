@@ -3,6 +3,7 @@ package com.ceos.bankids.domain;
 import com.ceos.bankids.exception.BadRequestException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,7 +35,7 @@ public class Parent extends AbstractTimestamp {
     @ColumnDefault("0")
     private Long savings;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
