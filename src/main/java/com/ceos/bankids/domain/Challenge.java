@@ -1,11 +1,11 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
@@ -30,6 +31,7 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @DynamicInsert
+@DynamicUpdate
 @ToString(exclude = {"progressList", "challengeUserList"})
 public class Challenge extends AbstractTimestamp {
 
@@ -54,36 +56,32 @@ public class Challenge extends AbstractTimestamp {
     private Long weeks;
 
     @Column(nullable = false)
+    @ColumnDefault("1")
     private Long status;
 
     @Column(nullable = false)
     private Long interestRate;
 
-    @JsonBackReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "targetItemId", nullable = false)
     private TargetItem targetItem;
 
-    @JsonBackReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeCategoryId", nullable = false)
     private ChallengeCategory challengeCategory;
 
-    @JsonBackReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contractUserId", nullable = false)
     private User contractUser;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "challenge")
     private List<Progress> progressList;
 
-    @JsonManagedReference
-    @OneToOne(mappedBy = "challenge")
+    @JsonIgnore
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
     private ChallengeUser challengeUser;
 
-    @JsonManagedReference
-    @OneToOne(mappedBy = "challenge")
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
     private Comment comment;
 
     @Builder

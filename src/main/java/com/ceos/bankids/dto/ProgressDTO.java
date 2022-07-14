@@ -11,9 +11,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class ProgressDTO {
 
-    @ApiModelProperty(example = "1")
-    private Long id;
-
     @ApiModelProperty(example = "2")
     private Long challengeId;
 
@@ -24,7 +21,6 @@ public class ProgressDTO {
     private Boolean isAchieved;
 
     public ProgressDTO(Progress progress) {
-        this.id = progress.getId();
         this.challengeId = progress.getChallenge().getId();
         this.weeks = progress.getWeeks();
         this.isAchieved = progress.getIsAchieved();

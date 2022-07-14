@@ -1,9 +1,9 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,12 +16,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "Comment")
 @NoArgsConstructor
+@DynamicUpdate
 @EqualsAndHashCode(of = "id")
 public class Comment {
 
@@ -32,13 +34,11 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
-    @JsonBackReference
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeId", nullable = false)
     private Challenge challenge;
 
-    @JsonBackReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
