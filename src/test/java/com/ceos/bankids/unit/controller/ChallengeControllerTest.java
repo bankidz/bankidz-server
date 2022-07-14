@@ -1286,10 +1286,20 @@ public class ChallengeControllerTest {
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
             .interestRate(challengeRequest1.getInterestRate()).build();
 
+        Challenge newChallenge2 = Challenge.builder().id(3L).title("티비 사기")
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest1.getTotalPrice())
+            .weekPrice(challengeRequest1.getWeekPrice()).weeks(challengeRequest1.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
+            .interestRate(challengeRequest1.getInterestRate()).build();
+
         ChallengeUser newChallengeUser = ChallengeUser.builder().id(1L).challenge(newChallenge)
             .member("parent").user(newUser).build();
 
         ChallengeUser newChallengeUser1 = ChallengeUser.builder().id(2L).challenge(newChallenge1)
+            .member("parent").user(newUser).build();
+
+        ChallengeUser newChallengeUser2 = ChallengeUser.builder().id(3L).challenge(newChallenge2)
             .member("parent").user(newUser).build();
 
         Family newFamily = Family.builder().id(1L)
@@ -1307,6 +1317,11 @@ public class ChallengeControllerTest {
         Progress newProgress1 = Progress.builder().id(2L).challenge(newChallenge1).isAchieved(false)
             .weeks(2L).build();
 
+        Comment newComment = Comment.builder().id(1L).challenge(newChallenge2).user(newParent)
+            .content("아쉽다").build();
+
+        newChallenge2.setComment(newComment);
+
         List<Progress> progressList = new ArrayList<>();
         progressList.add(newProgress);
         progressList.add(newProgress1);
@@ -1318,17 +1333,19 @@ public class ChallengeControllerTest {
         newChallenge1.setProgressList(progressList);
 
         List<ChallengeUser> challengeUserList = new ArrayList<>();
+        challengeUserList.add(newChallengeUser);
         challengeUserList.add(newChallengeUser1);
+        challengeUserList.add(newChallengeUser2);
 
         List<FamilyUser> familyUserList = new ArrayList<>();
         familyUserList.add(newFamilyUser);
         familyUserList.add(newFamilyUser1);
 
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
-        challengeUserList.forEach(challengeUser -> {
-            challengeDTOList.add(new ChallengeDTO(challengeUser.getChallenge(),
-                progressDTOList, null));
-        });
+
+        challengeDTOList.add(new ChallengeDTO(newChallenge, null, null));
+        challengeDTOList.add(new ChallengeDTO(newChallenge1, progressDTOList, null));
+        challengeDTOList.add(new ChallengeDTO(newChallenge2, null, newComment));
 
         Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
             .thenReturn(challengeUserList);
