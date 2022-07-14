@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -61,15 +62,15 @@ public class Challenge extends AbstractTimestamp {
     @Column(nullable = false)
     private Long interestRate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "targetItemId", nullable = false)
     private TargetItem targetItem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeCategoryId", nullable = false)
     private ChallengeCategory challengeCategory;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contractUserId", nullable = false)
     private User contractUser;
 
@@ -77,10 +78,10 @@ public class Challenge extends AbstractTimestamp {
     private List<Progress> progressList;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "challenge")
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
     private ChallengeUser challengeUser;
 
-    @OneToOne(mappedBy = "challenge")
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
     private Comment comment;
 
     @Builder

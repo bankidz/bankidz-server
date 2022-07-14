@@ -3,6 +3,7 @@ package com.ceos.bankids.domain;
 import com.ceos.bankids.exception.BadRequestException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class Progress extends AbstractTimestamp {
     @ColumnDefault("false") //default value: false
     private Boolean isAchieved;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeId", nullable = false)
     private Challenge challenge;
 
