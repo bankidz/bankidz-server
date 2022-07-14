@@ -1,7 +1,6 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,12 +31,10 @@ public class ChallengeUser extends AbstractTimestamp {
     @Column(nullable = false)
     private String member;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "challengeId", nullable = false)
     private Challenge challenge;

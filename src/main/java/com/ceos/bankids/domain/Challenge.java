@@ -1,8 +1,7 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,35 +55,31 @@ public class Challenge extends AbstractTimestamp {
     private Long weeks;
 
     @Column(nullable = false)
+    @ColumnDefault("1")
     private Long status;
 
     @Column(nullable = false)
     private Long interestRate;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "targetItemId", nullable = false)
     private TargetItem targetItem;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "challengeCategoryId", nullable = false)
     private ChallengeCategory challengeCategory;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "contractUserId", nullable = false)
     private User contractUser;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "challenge")
     private List<Progress> progressList;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToOne(mappedBy = "challenge")
     private ChallengeUser challengeUser;
 
-    @JsonManagedReference
     @OneToOne(mappedBy = "challenge")
     private Comment comment;
 

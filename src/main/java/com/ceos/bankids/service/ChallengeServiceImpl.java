@@ -179,15 +179,17 @@ public class ChallengeServiceImpl implements ChallengeService {
                         List<ProgressDTO> progressDTOList = new ArrayList<>();
                         Long status = challengeUser.getChallenge().getStatus();
                         if (status == 2L) {
-                            System.out.println(challengeUser.getChallenge().getProgressList());
-                            System.out.println(challengeUser.getChallenge().getId());
                             challengeUser.getChallenge().getProgressList()
                                 .forEach(
                                     progress -> progressDTOList.add(new ProgressDTO(progress)));
+                            challengeList.add(
+                                new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
+                                    challengeUser.getChallenge().getComment()));
+                        } else {
+                            challengeList.add(new ChallengeDTO(challengeUser.getChallenge(), null,
+                                challengeUser.getChallenge()
+                                    .getComment()));
                         }
-                        challengeList.add(
-                            new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
-                                challengeUser.getChallenge().getComment()));
                     });
                     kidChallengeListDTOList.add(
                         new KidChallengeListDTO(familyUser1.getUser(), challengeList));
