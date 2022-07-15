@@ -4,6 +4,7 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -48,6 +49,16 @@ public class UserController {
         LoginDTO loginDTO = userService.issueNewTokens(authUser, true, response);
 
         return CommonResponse.onSuccess(loginDTO);
+    }
+
+    @ApiOperation(value = "유저 정보 조회하기")
+    @GetMapping(value = "", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<MyPageDTO> getUserInfo(@AuthenticationPrincipal User authUser) {
+
+        MyPageDTO myPageDTO = userService.getUserInformation(authUser);
+
+        return CommonResponse.onSuccess(myPageDTO);
     }
 
 }

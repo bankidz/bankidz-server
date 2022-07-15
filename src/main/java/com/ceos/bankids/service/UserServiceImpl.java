@@ -5,6 +5,7 @@ import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -87,5 +88,17 @@ public class UserServiceImpl implements UserService {
         LoginDTO loginDTO = new LoginDTO(isRegistered, user.getIsKid(),
             jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
         return loginDTO;
+    }
+
+    @Override
+    @Transactional
+    public MyPageDTO getUserInformation(User user) {
+        if (user.getIsKid()) {
+            MyPageDTO myPageDTO = new MyPageDTO(user, user.getKid());
+            return myPageDTO;
+        } else {
+            MyPageDTO myPageDTO = new MyPageDTO(user, user.getParent());
+            return myPageDTO;
+        }
     }
 }

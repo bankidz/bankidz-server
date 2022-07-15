@@ -79,7 +79,7 @@ public class KakaoServiceImpl implements KakaoService {
             uRepo.save(newUser);
 
             LoginDTO loginDTO = userService.issueNewTokens(newUser, false, response);
-
+    
             return loginDTO;
         }
     }
