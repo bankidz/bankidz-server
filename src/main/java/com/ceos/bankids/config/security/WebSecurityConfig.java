@@ -34,7 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
-            .cors().and()
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
             .csrf().disable()
             .authorizeRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
@@ -58,12 +59,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("https://bankids.click");
-        configuration.addAllowedOrigin("https://bankidz.com");
+        configuration.addAllowedOrigin("*");
+//        configuration.addAllowedOrigin("http://localhost:3000");
+//        configuration.addAllowedOrigin("https://bankids.click");
+//        configuration.addAllowedOrigin("https://bankidz.com");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+        
         return configuration;
     }
 }
