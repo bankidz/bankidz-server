@@ -4,6 +4,7 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.ChallengeController;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
+import com.ceos.bankids.domain.AbstractTimestamp;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
@@ -16,6 +17,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.ProgressDTO;
+import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.NotFoundException;
@@ -28,6 +30,8 @@ import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ChallengeServiceImpl;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +41,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
 
 public class ChallengeControllerTest {
@@ -1810,11 +1815,101 @@ public class ChallengeControllerTest {
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        //then
 
+        //then
         Assertions.assertThrows(BadRequestException.class, () -> {
             challengeController.patchChallengeStatus(newParent, newChallenge.getId(),
                 kidChallengeRequest);
         });
+    }
+
+    @Test
+    @DisplayName("주차 정보 가져오기 API 실행 시, 정상 Response 테스트")
+    public void testIfReadWeekInfo() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L);
+
+        User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("user1").isFemale(true).birthday("19990623")
+            .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().id(1L).challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Family newFamily = Family.builder().id(1L)
+            .code("adfadfaf").build();
+
+        FamilyUser newFamilyUser = FamilyUser.builder().id(1L)
+            .family(newFamily).user(newParent).build();
+
+        List<ChallengeUser> challengeUserList = new ArrayList<>();
+        challengeUserList.add(newChallengeUser);
+
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(newFamilyUser);
+
+        List<Progress> progressList = new ArrayList<>();
+
+        for (Long i = 1L; i <= newChallenge.getWeeks(); i++) {
+            Progress newProgress = Progress.builder().weeks(i).challenge(newChallenge)
+                .isAchieved(false).build();
+            if (i == 1L) {
+                newProgress.setIsAchieved(true);
+            }
+            progressList.add(newProgress);
+        }
+
+        ReflectionTestUtils.setField(
+            progressList.get(0),
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
+
+        newChallenge.setProgressList(progressList);
+
+        Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(challengeUserList);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+        CommonResponse<WeekDTO> result = challengeController.getWeekInfo(newUser);
+
+        //then
+        WeekDTO weekDTO1 = new WeekDTO(newChallenge.getWeekPrice(), newChallenge.getWeekPrice());
+
+        Assertions.assertEquals(weekDTO1, result.getData());
     }
 }

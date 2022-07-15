@@ -6,6 +6,7 @@ import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ChallengeController {
         @AuthenticationPrincipal User authUser) {
 
         List<KidChallengeListDTO> kidChallengeList = challengeService.readKidChallenge(authUser);
-        
+
         return CommonResponse.onSuccess(kidChallengeList);
     }
 
@@ -91,5 +92,14 @@ public class ChallengeController {
             kidChallengeRequest);
 
         return CommonResponse.onSuccess(challengeDTO);
+    }
+
+    @ApiOperation(value = "주차 정보 가져오기")
+    @GetMapping(value = "/progress", produces = "application/json; charset=utf-8")
+    public CommonResponse<WeekDTO> getWeekInfo(@AuthenticationPrincipal User authUser) {
+
+        WeekDTO weekDTO = challengeService.readWeekInfo(authUser);
+
+        return CommonResponse.onSuccess(weekDTO);
     }
 }
