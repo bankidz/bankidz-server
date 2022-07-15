@@ -12,6 +12,7 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import java.util.Calendar;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +38,16 @@ public class UserServiceImpl implements UserService {
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
         Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
+
+        Calendar cal = Calendar.getInstance();
+        Integer currYear = cal.get(Calendar.YEAR);
+        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
         if (user.isEmpty()) {
             throw new BadRequestException("존재하지 않는 유저입니다.");
         } else if (user.get().getIsFemale() != null) {
             throw new BadRequestException("이미 유저 타입을 선택한 유저입니다.");
+        } else if (birthYear > currYear || birthYear <= currYear - 100) {
+            throw new BadRequestException("유효하지 않은 생년월일입니다.");
         } else {
             user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());

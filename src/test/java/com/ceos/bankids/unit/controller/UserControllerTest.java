@@ -175,6 +175,78 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("100세 초과 생년월일 입력으로 패치 실패시, 에러 처리 되는지 확인")
+    public void testIfUserTypePatchFailWithTooEarlyBirthdayThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("18880818", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.patchUserType(user, userTypeRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("0세 미만 생년월일 입력으로 패치 실패시, 에러 처리 되는지 확인")
+    public void testIfUserTypePatchFailWithTooLateBirthdayThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("23450818", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.patchUserType(user, userTypeRequest);
+        });
+    }
+
+    @Test
     @DisplayName("자녀 지정시, 자녀 row 생성 확인")
     public void testIfKidInsertSucceedWhenUserTypePatchSucceed() {
         // given
