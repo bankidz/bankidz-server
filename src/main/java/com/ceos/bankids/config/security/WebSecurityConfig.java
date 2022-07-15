@@ -1,6 +1,7 @@
 package com.ceos.bankids.config.security;
 
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,15 +60,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
+        configuration.setAllowedOrigins(Arrays.asList("*"));
 //        configuration.addAllowedOrigin("http://localhost:3000");
 //        configuration.addAllowedOrigin("https://bankids.click");
 //        configuration.addAllowedOrigin("https://bankidz.com");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        
+
         return configuration;
     }
 }
