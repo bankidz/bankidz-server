@@ -40,9 +40,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .authorizeRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-            .antMatchers("/health/**").permitAll()
+            .antMatchers("/health").permitAll()
             .antMatchers(SwaggerPatterns).permitAll()
-            .antMatchers("/kakao/**").permitAll()
+            .antMatchers("/kakao/login").permitAll()
             .antMatchers("/user/refresh").permitAll()
             .anyRequest().authenticated()
             .and()
@@ -60,10 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-//        configuration.addAllowedOrigin("http://localhost:3000");
-//        configuration.addAllowedOrigin("https://bankids.click");
-//        configuration.addAllowedOrigin("https://bankidz.com");
+        configuration.setAllowedOrigins(
+            Arrays.asList("http://localhost:3000", "https://bankids.click", "https://bankidz.com"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
