@@ -3,6 +3,7 @@ package com.ceos.bankids.domain;
 import com.ceos.bankids.exception.BadRequestException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,12 +16,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "Kid")
 @NoArgsConstructor
+@DynamicUpdate
 @EqualsAndHashCode(of = "id")
 public class Kid extends AbstractTimestamp {
 
@@ -36,7 +39,7 @@ public class Kid extends AbstractTimestamp {
     @ColumnDefault("1")
     private Long level;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 

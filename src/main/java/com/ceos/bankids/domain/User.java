@@ -1,12 +1,12 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,8 +28,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
+@DynamicUpdate
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"challengeUserList", "challengeUserList"})
 public class User extends AbstractTimestamp implements UserDetails {
 
     @Id
@@ -60,21 +60,18 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String refreshToken;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Kid kid;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Parent parent;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<ChallengeUser> challengeUserList;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<FamilyUser> familyUserList;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Comment> commentList;
 
@@ -84,6 +81,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         String username,
         Boolean isFemale,
         String birthday,
+        String phone,
         String authenticationCode,
         String provider,
         Boolean isKid,
@@ -108,6 +106,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.username = username;
         this.isFemale = isFemale;
         this.birthday = birthday;
+        this.phone = phone;
         this.authenticationCode = authenticationCode;
         this.provider = provider;
         this.isKid = isKid;

@@ -14,7 +14,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
@@ -22,7 +21,6 @@ import lombok.ToString;
 @Table(name = "Family")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = "familyUserList")
 public class Family {
 
     @Id
