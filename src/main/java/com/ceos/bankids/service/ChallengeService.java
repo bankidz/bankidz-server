@@ -6,7 +6,6 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.WeekDTO;
-import java.text.ParseException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,6 @@ public interface ChallengeService {
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest);
 
-    public WeekDTO readWeekInfo(User user) throws ParseException;
+    public WeekDTO readWeekInfo(User user);
 
 }
