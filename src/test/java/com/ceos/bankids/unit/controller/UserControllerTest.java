@@ -362,7 +362,7 @@ public class UserControllerTest {
         CommonResponse result = userController.refreshUserToken(user, "rT", response);
 
         // then
-        LoginDTO loginDTO = new LoginDTO(true, false, "aT");
+        LoginDTO loginDTO = new LoginDTO(false, "aT");
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
     }
 }

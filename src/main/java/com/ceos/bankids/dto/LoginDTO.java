@@ -11,14 +11,11 @@ import lombok.ToString;
 public class LoginDTO {
 
     @ApiModelProperty(example = "true")
-    private Boolean isRegistered;
-    @ApiModelProperty(example = "true")
     private Boolean isKid;
     @ApiModelProperty(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ~~~~")
     private String accessToken;
 
-    public LoginDTO(Boolean isRegistered, Boolean isKid, String accessToken) {
-        this.isRegistered = isRegistered;
+    public LoginDTO(Boolean isKid, String accessToken) {
         this.isKid = isKid;
         this.accessToken = accessToken;
     }

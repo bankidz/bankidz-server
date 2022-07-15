@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
         response.addCookie(cookie);
 
-        LoginDTO loginDTO = new LoginDTO(isRegistered, user.getIsKid(),
+        LoginDTO loginDTO = new LoginDTO(user.getIsKid(),
             jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
         return loginDTO;
     }
