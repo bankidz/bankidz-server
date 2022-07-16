@@ -11,19 +11,19 @@ import lombok.ToString;
 public class MyPageDTO {
 
     @ApiModelProperty(example = "UserDTO")
-    UserDTO userDTO;
+    UserDTO user;
     @ApiModelProperty(example = "KidDTO")
-    KidDTO kidDTO;
+    KidDTO kid;
     @ApiModelProperty(example = "ParentDTO")
-    ParentDTO parentDTO;
+    ParentDTO parent;
 
     public MyPageDTO(UserDTO userDTO, KidDTO kidDTO) {
-        this.userDTO = userDTO;
-        this.kidDTO = kidDTO;
+        this.user = userDTO;
+        this.kid = kidDTO;
     }
 
     public MyPageDTO(UserDTO userDTO, ParentDTO parentDTO) {
-        this.userDTO = userDTO;
-        this.parentDTO = parentDTO;
+        this.user = userDTO;
+        this.parent = parentDTO;
     }
 }
