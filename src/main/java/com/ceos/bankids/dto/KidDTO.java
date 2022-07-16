@@ -19,6 +19,8 @@ public class KidDTO {
     Long level;
 
     public KidDTO(Kid kid) {
+        this.achievedChallenge = kid.getAchievedChallenge();
+        this.totalChallenge = kid.getTotalChallenge();
         this.level = kid.getLevel();
     }
 }

@@ -21,6 +21,9 @@ public class ParentDTO {
     Long savings;
 
     public ParentDTO(Parent parent) {
+        this.totalChallenge = parent.getTotalChallenge();
+        this.acceptedRequest = parent.getAcceptedRequest();
+        this.totalRequest = parent.getTotalRequest();
         this.savings = parent.getSavings();
     }
 }

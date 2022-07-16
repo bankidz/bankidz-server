@@ -36,6 +36,14 @@ public class Kid extends AbstractTimestamp {
     private Long savings;
 
     @Column(nullable = false, length = 5)
+    @ColumnDefault("0")
+    private Long achievedChallenge;
+
+    @Column(nullable = false, length = 5)
+    @ColumnDefault("0")
+    private Long totalChallenge;
+
+    @Column(nullable = false, length = 5)
     @ColumnDefault("1")
     private Long level;
 
@@ -47,6 +55,8 @@ public class Kid extends AbstractTimestamp {
     public Kid(
         Long id,
         Long savings,
+        Long achievedChallenge,
+        Long totalChallenge,
         Long level,
         User user
     ) {
@@ -58,6 +68,8 @@ public class Kid extends AbstractTimestamp {
         }
         this.id = id;
         this.savings = savings;
+        this.achievedChallenge = achievedChallenge;
+        this.totalChallenge = totalChallenge;
         this.level = level;
         this.user = user;
     }
