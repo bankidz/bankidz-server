@@ -17,8 +17,9 @@ public interface UserService {
     public UserDTO updateUserType(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody UserTypeRequest userTypeRequest);
 
-    public LoginDTO issueNewTokens(@AuthenticationPrincipal User authUser, Boolean isRegistered,
-        HttpServletResponse response);
+    public LoginDTO issueNewTokens(User authUser, HttpServletResponse response);
 
     public MyPageDTO getUserInformation(User user);
+
+    public User getUserByRefreshToken(String refreshToken);
 }

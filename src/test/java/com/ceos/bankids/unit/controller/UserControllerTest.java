@@ -409,7 +409,7 @@ public class UserControllerTest {
         UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
-            .thenReturn(Optional.ofNullable(null));
+            .thenReturn(Optional.ofNullable(user));
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
@@ -417,6 +417,7 @@ public class UserControllerTest {
         TokenDTO tokenDTO = new TokenDTO(user);
         Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
         Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
+        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn("1");
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
@@ -431,7 +432,7 @@ public class UserControllerTest {
             userService
         );
 
-        CommonResponse result = userController.refreshUserToken(user, "rT", response);
+        CommonResponse result = userController.refreshUserToken("rT", response);
 
         // then
         LoginDTO loginDTO = new LoginDTO(false, "aT");

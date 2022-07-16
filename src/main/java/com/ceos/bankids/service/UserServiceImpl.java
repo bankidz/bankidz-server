@@ -75,8 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, Boolean isRegistered,
-        HttpServletResponse response) {
+    public LoginDTO issueNewTokens(User user, HttpServletResponse response) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
         uRepo.save(user);
@@ -107,5 +106,13 @@ public class UserServiceImpl implements UserService {
             MyPageDTO myPageDTO = new MyPageDTO(user, user.getParent());
             return myPageDTO;
         }
+    }
+
+    @Override
+    @Transactional
+    public User getUserByRefreshToken(String refreshToken) {
+        String userId = jwtTokenServiceImpl.getUserIdFromJwtToken(refreshToken);
+        Optional<User> user = uRepo.findById(Long.parseLong(userId));
+        return user.get();
     }
 }

@@ -41,12 +41,13 @@ public class UserController {
     }
 
     @ApiOperation(value = "토큰 리프레시")
-    @GetMapping(value = "/refresh", produces = "application/json; charset=utf-8")
+    @PatchMapping(value = "/refresh", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<LoginDTO> refreshUserToken(@AuthenticationPrincipal User authUser,
+    public CommonResponse<LoginDTO> refreshUserToken(
         @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
 
-        LoginDTO loginDTO = userService.issueNewTokens(authUser, true, response);
+        User user = userService.getUserByRefreshToken(refreshToken);
+        LoginDTO loginDTO = userService.issueNewTokens(user, response);
 
         return CommonResponse.onSuccess(loginDTO);
     }
