@@ -57,7 +57,8 @@ public class ChallengeServiceImpl implements ChallengeService {
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
 
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
-            .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2).count();
+            .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
+                && !challengeUser.getChallenge().getIsAchieved()).count();
         if (count >= 5) {
             throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
         }
