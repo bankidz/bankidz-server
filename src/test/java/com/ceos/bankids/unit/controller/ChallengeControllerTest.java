@@ -136,6 +136,143 @@ public class ChallengeControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 생성 개수 제한 도달 시, 403 에러 테스트")
+    public void testIfPostChallengeMaxCountForbiddenErr() {
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFmailyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        BindingResult mockBindingResult = Mockito.mock(BindingResult.class);
+        //given
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990623")
+            .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token1")
+            .build();
+
+        User newFather = User.builder().id(3L).username("parent2").isFemale(false)
+            .birthday("19990623")
+            .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token1")
+            .build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge5 = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge1 = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge2 = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge3 = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge4 = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Family newFamily = Family.builder().code("asdfasdf").build();
+
+        FamilyUser newFamilyUser = FamilyUser.builder().user(newUser).family(newFamily).build();
+
+        FamilyUser newFamilyFather = FamilyUser.builder().user(newFather).family(newFamily).build();
+
+        FamilyUser newFamilyParent = FamilyUser.builder().user(newParent).family(newFamily).build();
+
+        ChallengeUser newChallengeUser1 = ChallengeUser.builder().user(newUser)
+            .challenge(newChallenge1).member("parent").build();
+
+        ChallengeUser newChallengeUser2 = ChallengeUser.builder().user(newUser)
+            .challenge(newChallenge2).member("parent").build();
+
+        ChallengeUser newChallengeUser3 = ChallengeUser.builder().user(newUser)
+            .challenge(newChallenge3).member("parent").build();
+
+        ChallengeUser newChallengeUser4 = ChallengeUser.builder().user(newUser)
+            .challenge(newChallenge4).member("parent").build();
+
+        ChallengeUser newChallengeUser5 = ChallengeUser.builder().user(newUser)
+            .challenge(newChallenge5).member("parent").build();
+
+        List<ChallengeUser> challengeUserList = List.of(newChallengeUser1, newChallengeUser2,
+            newChallengeUser3, newChallengeUser4, newChallengeUser5);
+
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(newFamilyFather);
+        familyUserList.add(newFamilyParent);
+
+        Mockito.when(mockFmailyUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(Optional.ofNullable(newFamilyUser));
+        Mockito.when(mockFmailyUserRepository.findByFamily(newFamily))
+            .thenReturn(familyUserList);
+        Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(challengeUserList);
+
+        Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
+        Mockito.when(mockChallengeRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(newChallenge));
+        Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
+            .thenReturn(newTargetItem);
+        Mockito.when(
+                mockChallengeCategoryRepository.findByCategory(newChallengeCategory.getCategory()))
+            .thenReturn(newChallengeCategory);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository, mockFmailyUserRepository, mockCommentRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+
+        //then
+        Assertions.assertThrows(ForbiddenException.class,
+            () -> challengeController.postChallenge(newUser, challengeRequest, mockBindingResult));
+    }
+
+    @Test
     @DisplayName("챌린지 생성 시, 챌린지-유저 미들 테이블 로우 정상 생성 확인")
     public void testMakeChallengeUserRow() {
 
@@ -1151,6 +1288,14 @@ public class ChallengeControllerTest {
 
         Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
             .challenge(newChallenge1).build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
 
         List<Progress> progressList = new ArrayList<>();
         progressList.add(newProgress);
