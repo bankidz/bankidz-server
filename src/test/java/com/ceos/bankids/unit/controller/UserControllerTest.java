@@ -6,7 +6,10 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -437,5 +440,145 @@ public class UserControllerTest {
         // then
         LoginDTO loginDTO = new LoginDTO(false, "aT");
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
+    }
+
+    @Test
+    @DisplayName("부모 유저 정보 조회 성공 시, 부모 결과 반환하는지 확인")
+    public void testIfGetParentInfoSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(false)
+            .refreshToken("token")
+            .build();
+        Parent parent = Parent.builder()
+            .totalChallenge(0L)
+            .acceptedRequest(0L)
+            .totalRequest(0L)
+            .savings(0L)
+            .user(user)
+            .build();
+        user.setParent(parent);
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        CommonResponse result = userController.getUserInfo(user);
+
+        // then
+        MyPageDTO myPageDTO = new MyPageDTO(new UserDTO(user), new ParentDTO(parent));
+        Assertions.assertEquals(CommonResponse.onSuccess(myPageDTO), result);
+    }
+
+    @Test
+    @DisplayName("자녀 유저 정보 조회 성공 시, 자녀 결과 반환하는지 확인")
+    public void testIfGetKidInfoSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .build();
+        Kid kid = Kid.builder()
+            .savings(0L)
+            .achievedChallenge(0L)
+            .totalChallenge(0L)
+            .level(1L)
+            .user(user)
+            .build();
+        user.setKid(kid);
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        CommonResponse result = userController.getUserInfo(user);
+
+        // then
+        MyPageDTO myPageDTO = new MyPageDTO(new UserDTO(user), new KidDTO(kid));
+        Assertions.assertEquals(CommonResponse.onSuccess(myPageDTO), result);
+    }
+
+    @Test
+    @DisplayName("유저 타입 선택 없이 유저 정보 조회 시, 에러 처리하는지 확인")
+    public void testIfGetUserInfoFailWithoutUserTypeThenThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(null)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(null)
+            .refreshToken("token")
+            .build();
+        Kid kid = Kid.builder()
+            .savings(0L)
+            .achievedChallenge(0L)
+            .totalChallenge(0L)
+            .level(1L)
+            .user(user)
+            .build();
+        user.setKid(kid);
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.getUserInfo(user);
+        });
     }
 }

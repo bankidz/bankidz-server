@@ -116,7 +116,9 @@ public class UserServiceImpl implements UserService {
     public MyPageDTO getUserInformation(User user) {
         MyPageDTO myPageDTO;
         UserDTO userDTO = new UserDTO(user);
-        if (user.getIsKid()) {
+        if (user.getIsKid() == null) {
+            throw new BadRequestException("유저 타입이 선택되지 않은 유저입니다.");
+        } else if (user.getIsKid() == true) {
             KidDTO kidDTO = new KidDTO(user.getKid());
             myPageDTO = new MyPageDTO(userDTO, kidDTO);
         } else {
