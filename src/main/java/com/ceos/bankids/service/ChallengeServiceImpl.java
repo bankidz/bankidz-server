@@ -107,8 +107,11 @@ public class ChallengeServiceImpl implements ChallengeService {
             Challenge findChallenge = challengeUser.getChallenge();
             List<ProgressDTO> progressDTOList = new ArrayList<>();
             if (findChallenge.getStatus() == 2L) {
-                findChallenge.getProgressList()
-                    .forEach(progress -> progressDTOList.add(new ProgressDTO(progress)));
+                List<Progress> progressList = findChallenge.getProgressList();
+                progressList.forEach(
+                    progress -> {
+                        progressDTOList.add(new ProgressDTO(progress));
+                    });
                 return new ChallengeDTO(findChallenge, progressDTOList, null);
             } else if (findChallenge.getStatus() == 0L) {
                 return new ChallengeDTO(findChallenge, null, findChallenge.getComment());
@@ -149,23 +152,41 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public List<ChallengeDTO> readChallenge(User user, String status) {
 
-        List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
-            user.getId());
-        List<ChallengeDTO> challengeDTOList = new ArrayList<>();
-        for (ChallengeUser r : challengeUserRow) {
-            if (status.equals("accept") && r.getChallenge().getStatus() == 2L) {
-                List<ProgressDTO> progressDTOList = new ArrayList<>();
-                r.getChallenge().getProgressList()
-                    .forEach(progress -> progressDTOList.add(new ProgressDTO(progress)));
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-                    r.getChallenge().getComment()));
-            } else if ((status.equals("pending") || status.equals("reject"))
-                && r.getChallenge().getStatus() != 2L) {
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
-                    r.getChallenge().getComment()));
+        try {
+            List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
+                user.getId());
+            List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+            String nowDate = LocalDate.now().toString();
+            SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd");
+            Date date = format.parse(nowDate);
+            for (ChallengeUser r : challengeUserRow) {
+                if (status.equals("accept") && r.getChallenge().getStatus() == 2L) {
+                    List<ProgressDTO> progressDTOList = new ArrayList<>();
+                    List<Progress> progressList = r.getChallenge().getProgressList();
+                    Progress progress1 = progressList.stream().findFirst()
+                        .orElseThrow(BadRequestException::new);
+                    Date createdAt = format.parse(progress1.getCreatedAt().toString());
+                    long diff = date.getTime() - createdAt.getTime();
+                    long diffWeeks = (diff / (1000 * 60 * 60 * 24 * 7)) + 1;
+                    progressList
+                        .forEach(progress -> {
+                            if (progress.getWeeks() <= diffWeeks) {
+                                progressDTOList.add(new ProgressDTO(progress));
+                            }
+                        });
+                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+                        r.getChallenge().getComment()));
+                } else if ((status.equals("pending"))
+                    && r.getChallenge().getStatus() != 2L) {
+                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
+                        r.getChallenge().getComment()));
+                }
             }
+            return challengeDTOList;
+        } catch (ParseException e) {
+            throw new InternalServerException("Datetime parse 오류");
         }
-        return challengeDTOList;
+
     }
 
     @Transactional
