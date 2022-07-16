@@ -176,7 +176,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                         });
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
-                } else if ((status.equals("pending") || status.equals("reject"))
+                } else if ((status.equals("pending"))
                     && r.getChallenge().getStatus() != 2L) {
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
                         r.getChallenge().getComment()));

@@ -1152,6 +1152,14 @@ public class ChallengeControllerTest {
         Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
             .challenge(newChallenge1).build();
 
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
+
         List<Progress> progressList = new ArrayList<>();
         progressList.add(newProgress);
 
