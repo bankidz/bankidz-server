@@ -56,6 +56,11 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
 
+        long count = challengeUserRepository.findByUserId(user.getId()).stream()
+            .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2).count();
+        if (count >= 5) {
+            throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
+        }
         Boolean isMom = challengeRequest.getIsMom();
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
             .orElseThrow(() -> new ForbiddenException("가족이 없는 유저는 돈길을 생성 할 수 없습니다."));

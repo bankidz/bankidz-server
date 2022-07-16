@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -34,6 +35,7 @@ public class ChallengeRequest {
 
     @ApiModelProperty(example = "에어팟 사기")
     @NotBlank(message = "돈길의 제목을 입력해주세요")
+    @Length(min = 3, max = 15, message = "돈길 제목 길이를 확인해주세요")
     private String title;
 
     @ApiModelProperty(example = "30")
@@ -47,7 +49,7 @@ public class ChallengeRequest {
     private Long totalPrice;
 
 
-    @ApiModelProperty(example = "3000")
+    @ApiModelProperty(example = "10000")
     @NotNull(message = "돈길의 주당 금액을 입력해주세요")
     private Long weekPrice;
 
