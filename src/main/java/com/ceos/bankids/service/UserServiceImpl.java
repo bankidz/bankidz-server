@@ -4,8 +4,10 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -98,21 +100,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public MyPageDTO getUserInformation(User user) {
-        if (user.getIsKid()) {
-            MyPageDTO myPageDTO = new MyPageDTO(user, user.getKid());
-            return myPageDTO;
-        } else {
-            MyPageDTO myPageDTO = new MyPageDTO(user, user.getParent());
-            return myPageDTO;
-        }
-    }
-
-    @Override
-    @Transactional
     public User getUserByRefreshToken(String refreshToken) {
         String userId = jwtTokenServiceImpl.getUserIdFromJwtToken(refreshToken);
         Optional<User> user = uRepo.findById(Long.parseLong(userId));
         return user.get();
+    }
+
+    @Override
+    @Transactional
+    public MyPageDTO getUserInformation(User user) {
+        MyPageDTO myPageDTO;
+        UserDTO userDTO = new UserDTO(user);
+        if (user.getIsKid()) {
+            KidDTO kidDTO = new KidDTO(user.getKid());
+            myPageDTO = new MyPageDTO(userDTO, kidDTO);
+        } else {
+            ParentDTO parentDTO = new ParentDTO(user.getParent());
+            myPageDTO = new MyPageDTO(userDTO, parentDTO);
+        }
+        return myPageDTO;
     }
 }
