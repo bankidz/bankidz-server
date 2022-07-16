@@ -7,6 +7,10 @@ import com.ceos.bankids.controller.request.ProgressRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.Family;
+import com.ceos.bankids.domain.FamilyUser;
+import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
@@ -16,9 +20,11 @@ import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
+import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import com.ceos.bankids.service.ProgressServiceImpl;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +46,7 @@ public class ProgressControllerTest {
         ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -52,6 +59,14 @@ public class ProgressControllerTest {
             .birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
             .build();
+
+        Kid newKid = Kid.builder().user(newUser).savings(0L).build();
+        newUser.setKid(newKid);
+
+        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        newParent.setParent(parent);
+
+        newParent.setParent(parent);
 
         ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
             .category("이자율 받기").build();
@@ -75,6 +90,14 @@ public class ProgressControllerTest {
             .isAchieved(false)
             .build();
 
+        Family newFamily = Family.builder().id(1L).code("adsfdas").build();
+
+        FamilyUser newFamilyUser = FamilyUser.builder().user(newUser).family(newFamily).build();
+
+        FamilyUser newFamilyUser1 = FamilyUser.builder().user(newParent).family(newFamily).build();
+
+        List<FamilyUser> familyUserList = List.of(newFamilyUser, newFamilyUser1);
+
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
             .thenReturn(Optional.ofNullable(newChallenge));
@@ -89,11 +112,17 @@ public class ProgressControllerTest {
             .thenReturn(Optional.ofNullable(newChallengeUser));
         Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(), 1L))
             .thenReturn(Optional.ofNullable(newProgress));
+        Mockito.when(mockFamilyUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(Optional.of(newFamilyUser));
+        Mockito.when(mockFamilyUserRepository.findByFamily(newFamily))
+            .thenReturn(familyUserList);
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
 
         //when
         ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
         ProgressController progressController = new ProgressController(progressService);
         ProgressDTO progressDTO = new ProgressDTO(newProgress);
         CommonResponse result = progressController.patchProgress(newUser, newChallenge.getId(),
@@ -105,6 +134,9 @@ public class ProgressControllerTest {
 
         Mockito.verify(mockProgressRepository, Mockito.times(1))
             .findByChallengeIdAndWeeks(pCaptor.capture(), wCaptor.capture());
+
+        Assertions.assertEquals(newKid.getSavings(), newChallenge.getWeekPrice());
+        Assertions.assertEquals(parent.getSavings(), newChallenge.getWeekPrice());
 
         Assertions.assertEquals(newProgress.getChallenge().getId(), pCaptor.getValue());
         Assertions.assertEquals(newProgress.getWeeks(), wCaptor.getValue());
@@ -124,6 +156,7 @@ public class ProgressControllerTest {
         ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -181,7 +214,7 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -202,6 +235,7 @@ public class ProgressControllerTest {
         ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -237,6 +271,14 @@ public class ProgressControllerTest {
             .isAchieved(false)
             .build();
 
+        Family newFamily = Family.builder().id(1L).code("adsfdas").build();
+
+        FamilyUser newFamilyUser = FamilyUser.builder().user(newUser).family(newFamily).build();
+
+        FamilyUser newFamilyUser1 = FamilyUser.builder().user(newParent).family(newFamily).build();
+
+        List<FamilyUser> familyUserList = List.of(newFamilyUser, newFamilyUser1);
+
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
             .thenReturn(Optional.ofNullable(newChallenge));
@@ -251,11 +293,17 @@ public class ProgressControllerTest {
             .thenReturn(Optional.ofNullable(newChallengeUser));
         Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(), 1L))
             .thenReturn(Optional.ofNullable(newProgress));
+        Mockito.when(mockFamilyUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(Optional.of(newFamilyUser));
+        Mockito.when(mockFamilyUserRepository.findByFamily(newFamily))
+            .thenReturn(familyUserList);
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
 
         //when
         ProgressRequest progressRequest = new ProgressRequest(2L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
         ProgressController progressController = new ProgressController(progressService);
 
         //then

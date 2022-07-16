@@ -25,9 +25,11 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "에어팟 사기")
     private String title;
 
-    private String targetItemName;
+    @ApiModelProperty(example = "전자제품")
+    private String itemName;
 
-    private String challengeCategoryName;
+    @ApiModelProperty(example = "부모와 함께 하기")
+    private String challengeCategory;
 
     @ApiModelProperty(example = "false")
     private Boolean isAchieved;
@@ -60,8 +62,8 @@ public class ChallengeDTO {
         this.id = challenge.getId();
         this.isMom = challenge.getContractUser().getIsFemale();
         this.title = challenge.getTitle();
-        this.targetItemName = challenge.getTargetItem().getName();
-        this.challengeCategoryName = challenge.getChallengeCategory().getCategory();
+        this.itemName = challenge.getTargetItem().getName();
+        this.challengeCategory = challenge.getChallengeCategory().getCategory();
         this.isAchieved = challenge.getIsAchieved();
         this.interestRate = challenge.getInterestRate();
         this.totalPrice = challenge.getTotalPrice();

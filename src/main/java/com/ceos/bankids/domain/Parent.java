@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -24,6 +25,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "Parent")
 @NoArgsConstructor
 @DynamicUpdate
+@DynamicInsert
 @EqualsAndHashCode(of = "id")
 public class Parent extends AbstractTimestamp {
 
