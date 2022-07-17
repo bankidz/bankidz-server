@@ -33,11 +33,19 @@ public class Kid extends AbstractTimestamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Long savings;
 
-    @Column(nullable = false, length = 5)
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long achievedChallenge;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long totalChallenge;
+
+    @Column(nullable = false)
     @ColumnDefault("1")
     private Long level;
 
@@ -49,6 +57,8 @@ public class Kid extends AbstractTimestamp {
     public Kid(
         Long id,
         Long savings,
+        Long achievedChallenge,
+        Long totalChallenge,
         Long level,
         User user
     ) {
@@ -60,6 +70,8 @@ public class Kid extends AbstractTimestamp {
         }
         this.id = id;
         this.savings = savings;
+        this.achievedChallenge = achievedChallenge;
+        this.totalChallenge = totalChallenge;
         this.level = level;
         this.user = user;
     }

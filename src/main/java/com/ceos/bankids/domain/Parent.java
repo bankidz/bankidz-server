@@ -33,7 +33,19 @@ public class Parent extends AbstractTimestamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long totalChallenge;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long acceptedRequest;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long totalRequest;
+
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Long savings;
 
@@ -44,6 +56,9 @@ public class Parent extends AbstractTimestamp {
     @Builder
     public Parent(
         Long id,
+        Long totalChallenge,
+        Long acceptedRequest,
+        Long totalRequest,
         Long savings,
         User user
     ) {
@@ -51,6 +66,9 @@ public class Parent extends AbstractTimestamp {
             throw new BadRequestException("유저는 필수값입니다.");
         }
         this.id = id;
+        this.totalChallenge = totalChallenge;
+        this.acceptedRequest = acceptedRequest;
+        this.totalRequest = totalRequest;
         this.savings = savings;
         this.user = user;
     }

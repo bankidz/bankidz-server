@@ -50,6 +50,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         Date now = new Date();
         return Jwts.builder()
             .setIssuedAt(now)
+            .setSubject(id.toString())
             .setExpiration(new Date(now.getTime() + Duration.ofMinutes(20160).toMillis()))
             .claim("id", id)
             .claim("roles", "USER")

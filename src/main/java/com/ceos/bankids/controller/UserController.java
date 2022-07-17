@@ -4,6 +4,7 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -40,14 +41,25 @@ public class UserController {
     }
 
     @ApiOperation(value = "토큰 리프레시")
-    @GetMapping(value = "/refresh", produces = "application/json; charset=utf-8")
+    @PatchMapping(value = "/refresh", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<LoginDTO> refreshUserToken(@AuthenticationPrincipal User authUser,
+    public CommonResponse<LoginDTO> refreshUserToken(
         @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
 
-        LoginDTO loginDTO = userService.issueNewTokens(authUser, true, response);
+        User user = userService.getUserByRefreshToken(refreshToken);
+        LoginDTO loginDTO = userService.issueNewTokens(user, response);
 
         return CommonResponse.onSuccess(loginDTO);
+    }
+
+    @ApiOperation(value = "유저 정보 조회하기")
+    @GetMapping(value = "", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<MyPageDTO> getUserInfo(@AuthenticationPrincipal User authUser) {
+
+        MyPageDTO myPageDTO = userService.getUserInformation(authUser);
+
+        return CommonResponse.onSuccess(myPageDTO);
     }
 
 }

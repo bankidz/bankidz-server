@@ -4,13 +4,17 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import java.util.Calendar;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -36,10 +40,16 @@ public class UserServiceImpl implements UserService {
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
         Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
+
+        Calendar cal = Calendar.getInstance();
+        Integer currYear = cal.get(Calendar.YEAR);
+        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
         if (user.isEmpty()) {
             throw new BadRequestException("존재하지 않는 유저입니다.");
         } else if (user.get().getIsFemale() != null) {
             throw new BadRequestException("이미 유저 타입을 선택한 유저입니다.");
+        } else if (birthYear > currYear || birthYear <= currYear - 100) {
+            throw new BadRequestException("유효하지 않은 생년월일입니다.");
         } else {
             user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());
@@ -49,12 +59,17 @@ public class UserServiceImpl implements UserService {
             if (user.get().getIsKid() == true) {
                 Kid newKid = Kid.builder()
                     .savings(0L)
-                    .user(user.get())
+                    .achievedChallenge(0L)
+                    .totalChallenge(0L)
                     .level(1L)
+                    .user(user.get())
                     .build();
                 kRepo.save(newKid);
             } else {
                 Parent newParent = Parent.builder()
+                    .totalChallenge(0L)
+                    .acceptedRequest(0L)
+                    .totalRequest(0L)
                     .savings(0L)
                     .user(user.get())
                     .build();
@@ -67,8 +82,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, Boolean isRegistered,
-        HttpServletResponse response) {
+    public LoginDTO issueNewTokens(User user, HttpServletResponse response) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
         uRepo.save(user);
@@ -84,8 +98,33 @@ public class UserServiceImpl implements UserService {
 
         response.addCookie(cookie);
 
-        LoginDTO loginDTO = new LoginDTO(isRegistered, user.getIsKid(),
+        LoginDTO loginDTO = new LoginDTO(user.getIsKid(),
             jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
         return loginDTO;
+    }
+
+    @Override
+    @Transactional
+    public User getUserByRefreshToken(String refreshToken) {
+        String userId = jwtTokenServiceImpl.getUserIdFromJwtToken(refreshToken);
+        Optional<User> user = uRepo.findById(Long.parseLong(userId));
+        return user.get();
+    }
+
+    @Override
+    @Transactional
+    public MyPageDTO getUserInformation(User user) {
+        MyPageDTO myPageDTO;
+        UserDTO userDTO = new UserDTO(user);
+        if (user.getIsKid() == null) {
+            throw new BadRequestException("유저 타입이 선택되지 않은 유저입니다.");
+        } else if (user.getIsKid() == true) {
+            KidDTO kidDTO = new KidDTO(user.getKid());
+            myPageDTO = new MyPageDTO(userDTO, kidDTO);
+        } else {
+            ParentDTO parentDTO = new ParentDTO(user.getParent());
+            myPageDTO = new MyPageDTO(userDTO, parentDTO);
+        }
+        return myPageDTO;
     }
 }
