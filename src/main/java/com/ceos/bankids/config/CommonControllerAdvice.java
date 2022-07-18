@@ -23,7 +23,9 @@ public class CommonControllerAdvice {
 
         pw.append("\n==========================!!!TRACE START!!!==========================\n");
         pw.append("uri: " + request.getRequestURI() + " " + request.getMethod() + "\n");
-        pw.append("uid: " + user.getId() + "\n");
+        if (user != null) {
+            pw.append("uid: " + user.getId() + "\n");
+        }
         pw.append(e.getMessage());
         pw.append("\n==================================================================\n");
         log.error(sw.toString());
