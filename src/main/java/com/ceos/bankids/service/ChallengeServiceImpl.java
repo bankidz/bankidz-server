@@ -7,6 +7,7 @@ import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Comment;
 import com.ceos.bankids.domain.FamilyUser;
+import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
@@ -23,8 +24,10 @@ import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.CommentRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -41,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional(readOnly = false)
 public class ChallengeServiceImpl implements ChallengeService {
 
     private final ChallengeRepository challengeRepository;
@@ -51,14 +53,16 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ProgressRepository progressRepository;
     private final FamilyUserRepository familyUserRepository;
     private final CommentRepository commentRepository;
+    private final KidRepository kidRepository;
 
+    // 돈길 생성 API
     @Transactional
     @Override
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
 
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
             .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
-                && !challengeUser.getChallenge().getIsAchieved()).count();
+                && challengeUser.getChallenge().getIsAchieved() == 1).count();
         if (count >= 5) {
             throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
         }
@@ -87,8 +91,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(contractUser)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .isAchieved(1L)
             .status(1L).interestRate(challengeRequest.getInterestRate())
             .challengeCategory(challengeCategory).targetItem(targetItem).build();
         challengeRepository.save(newChallenge);
@@ -100,6 +105,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeDTO(newChallenge, null, null);
     }
 
+    // 돈길 상세 정보 API
     @Transactional
     @Override
     public ChallengeDTO detailChallenge(User user, Long challengeId) {
@@ -115,9 +121,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             if (findChallenge.getStatus() == 2L) {
                 List<Progress> progressList = findChallenge.getProgressList();
                 progressList.forEach(
-                    progress -> {
-                        progressDTOList.add(new ProgressDTO(progress));
-                    });
+                    progress -> progressDTOList.add(new ProgressDTO(progress)));
                 return new ChallengeDTO(findChallenge, progressDTOList, null);
             } else if (findChallenge.getStatus() == 0L) {
                 return new ChallengeDTO(findChallenge, null, findChallenge.getComment());
@@ -129,31 +133,53 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
     }
 
+    // 돈길 삭제 API (2주에 한번)
     @Transactional
     @Override
     public ChallengeDTO deleteChallenge(User user, Long challengeId) {
-        Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
-            challengeId);
-        if (deleteChallengeUserRow.isPresent()) {
-            ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
-            Challenge deleteChallenge = deleteChallengeUser.getChallenge();
-            if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
-                throw new ForbiddenException("권한이 없습니다.");
-            }
-            List<Progress> progressList = deleteChallenge.getProgressList();
-            if ((long) progressList.size() == 1 || progressList.isEmpty()) {
+
+        try {
+            String nowDate = LocalDate.now().toString();
+            SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd");
+            Date date = format.parse(nowDate);
+            Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
+                challengeId);
+            if (deleteChallengeUserRow.isPresent()) {
+                ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
+                Challenge deleteChallenge = deleteChallengeUser.getChallenge();
+                Kid kid = deleteChallengeUser.getUser().getKid();
+                if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
+                    throw new ForbiddenException("권한이 없습니다.");
+                } else if (kid.getDeleteChallenge() == null) {
+                    Long datetime = System.currentTimeMillis();
+                    Timestamp timestamp = new Timestamp(datetime);
+                    kid.setDeleteChallenge(timestamp);
+                    kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                    kidRepository.save(kid);
+                } else if (!kid.getDeleteChallenge().equals(null)) {
+                    String deleteChallengeTimestamp = kid.getDeleteChallenge().toString();
+                    Date deleteChallengeAt = format.parse(deleteChallengeTimestamp);
+                    long diff = date.getTime() - deleteChallengeAt.getTime();
+                    long diffWeeks = (diff / (1000 * 60 * 60 * 24 * 7)) + 1;
+                    if (diffWeeks < 2) {
+                        throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                    }
+                }
+                List<Progress> progressList = deleteChallenge.getProgressList();
                 progressRepository.deleteAll(progressList);
                 challengeUserRepository.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
+
+                return null;
             } else {
-                throw new BadRequestException("생성한지 일주일이 지난 돈길은 포기가 불가능합니다.");
+                throw new NotFoundException("챌린지가 없습니다.");
             }
-            return null;
-        } else {
-            throw new NotFoundException("챌린지가 없습니다.");
+        } catch (ParseException e) {
+            throw new InternalServerException("Datetime parse 오류");
         }
     }
 
+    // 돈길 리스트 가져오기 API
     @Transactional
     @Override
     public List<ChallengeDTO> readChallenge(User user, String status) {
@@ -195,6 +221,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     }
 
+    // 자녀의 돈길 리스트 가져오기 API
     @Transactional
     @Override
     public List<KidChallengeListDTO> readKidChallenge(User user) {
@@ -233,6 +260,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         return kidChallengeListDTOList;
     }
 
+    // 돈길 수락 / 거절 API
     @Transactional
     @Override
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
@@ -277,6 +305,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
+    // 주차 정보 가져오기 API
     @Transactional
     @Override
     public WeekDTO readWeekInfo(User user) {
@@ -292,7 +321,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 user.getId());
             challengeUserList.forEach(challengeUser -> {
                 Challenge challenge = challengeUser.getChallenge();
-                if (challenge.getStatus() == 2 && !challenge.getIsAchieved()) {
+                if (challenge.getStatus() == 2 && challenge.getIsAchieved() == 1) {
                     List<Progress> progressList = challenge.getProgressList();
                     Progress progress1 = progressList.stream().findFirst()
                         .orElseThrow(BadRequestException::new);

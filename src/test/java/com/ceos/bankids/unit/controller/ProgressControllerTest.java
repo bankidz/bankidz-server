@@ -75,7 +75,7 @@ public class ProgressControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -100,7 +100,7 @@ public class ProgressControllerTest {
 
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
-            .thenReturn(Optional.ofNullable(newChallenge));
+            .thenReturn(Optional.of(newChallenge));
         Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
             .thenReturn(newTargetItem);
         Mockito.when(
@@ -109,7 +109,7 @@ public class ProgressControllerTest {
         Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
             .thenReturn(newChallengeUser);
         Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
-            .thenReturn(Optional.ofNullable(newChallengeUser));
+            .thenReturn(Optional.of(newChallengeUser));
         Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(), 1L))
             .thenReturn(Optional.ofNullable(newProgress));
         Mockito.when(mockFamilyUserRepository.findByUserId(newUser.getId()))
@@ -146,7 +146,7 @@ public class ProgressControllerTest {
 
     @Test
     @DisplayName("돈길 걷기 요청 시, 챌린지를 만든 유저가 아닐 때 403 에러 테스트")
-    public void testIfSavingsNotProgressUserForbbidenErr() {
+    public void testIfSavingsNotProgressUserForbiddenErr() {
 
         //given
         ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
@@ -181,7 +181,7 @@ public class ProgressControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -256,7 +256,7 @@ public class ProgressControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();

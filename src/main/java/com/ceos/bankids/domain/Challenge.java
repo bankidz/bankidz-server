@@ -43,8 +43,8 @@ public class Challenge extends AbstractTimestamp {
     private String title;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
-    private Boolean isAchieved;
+    @ColumnDefault("1")
+    private Long isAchieved;
 
     @Column(nullable = false)
     private Long totalPrice;
@@ -88,7 +88,7 @@ public class Challenge extends AbstractTimestamp {
     public Challenge(
         Long id,
         String title,
-        Boolean isAchieved,
+        Long isAchieved,
         Long totalPrice,
         Long weekPrice,
         Long weeks,

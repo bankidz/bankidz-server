@@ -1,6 +1,8 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,6 +42,10 @@ public class Kid extends AbstractTimestamp {
     @Column(nullable = false)
     @ColumnDefault("0")
     private Long achievedChallenge;
+
+    @Column()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Timestamp deleteChallenge;
 
     @Column(nullable = false)
     @ColumnDefault("0")
