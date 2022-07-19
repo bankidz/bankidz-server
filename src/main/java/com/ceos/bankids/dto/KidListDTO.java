@@ -23,4 +23,5 @@ public class KidListDTO {
         this.isFemale = user.getIsFemale();
         this.level = user.getKid().getLevel();
     }
+
 }
