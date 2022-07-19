@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
         TokenDTO tokenDTO = new TokenDTO(user);
 
         Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
-
         cookie.setMaxAge(14 * 24 * 60 * 60);
         cookie.setSecure(true);
         cookie.setHttpOnly(true);

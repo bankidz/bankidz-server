@@ -21,6 +21,8 @@ import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import com.ceos.bankids.service.ProgressServiceImpl;
@@ -47,6 +49,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -75,7 +79,7 @@ public class ProgressControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -100,7 +104,7 @@ public class ProgressControllerTest {
 
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
-            .thenReturn(Optional.ofNullable(newChallenge));
+            .thenReturn(Optional.of(newChallenge));
         Mockito.when(mockTargetItemRepository.findByName(newTargetItem.getName()))
             .thenReturn(newTargetItem);
         Mockito.when(
@@ -109,7 +113,7 @@ public class ProgressControllerTest {
         Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
             .thenReturn(newChallengeUser);
         Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
-            .thenReturn(Optional.ofNullable(newChallengeUser));
+            .thenReturn(Optional.of(newChallengeUser));
         Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(), 1L))
             .thenReturn(Optional.ofNullable(newProgress));
         Mockito.when(mockFamilyUserRepository.findByUserId(newUser.getId()))
@@ -122,7 +126,8 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
         ProgressController progressController = new ProgressController(progressService);
         ProgressDTO progressDTO = new ProgressDTO(newProgress);
         CommonResponse result = progressController.patchProgress(newUser, newChallenge.getId(),
@@ -146,7 +151,7 @@ public class ProgressControllerTest {
 
     @Test
     @DisplayName("돈길 걷기 요청 시, 챌린지를 만든 유저가 아닐 때 403 에러 테스트")
-    public void testIfSavingsNotProgressUserForbbidenErr() {
+    public void testIfSavingsNotProgressUserForbiddenErr() {
 
         //given
         ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
@@ -157,6 +162,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -181,7 +188,7 @@ public class ProgressControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -214,7 +221,8 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -236,6 +244,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -256,7 +266,7 @@ public class ProgressControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(false).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -303,7 +313,8 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(2L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
         ProgressController progressController = new ProgressController(progressService);
 
         //then

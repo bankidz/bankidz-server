@@ -31,8 +31,8 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "부모와 함께 하기")
     private String challengeCategory;
 
-    @ApiModelProperty(example = "false")
-    private Boolean isAchieved;
+    @ApiModelProperty(example = "1")
+    private Long isAchieved;
 
     @ApiModelProperty(example = "30")
     private Long interestRate;
