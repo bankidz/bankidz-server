@@ -40,7 +40,7 @@ public class CustomUserDetailServiceTest {
 
     @Test
     @DisplayName("유저 아이디로 유저 조회 실패 시, 에러 처리하는지 확인")
-    public void testIfLoadByUsernameFailWihtoutUserThenThrowNotFoundException() {
+    public void testIfLoadByUsernameFailWithoutUserThenThrowNotFoundException() {
         // given
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(5L)).thenReturn(Optional.ofNullable(null));
