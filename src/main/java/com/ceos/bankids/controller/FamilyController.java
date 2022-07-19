@@ -3,8 +3,11 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
+import com.ceos.bankids.dto.KidListDTO;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,5 +43,18 @@ public class FamilyController {
         FamilyDTO familyDTO = familyService.getFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
+    }
+
+    @ApiOperation(value = "아이들 목록 조회하기")
+    @GetMapping(value = "/kid", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<List<KidListDTO>> getFamilyKidList(
+        @AuthenticationPrincipal User authUser) {
+        if (authUser.getIsKid()) {
+            throw new ForbiddenException("부모만 자녀 정보를 조회할 수 있습니다.");
+        }
+        List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(authUser);
+
+        return CommonResponse.onSuccess(kidListDTOList);
     }
 }

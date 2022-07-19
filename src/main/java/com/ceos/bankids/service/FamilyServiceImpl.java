@@ -5,10 +5,13 @@ import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
+import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +26,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     private final FamilyRepository fRepo;
     private final FamilyUserRepository fuRepo;
+
 
     @Override
     @Transactional
@@ -86,6 +90,35 @@ public class FamilyServiceImpl implements FamilyService {
         } else {
             FamilyDTO familyDTO = new FamilyDTO(new Family(), new ArrayList<>());
             return familyDTO;
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<KidListDTO> getKidListFromFamily(User user) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.isEmpty()) {
+                throw new BadRequestException("삭제된 가족입니다.");
+            }
+            List<FamilyUser> familyUserList = fuRepo.findByFamily(family.get());
+            List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
+                .filter(User::getIsKid).map(KidListDTO::new).collect(
+                    Collectors.toList());
+            Collections.sort(kidListDTOList, new KidListDTOComparator());
+            return kidListDTOList;
+        } else {
+            List<KidListDTO> kidListDTOList = new ArrayList<>();
+            return kidListDTOList;
+        }
+    }
+
+    class KidListDTOComparator implements Comparator<KidListDTO> {
+
+        @Override
+        public int compare(KidListDTO k1, KidListDTO k2) {
+            return k1.getUsername().compareTo(k2.getUsername());
         }
     }
 }

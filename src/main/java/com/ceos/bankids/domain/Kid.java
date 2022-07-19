@@ -68,9 +68,6 @@ public class Kid extends AbstractTimestamp {
         Long level,
         User user
     ) {
-        if (savings == null) {
-            throw new BadRequestException("총 저축액은 필수값입니다.");
-        }
         if (user == null) {
             throw new BadRequestException("유저는 필수값입니다.");
         }
