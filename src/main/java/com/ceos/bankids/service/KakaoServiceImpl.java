@@ -11,12 +11,9 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -39,26 +36,31 @@ public class KakaoServiceImpl implements KakaoService {
                 + KAKAO_KEY + "&redirect_uri=" + KAKAO_URI + "&code="
                 + kakaoRequest.getCode();
 
-        return (KakaoTokenDTO) webClient.post().uri(getTokenURL).retrieve()
-            .onStatus(HttpStatus::is4xxClientError,
-                clientResponse -> Mono.error(new BadRequestException("잘못된 요청입니다.")))
-            .bodyToMono(
-                ParameterizedTypeReference.forType(KakaoTokenDTO.class))
-            .block();
+        WebClient.ResponseSpec responseSpec = webClient.post().uri(getTokenURL).retrieve();
+
+        try {
+            KakaoTokenDTO kakaoTokenDTO = responseSpec.bodyToMono(KakaoTokenDTO.class).block();
+            return kakaoTokenDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
     }
 
     @Override
     public KakaoUserDTO getKakaoUserCode(KakaoTokenDTO kakaoTokenDTO) {
         String getUserURL = "https://kapi.kakao.com/v2/user/me";
 
-        return (KakaoUserDTO) webClient.post().uri(getUserURL)
-            .header("Authorization", "Bearer " + kakaoTokenDTO.getAccessToken())
-            .retrieve()
-            .onStatus(HttpStatus::is4xxClientError,
-                clientResponse -> Mono.error(new BadRequestException("잘못된 요청입니다.")))
-            .bodyToMono(
-                ParameterizedTypeReference.forType(KakaoUserDTO.class))
-            .block();
+        WebClient.ResponseSpec responseSpec = webClient.post().uri(getUserURL)
+            .header("Authorization", "Bearer " + kakaoTokenDTO.getAccessToken()).retrieve();
+
+        try {
+            KakaoUserDTO kakaoUserDTO = responseSpec.bodyToMono(KakaoUserDTO.class).block();
+            return kakaoUserDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
     }
 
     @Override
