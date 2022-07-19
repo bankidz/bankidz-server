@@ -21,6 +21,8 @@ import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import com.ceos.bankids.service.ProgressServiceImpl;
@@ -47,6 +49,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -122,7 +126,8 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
         ProgressController progressController = new ProgressController(progressService);
         ProgressDTO progressDTO = new ProgressDTO(newProgress);
         CommonResponse result = progressController.patchProgress(newUser, newChallenge.getId(),
@@ -157,6 +162,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -214,7 +221,8 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -236,6 +244,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
@@ -303,7 +313,8 @@ public class ProgressControllerTest {
         //when
         ProgressRequest progressRequest = new ProgressRequest(2L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
-            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository);
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
         ProgressController progressController = new ProgressController(progressService);
 
         //then

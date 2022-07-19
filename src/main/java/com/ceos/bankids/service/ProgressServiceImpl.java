@@ -5,6 +5,8 @@ import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
+import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ProgressDTO;
@@ -13,7 +15,10 @@ import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +34,13 @@ public class ProgressServiceImpl implements ProgressService {
     private final ChallengeUserRepository challengeUserRepository;
     private final ChallengeRepository challengeRepository;
     private final FamilyUserRepository familyUserRepository;
+    private final KidRepository kidRepository;
+    private final ParentRepository parentRepository;
 
     @Transactional
     @Override
     public ProgressDTO updateProgress(User user, Long challengeId,
         ProgressRequest progressRequest) {
-
         Long weeks = progressRequest.getWeeks();
         Optional<Progress> progress = progressRepository.findByChallengeIdAndWeeks(
             challengeId, weeks);
@@ -47,22 +53,27 @@ public class ProgressServiceImpl implements ProgressService {
         });
         if (progress.isPresent()) {
             progress.ifPresent(p -> {
+                if (p.getIsAchieved()) {
+                    throw new BadRequestException("이번주는 이미 저축했습니다.");
+                }
                 FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
                     .orElseThrow(BadRequestException::new);
                 Family family = familyUser.getFamily();
+                Challenge challenge = challengeRepository.findById(challengeId)
+                    .orElseThrow(BadRequestException::new);
                 familyUserRepository.findByFamily(family).forEach(familyUser1 -> {
-                    if (familyUser1.getUser() == user) {
-                        Long savings = familyUser1.getUser().getKid().getSavings();
-                        Challenge challenge = challengeRepository.findById(challengeId)
-                            .orElseThrow(BadRequestException::new);
-                        Long weekPrice = challenge.getWeekPrice();
-                        familyUser1.getUser().getKid().setSavings(savings + weekPrice);
-                    } else if (!familyUser1.getUser().getIsKid()) {
+                    if (!familyUser1.getUser().getIsKid()) {
                         Long savings = familyUser1.getUser().getParent().getSavings();
-                        Challenge challenge = challengeRepository.findById(challengeId)
-                            .orElseThrow(BadRequestException::new);
                         Long weekPrice = challenge.getWeekPrice();
-                        familyUser1.getUser().getParent().setSavings(savings + weekPrice);
+                        Parent parent = familyUser1.getUser().getParent();
+                        parent.setSavings(savings + weekPrice);
+                        parentRepository.save(parent);
+                    } else if (Objects.equals(familyUser1.getUser().getId(), user.getId())) {
+                        Long savings = familyUser1.getUser().getKid().getSavings();
+                        Long weekPrice = challenge.getWeekPrice();
+                        Kid kid = familyUser1.getUser().getKid();
+                        kid.setSavings(savings + weekPrice);
+                        kidRepository.save(kid);
                     }
                 });
                 p.setIsAchieved(true);

@@ -85,8 +85,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (challengeCategory == null) {
             throw new BadRequestException("카테고리 입력이 잘 못 되었습니다.");
         }
-        if (challengeRequest.getWeeks()
-            != challengeRequest.getTotalPrice() / challengeRequest.getWeekPrice()) {
+        if (challengeRequest.getWeeks() !=
+            challengeRequest.getTotalPrice() / challengeRequest.getWeekPrice()) {
             throw new BadRequestException("주차수가 목표 금액 / 주당 금액의 값과 다릅니다.");
         }
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
@@ -239,12 +239,29 @@ public class ChallengeServiceImpl implements ChallengeService {
                         List<ProgressDTO> progressDTOList = new ArrayList<>();
                         Long status = challengeUser.getChallenge().getStatus();
                         if (status == 2L) {
-                            challengeUser.getChallenge().getProgressList()
-                                .forEach(
-                                    progress -> progressDTOList.add(new ProgressDTO(progress)));
-                            challengeList.add(
-                                new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
-                                    challengeUser.getChallenge().getComment()));
+                            try {
+                                String nowDate = LocalDate.now().toString();
+                                SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd");
+                                Date date = format.parse(nowDate);
+                                List<Progress> progressList = challengeUser.getChallenge()
+                                    .getProgressList();
+                                Progress progress1 = progressList.get(0);
+                                String createdAt = progress1.getCreatedAt().toString();
+                                Date parse = format.parse(createdAt);
+                                long diff = date.getTime() - parse.getTime();
+                                long diffWeeks = (diff / (1000 * 60 * 60 * 24 * 7)) + 1;
+                                progressList.forEach(
+                                    progress -> {
+                                        if (progress.getWeeks() <= diffWeeks) {
+                                            progressDTOList.add(new ProgressDTO(progress));
+                                        }
+                                    });
+                                challengeList.add(
+                                    new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
+                                        challengeUser.getChallenge().getComment()));
+                            } catch (ParseException e) {
+                                throw new InternalServerException("Datetime parse 오류");
+                            }
                         } else {
                             challengeList.add(new ChallengeDTO(challengeUser.getChallenge(), null,
                                 challengeUser.getChallenge()
@@ -284,8 +301,11 @@ public class ChallengeServiceImpl implements ChallengeService {
             throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
         }
         if (kidChallengeRequest.getAccept()) {
+            Kid kid = cUser.getKid();
             challenge.setStatus(2L);
             challengeRepository.save(challenge);
+            kid.setTotalChallenge(kid.getTotalChallenge() + 1);
+            kidRepository.save(kid);
             for (int i = 1; i <= challenge.getWeeks(); i++) {
                 Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
                     .challenge(challenge)

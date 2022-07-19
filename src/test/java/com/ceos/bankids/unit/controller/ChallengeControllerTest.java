@@ -12,6 +12,7 @@ import com.ceos.bankids.domain.Comment;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
@@ -1605,10 +1606,18 @@ public class ChallengeControllerTest {
         User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
 
+        Kid newKid = Kid.builder().savings(0L).achievedChallenge(0L).level(0L).totalChallenge(0L)
+            .user(newUser).build();
+        newUser.setKid(newKid);
+
         User newParent = User.builder().id(2L).username("user1").isFemale(true).birthday("19990623")
             .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token")
             .build();
 
+        Parent parent = Parent.builder().totalChallenge(0L).savings(0L).acceptedRequest(0L)
+            .totalRequest(0L).user(newParent).build();
+        newParent.setParent(parent);
+        
         ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
             .category("이자율 받기").build();
 
