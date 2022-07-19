@@ -38,3 +38,6 @@ out/
 
 ### application.properties ###
 src/main/resources/application.properties
+
+### logback-spring.xml ###
+src/main/resources/logback-spring.xml
