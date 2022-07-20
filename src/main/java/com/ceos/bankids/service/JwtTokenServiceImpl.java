@@ -40,7 +40,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .claim("id", tokenDTO.getId())
             .claim("roles", "USER")
             .signWith(SignatureAlgorithm.HS256,
-                Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
+                Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
                     StandardCharsets.UTF_8)))
             .compact();
     }
@@ -55,7 +55,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .claim("id", id)
             .claim("roles", "USER")
             .signWith(SignatureAlgorithm.HS256,
-                Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
+                Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
                     StandardCharsets.UTF_8)))
             .compact();
     }
@@ -63,7 +63,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     @Override
     public String getUserIdFromJwtToken(String token) {
         Claims claims = Jwts.parser()
-            .setSigningKey(Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
+            .setSigningKey(Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
                 StandardCharsets.UTF_8)))
             .parseClaimsJws(token)
             .getBody();
@@ -83,8 +83,9 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
-                .setSigningKey(Base64.getEncoder().encodeToString(JWT_SECRET.getBytes(
+                .setSigningKey(Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
                     StandardCharsets.UTF_8))).parseClaimsJws(token);
+
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
