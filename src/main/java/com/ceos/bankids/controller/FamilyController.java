@@ -4,7 +4,6 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.KidListDTO;
-import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -50,9 +49,7 @@ public class FamilyController {
     @ResponseBody
     public CommonResponse<List<KidListDTO>> getFamilyKidList(
         @AuthenticationPrincipal User authUser) {
-        if (authUser.getIsKid()) {
-            throw new ForbiddenException("부모만 자녀 정보를 조회할 수 있습니다.");
-        }
+
         List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(authUser);
 
         return CommonResponse.onSuccess(kidListDTOList);

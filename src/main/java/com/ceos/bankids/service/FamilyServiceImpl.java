@@ -7,6 +7,7 @@ import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import java.util.ArrayList;
@@ -96,6 +97,9 @@ public class FamilyServiceImpl implements FamilyService {
     @Override
     @Transactional
     public List<KidListDTO> getKidListFromFamily(User user) {
+        if (user.getIsKid()) {
+            throw new ForbiddenException("부모만 자녀 정보를 조회할 수 있습니다.");
+        }
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
