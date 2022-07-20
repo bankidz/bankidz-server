@@ -29,10 +29,10 @@ public class CustomUserDetailServiceTest {
         Mockito.when(mockUserRepository.findById(5L)).thenReturn(Optional.ofNullable(user));
 
         // when
-        CustomUserDetailServiceImpl mockCustomUserDetailServiceImpl = new CustomUserDetailServiceImpl(
+        CustomUserDetailServiceImpl customUserDetailServiceImpl = new CustomUserDetailServiceImpl(
             mockUserRepository
         );
-        UserDetails result = mockCustomUserDetailServiceImpl.loadUserByUsername("5");
+        UserDetails result = customUserDetailServiceImpl.loadUserByUsername("5");
 
         // then
         Assertions.assertEquals(user, result);
@@ -46,13 +46,13 @@ public class CustomUserDetailServiceTest {
         Mockito.when(mockUserRepository.findById(5L)).thenReturn(Optional.ofNullable(null));
 
         // when
-        CustomUserDetailServiceImpl mockCustomUserDetailServiceImpl = new CustomUserDetailServiceImpl(
+        CustomUserDetailServiceImpl customUserDetailServiceImpl = new CustomUserDetailServiceImpl(
             mockUserRepository
         );
 
         // then
         Assertions.assertThrows(NotFoundException.class, () -> {
-            mockCustomUserDetailServiceImpl.loadUserByUsername("5");
+            customUserDetailServiceImpl.loadUserByUsername("5");
         });
     }
 }
