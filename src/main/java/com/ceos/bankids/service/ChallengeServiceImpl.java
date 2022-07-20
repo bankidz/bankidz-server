@@ -235,6 +235,10 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public List<KidChallengeListDTO> readKidChallenge(User user) {
 
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
         Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
         List<KidChallengeListDTO> kidChallengeListDTOList = new ArrayList<>();
         familyUser.ifPresent(c -> {
@@ -248,29 +252,23 @@ public class ChallengeServiceImpl implements ChallengeService {
                         List<ProgressDTO> progressDTOList = new ArrayList<>();
                         Long status = challengeUser.getChallenge().getStatus();
                         if (status == 2L) {
-                            try {
-                                String nowDate = LocalDate.now().toString();
-                                SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd");
-                                Date date = format.parse(nowDate);
-                                List<Progress> progressList = challengeUser.getChallenge()
-                                    .getProgressList();
-                                Progress progress1 = progressList.get(0);
-                                String createdAt = progress1.getCreatedAt().toString();
-                                Date parse = format.parse(createdAt);
-                                long diff = date.getTime() - parse.getTime();
-                                long diffWeeks = (diff / (1000 * 60 * 60 * 24 * 7)) + 1;
-                                progressList.forEach(
-                                    progress -> {
-                                        if (progress.getWeeks() <= diffWeeks) {
-                                            progressDTOList.add(new ProgressDTO(progress));
-                                        }
-                                    });
-                                challengeList.add(
-                                    new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
-                                        challengeUser.getChallenge().getComment()));
-                            } catch (ParseException e) {
-                                throw new InternalServerException("Datetime parse 오류");
-                            }
+                            List<Progress> progressList = challengeUser.getChallenge()
+                                .getProgressList();
+                            Progress progress1 = progressList.get(0);
+                            Timestamp createdAt = progress1.getCreatedAt();
+                            Calendar createdAtCal = Calendar.getInstance();
+                            createdAtCal.setTime(createdAt);
+                            progressList
+                                .forEach(progress -> {
+                                    if (createdAtCal.getTime().getTime() <= nowCal.getTime()
+                                        .getTime()) {
+                                        progressDTOList.add(new ProgressDTO(progress));
+                                    }
+                                    createdAtCal.add(Calendar.DATE, 7);
+                                });
+                            challengeList.add(
+                                new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
+                                    challengeUser.getChallenge().getComment()));
                         } else {
                             challengeList.add(new ChallengeDTO(challengeUser.getChallenge(), null,
                                 challengeUser.getChallenge()
