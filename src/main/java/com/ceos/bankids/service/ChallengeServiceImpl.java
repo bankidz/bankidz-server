@@ -8,6 +8,7 @@ import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Comment;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
@@ -25,6 +26,7 @@ import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.CommentRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.KidRepository;
+import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import java.sql.Timestamp;
@@ -54,6 +56,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final FamilyUserRepository familyUserRepository;
     private final CommentRepository commentRepository;
     private final KidRepository kidRepository;
+    private final ParentRepository parentRepository;
 
     // 돈길 생성 API
     @Transactional
@@ -101,6 +104,10 @@ public class ChallengeServiceImpl implements ChallengeService {
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
             .member("parent").user(user).build();
         challengeUserRepository.save(newChallengeUser);
+
+        Parent parent = contractUser.getParent();
+        parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
+        parentRepository.save(parent);
 
         return new ChallengeDTO(newChallenge, null, null);
     }
@@ -306,6 +313,10 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             kid.setTotalChallenge(kid.getTotalChallenge() + 1);
             kidRepository.save(kid);
+            Parent parent = user.getParent();
+            parent.setTotalChallenge(parent.getTotalChallenge() + 1);
+            parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
+            parentRepository.save(parent);
             for (int i = 1; i <= challenge.getWeeks(); i++) {
                 Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
                     .challenge(challenge)
