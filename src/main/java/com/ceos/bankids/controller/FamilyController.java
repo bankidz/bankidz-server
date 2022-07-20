@@ -8,7 +8,7 @@ import com.ceos.bankids.service.FamilyServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Log
+@Slf4j
 @Controller
 @RequestMapping("/family")
 @RequiredArgsConstructor
@@ -29,6 +29,7 @@ public class FamilyController {
     @ResponseBody
     public CommonResponse<FamilyDTO> postFamily(@AuthenticationPrincipal User authUser) {
 
+        log.info("api = 가족 생성하기, user = {}", authUser.getUsername());
         FamilyDTO familyDTO = familyService.postNewFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
@@ -39,6 +40,7 @@ public class FamilyController {
     @ResponseBody
     public CommonResponse<FamilyDTO> getFamily(@AuthenticationPrincipal User authUser) {
 
+        log.info("api = 가족 정보 조회하기, user = {}", authUser.getUsername());
         FamilyDTO familyDTO = familyService.getFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
@@ -50,6 +52,7 @@ public class FamilyController {
     public CommonResponse<List<KidListDTO>> getFamilyKidList(
         @AuthenticationPrincipal User authUser) {
 
+        log.info("api = 아이들 목록 조회하기, user = {}", authUser.getUsername());
         List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(authUser);
 
         return CommonResponse.onSuccess(kidListDTOList);

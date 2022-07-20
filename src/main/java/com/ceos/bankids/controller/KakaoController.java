@@ -10,14 +10,14 @@ import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Log
+@Slf4j
 @Controller
 @RequestMapping("/kakao")
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class KakaoController {
     public CommonResponse<LoginDTO> postKakaoLogin(@Valid @RequestBody KakaoRequest kakaoRequest,
         HttpServletResponse response) {
 
+        log.info("api = 카카오 로그인");
         KakaoTokenDTO kakaoTokenDTO = kakaoService.getKakaoAccessToken(kakaoRequest);
 
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
