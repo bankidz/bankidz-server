@@ -18,7 +18,6 @@ import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
-import com.ceos.bankids.exception.InternalServerException;
 import com.ceos.bankids.exception.NotFoundException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
@@ -30,13 +29,9 @@ import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -344,42 +339,36 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public WeekDTO readWeekInfo(User user) {
 
-        String now = LocalDate.now().toString();
-        SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd");
-
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
         Long[] currentPrice = {0L};
         Long[] totalPrice = {0L};
-        try {
-            Date nowDate = format.parse(now);
-            List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
-                user.getId());
-            challengeUserList.forEach(challengeUser -> {
-                Challenge challenge = challengeUser.getChallenge();
-                if (challenge.getStatus() == 2 && challenge.getIsAchieved() == 1) {
-                    List<Progress> progressList = challenge.getProgressList();
-                    Progress progress1 = progressList.stream().findFirst()
-                        .orElseThrow(BadRequestException::new);
-                    String progressCreatedAtString = progress1.getCreatedAt().toString();
-                    try {
-                        Date progressCreatedAt = format.parse(progressCreatedAtString);
-                        long diff = nowDate.getTime() - progressCreatedAt.getTime();
-                        long diffWeeks = (diff / (1000 * 60 * 60 * 24 * 7)) + 1;
-                        progressList.forEach(progress -> {
-                            if (progress.getWeeks() == diffWeeks) {
-                                totalPrice[0] += challenge.getWeekPrice();
-                                if (progress.getIsAchieved()) {
-                                    currentPrice[0] += challenge.getWeekPrice();
-                                }
-                            }
-                        });
-                    } catch (ParseException ex) {
-                        throw new InternalServerException("Datetime Parse 오류");
+        List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
+            user.getId());
+        challengeUserList.forEach(challengeUser -> {
+            Challenge challenge = challengeUser.getChallenge();
+            if (challenge.getStatus() == 2 && challenge.getIsAchieved() == 1) {
+                List<Progress> progressList = challenge.getProgressList();
+                Progress progress1 = progressList.stream().findFirst()
+                    .orElseThrow(BadRequestException::new);
+                Timestamp createdAt = progress1.getCreatedAt();
+                Calendar createdAtCal = Calendar.getInstance();
+                createdAtCal.setTime(createdAt);
+                long diffSec = (nowCal.getTimeInMillis() - createdAtCal.getTimeInMillis()) / 1000;
+                long diffWeeks = diffSec / (24 * 60 * 60 * 7) + 1;
+                progressList.forEach(progress -> {
+                    if (progress.getWeeks() == diffWeeks) {
+                        totalPrice[0] += challenge.getWeekPrice();
+                        if (progress.getIsAchieved()) {
+                            currentPrice[0] += challenge.getWeekPrice();
+                        }
                     }
-                }
-            });
-        } catch (ParseException e) {
-            throw new InternalServerException("Datetime parse 오류");
-        }
+                });
+            }
+        });
+
         return new WeekDTO(currentPrice[0], totalPrice[0]);
     }
 }
