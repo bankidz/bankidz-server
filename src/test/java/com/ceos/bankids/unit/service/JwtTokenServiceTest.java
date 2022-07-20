@@ -4,6 +4,13 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.service.CustomUserDetailServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Base64;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -12,10 +19,6 @@ import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 
 public class JwtTokenServiceTest {
-
-//    @Spy
-//    @InjectMocks
-//    private Jwts mockJwts;
 
     @Test
     @DisplayName("유저 aT로 유저 조회 성공 시, id 반환하는지 확인")
@@ -142,5 +145,53 @@ public class JwtTokenServiceTest {
         // then
         Assertions.assertEquals(aT, token);
         Assertions.assertEquals(true, result);
+    }
+
+    @Test
+    @DisplayName("aT 조회 및 만료 토큰 validate")
+    public void testIfGetTokenSucceedAndValidateExpiredTokenThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("ozzing")
+            .isFemale(null)
+            .authenticationCode("1234")
+            .provider("kakao")
+            .isKid(null)
+            .refreshToken("rT")
+            .build();
+
+        CustomUserDetailServiceImpl customUserDetailsService = Mockito.mock(
+            CustomUserDetailServiceImpl.class);
+
+        // when
+        JwtTokenServiceImpl jwtTokenServiceImpl = new JwtTokenServiceImpl(
+            customUserDetailsService
+        );
+
+        Date now = new Date();
+        TokenDTO tokenDTO = new TokenDTO(user);
+        String aT = Jwts.builder()
+            .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+            .setIssuer("bankids")
+            .setIssuedAt(now)
+            .setSubject(tokenDTO.getId().toString())
+            .setExpiration(new Date(now.getTime() + Duration.ofMillis(1000).toMillis()))
+            .claim("id", tokenDTO.getId())
+            .claim("roles", "USER")
+            .signWith(SignatureAlgorithm.HS256,
+                Base64.getEncoder().encodeToString(("null").getBytes(
+                    StandardCharsets.UTF_8)))
+            .compact();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        boolean result = jwtTokenServiceImpl.validateToken(aT);
+
+        // then
+        Assertions.assertEquals(false, result);
     }
 }

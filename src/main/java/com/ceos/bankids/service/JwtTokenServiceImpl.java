@@ -85,8 +85,8 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             Jws<Claims> claims = Jwts.parser()
                 .setSigningKey(Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
                     StandardCharsets.UTF_8))).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
 
+            return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
