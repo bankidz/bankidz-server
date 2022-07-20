@@ -9,8 +9,8 @@ name: Docker push
 
 on:
   push:
-    branches: [main]
-    tags: ["v*.*.*"]
+    branches: [ main ]
+    tags: [ "v*.*.*" ]
 
 permissions:
   contents: read
@@ -46,6 +46,13 @@ jobs:
           echo "$PROPERTIES_PROD" > ./src/main/resources/application-prod.properties
         env:
           PROPERTIES_PROD: ${{ secrets.PROPERTIES_PROD }}
+
+      - name: Make logging-spring.xml
+        run: |
+          touch ./src/main/resources/logback-spring.xml
+          echo "$LOGGINGBACK" > ./src/main/resources/logback-spring.xml
+        env:
+          LOGGINGBACK: ${{ secrets.LOGGINGBACK }}
 
       - name: Build with Gradle
         run: ./gradlew build -x test
