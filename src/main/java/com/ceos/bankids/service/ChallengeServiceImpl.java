@@ -151,7 +151,6 @@ public class ChallengeServiceImpl implements ChallengeService {
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
         nowCal.setTime(nowTimestamp);
-        nowCal.add(Calendar.DATE, 14);
         Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
             challengeId);
         if (deleteChallengeUserRow.isPresent()) {
@@ -170,7 +169,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
-                if (nowCal.getTime().getTime() >= deleteCal.getTime().getTime()) {
+                deleteCal.add(Calendar.DATE, 14);
+                System.out.println(
+                    "deleteCal.getTime().toString() = " + deleteCal.getTime().toString());
+                System.out.println("nowCal = " + nowCal.getTime());
+                if (nowCal.getTime().getTime() <= deleteCal.getTime().getTime()) {
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 }
                 Long datetime = System.currentTimeMillis();
