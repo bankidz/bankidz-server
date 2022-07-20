@@ -12,11 +12,19 @@ public class LoginDTO {
 
     @ApiModelProperty(example = "true")
     private Boolean isKid;
+    @ApiModelProperty(example = "1")
+    private Long level;
     @ApiModelProperty(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ~~~~")
     private String accessToken;
 
     public LoginDTO(Boolean isKid, String accessToken) {
         this.isKid = isKid;
+        this.accessToken = accessToken;
+    }
+
+    public LoginDTO(Boolean isKid, String accessToken, Long level) {
+        this.isKid = isKid;
+        this.level = level;
         this.accessToken = accessToken;
     }
 }
