@@ -229,6 +229,13 @@ public class ChallengeControllerTest {
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
             .interestRate(challengeRequest.getInterestRate()).build();
 
+        Challenge newChallenge6 = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(0L).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
         Family newFamily = Family.builder().code("asdfasdf").build();
 
         FamilyUser newFamilyUser = FamilyUser.builder().user(newUser).family(newFamily).build();
@@ -252,8 +259,11 @@ public class ChallengeControllerTest {
         ChallengeUser newChallengeUser5 = ChallengeUser.builder().user(newUser)
             .challenge(newChallenge5).member("parent").build();
 
+        ChallengeUser newChallengeUser6 = ChallengeUser.builder().user(newUser)
+            .challenge(newChallenge6).member("parent").build();
+
         List<ChallengeUser> challengeUserList = List.of(newChallengeUser1, newChallengeUser2,
-            newChallengeUser3, newChallengeUser4, newChallengeUser5);
+            newChallengeUser3, newChallengeUser4, newChallengeUser5, newChallengeUser6);
 
         List<FamilyUser> familyUserList = new ArrayList<>();
         familyUserList.add(newFamilyFather);
