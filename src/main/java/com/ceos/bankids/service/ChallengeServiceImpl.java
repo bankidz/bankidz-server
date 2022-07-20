@@ -33,7 +33,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -145,44 +147,46 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO deleteChallenge(User user, Long challengeId) {
 
-        try {
-            String nowDate = LocalDate.now().toString();
-            SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd");
-            Date date = format.parse(nowDate);
-            Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
-                challengeId);
-            if (deleteChallengeUserRow.isPresent()) {
-                ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
-                Challenge deleteChallenge = deleteChallengeUser.getChallenge();
-                Kid kid = deleteChallengeUser.getUser().getKid();
-                if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
-                    throw new ForbiddenException("권한이 없습니다.");
-                } else if (kid.getDeleteChallenge() == null) {
-                    Long datetime = System.currentTimeMillis();
-                    Timestamp timestamp = new Timestamp(datetime);
-                    kid.setDeleteChallenge(timestamp);
-                    kid.setTotalChallenge(kid.getTotalChallenge() - 1);
-                    kidRepository.save(kid);
-                } else if (!kid.getDeleteChallenge().equals(null)) {
-                    String deleteChallengeTimestamp = kid.getDeleteChallenge().toString();
-                    Date deleteChallengeAt = format.parse(deleteChallengeTimestamp);
-                    long diff = date.getTime() - deleteChallengeAt.getTime();
-                    long diffWeeks = (diff / (1000 * 60 * 60 * 24 * 7)) + 1;
-                    if (diffWeeks < 2) {
-                        throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
-                    }
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
+        nowCal.add(Calendar.DATE, 14);
+        Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
+            challengeId);
+        if (deleteChallengeUserRow.isPresent()) {
+            ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
+            Challenge deleteChallenge = deleteChallengeUser.getChallenge();
+            Kid kid = deleteChallengeUser.getUser().getKid();
+            if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
+                throw new ForbiddenException("권한이 없습니다.");
+            } else if (kid.getDeleteChallenge() == null) {
+                Long datetime = System.currentTimeMillis();
+                Timestamp timestamp = new Timestamp(datetime);
+                kid.setDeleteChallenge(timestamp);
+                kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kidRepository.save(kid);
+            } else if (!kid.getDeleteChallenge().equals(null)) {
+                Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
+                Calendar deleteCal = Calendar.getInstance();
+                deleteCal.setTime(deleteChallengeTimestamp);
+                if (nowCal.getTime().getTime() >= deleteCal.getTime().getTime()) {
+                    throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 }
-                List<Progress> progressList = deleteChallenge.getProgressList();
-                progressRepository.deleteAll(progressList);
-                challengeUserRepository.delete(deleteChallengeUser);
-                challengeRepository.delete(deleteChallenge);
-
-                return null;
-            } else {
-                throw new NotFoundException("챌린지가 없습니다.");
+                Long datetime = System.currentTimeMillis();
+                Timestamp timestamp = new Timestamp(datetime);
+                kid.setDeleteChallenge(timestamp);
+                kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kidRepository.save(kid);
             }
-        } catch (ParseException e) {
-            throw new InternalServerException("Datetime parse 오류");
+            List<Progress> progressList = deleteChallenge.getProgressList();
+            progressRepository.deleteAll(progressList);
+            challengeUserRepository.delete(deleteChallengeUser);
+            challengeRepository.delete(deleteChallenge);
+
+            return null;
+        } else {
+            throw new NotFoundException("챌린지가 없습니다.");
         }
     }
 
