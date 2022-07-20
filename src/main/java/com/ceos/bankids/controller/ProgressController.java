@@ -28,6 +28,8 @@ public class ProgressController {
     public CommonResponse<ProgressDTO> patchProgress(@AuthenticationPrincipal User authUser,
         @PathVariable Long challengeId, @RequestBody ProgressRequest progressRequest) {
 
+        log.info("api = 돈길 걷기, user = {}, challengeId = {}, req = {}", authUser.getUsername(),
+            challengeId, progressRequest);
         ProgressDTO progressDTO = progressService.updateProgress(authUser, challengeId,
             progressRequest);
 
