@@ -85,10 +85,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (challengeCategory == null) {
             throw new BadRequestException("카테고리 입력이 잘 못 되었습니다.");
         }
-        if (challengeRequest.getWeeks() !=
-            challengeRequest.getTotalPrice() / challengeRequest.getWeekPrice()) {
-            throw new BadRequestException("주차수가 목표 금액 / 주당 금액의 값과 다릅니다.");
-        }
+
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(contractUser)
             .totalPrice(challengeRequest.getTotalPrice())
