@@ -44,6 +44,7 @@ public class ProgressServiceImpl implements ProgressService {
         Long weeks = progressRequest.getWeeks();
         Optional<Progress> progress = progressRepository.findByChallengeIdAndWeeks(
             challengeId, weeks);
+        System.out.println("progress = " + progress);
         Optional<ChallengeUser> challengeUser = challengeUserRepository.findByChallengeId(
             challengeId);
         challengeUser.ifPresent(c -> {
