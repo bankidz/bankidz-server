@@ -38,6 +38,7 @@ public class ChallengeController {
     public CommonResponse<ChallengeDTO> postChallenge(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody ChallengeRequest challengeRequest, BindingResult bindingResult) {
 
+        log.info("api = 돈길 생성, req = {}", challengeRequest);
         ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengeRequest);
         return CommonResponse.onSuccess(challengeDTO);
     }
@@ -47,6 +48,7 @@ public class ChallengeController {
     public CommonResponse<ChallengeDTO> getChallenge(@AuthenticationPrincipal User authUser,
         @PathVariable Long challengeId) {
 
+        log.info("api = 돈길 정보 가져오기, user = {}", authUser.getUsername());
         ChallengeDTO challengeDTO = challengeService.detailChallenge(authUser, challengeId);
 
         return CommonResponse.onSuccess(challengeDTO);
@@ -57,6 +59,7 @@ public class ChallengeController {
     public CommonResponse<ChallengeDTO> deleteChallenge(@AuthenticationPrincipal User authUser,
         @PathVariable Long challengeId) {
 
+        log.info("api = 돈길 포기하기, user = {} challengeId = {}", authUser.getUsername(), challengeId);
         ChallengeDTO challengeDTO = challengeService.deleteChallenge(authUser, challengeId);
 
         return CommonResponse.onSuccess(challengeDTO);
@@ -67,6 +70,7 @@ public class ChallengeController {
     public CommonResponse<List<ChallengeDTO>> getListChallenge(
         @AuthenticationPrincipal User authUser, @RequestParam String status) {
 
+        log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
         List<ChallengeDTO> challengeList = challengeService.readChallenge(authUser, status);
 
         return CommonResponse.onSuccess(challengeList);
@@ -77,6 +81,7 @@ public class ChallengeController {
     public CommonResponse<List<KidChallengeListDTO>> getListKidChallenge(
         @AuthenticationPrincipal User authUser) {
 
+        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}", authUser.getUsername());
         List<KidChallengeListDTO> kidChallengeList = challengeService.readKidChallenge(authUser);
 
         return CommonResponse.onSuccess(kidChallengeList);
@@ -88,6 +93,8 @@ public class ChallengeController {
         @PathVariable Long challengeId,
         @Valid @RequestBody KidChallengeRequest kidChallengeRequest) {
 
+        log.info("api = 자녀의 돈길 수락 / 거절, user = {}, challengeId = {}, 수락여부 = {}",
+            authUser.getUsername(), challengeId, kidChallengeRequest.getAccept());
         ChallengeDTO challengeDTO = challengeService.updateChallengeStatus(authUser, challengeId,
             kidChallengeRequest);
 
@@ -98,6 +105,7 @@ public class ChallengeController {
     @GetMapping(value = "/progress", produces = "application/json; charset=utf-8")
     public CommonResponse<WeekDTO> getWeekInfo(@AuthenticationPrincipal User authUser) {
 
+        log.info("api = 주차 정보 가져오기, user = {}", authUser.getUsername());
         WeekDTO weekDTO = challengeService.readWeekInfo(authUser);
 
         return CommonResponse.onSuccess(weekDTO);
