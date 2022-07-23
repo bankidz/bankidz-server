@@ -78,6 +78,11 @@ public class ProgressServiceImpl implements ProgressService {
                 });
                 p.setIsAchieved(true);
                 progressRepository.save(p);
+                if (Objects.equals(weeks, challenge.getWeeks())) {
+                    challenge.setStatus(0L);
+                    challenge.setIsAchieved(2L);
+                    challengeRepository.save(challenge);
+                }
             });
             return new ProgressDTO(progress.get());
         } else {
