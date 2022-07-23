@@ -85,10 +85,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (challengeCategory == null) {
             throw new BadRequestException("카테고리 입력이 잘 못 되었습니다.");
         }
-        if (challengeRequest.getWeeks() !=
-            challengeRequest.getTotalPrice() / challengeRequest.getWeekPrice()) {
-            throw new BadRequestException("주차수가 목표 금액 / 주당 금액의 값과 다릅니다.");
-        }
+
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(contractUser)
             .totalPrice(challengeRequest.getTotalPrice())
@@ -209,13 +206,38 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Timestamp createdAt1 = progress1.getCreatedAt();
                 Calendar createdAtCal = Calendar.getInstance();
                 createdAtCal.setTime(createdAt1);
-                progressList
-                    .forEach(progress -> {
-                        if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
-                            progressDTOList.add(new ProgressDTO(progress));
+                Challenge challenge = r.getChallenge();
+                Long interestRate = challenge.getInterestRate();
+                Long risk = 0L;
+                Long falseCnt = 0L;
+                if (interestRate == 10L) {
+                    risk = challenge.getWeeks();
+                } else if (interestRate == 20L) {
+                    risk = 3L;
+                } else if (interestRate == 30L) {
+                    risk = 1L;
+                }
+                System.out.println("falseCnt = " + falseCnt);
+                System.out.println("risk = " + risk);
+                
+                for (Progress progress : progressList) {
+                    if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                        if (!progress.getIsAchieved()) {
+                            falseCnt += 1;
+                            if (falseCnt >= risk) {
+                                challenge.setIsAchieved(0L);
+                                challenge.setStatus(0L);
+                                challengeRepository.save(challenge);
+                                progressDTOList.removeAll(progressDTOList);
+                                break;
+                            }
                         }
+                        System.out.println(
+                            "progress.getIsAchieved() = " + progress.getIsAchieved());
+                        progressDTOList.add(new ProgressDTO(progress));
                         createdAtCal.add(Calendar.DATE, 7);
-                    });
+                    }
+                }
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                     r.getChallenge().getComment()));
             } else if ((status.equals("pending"))
@@ -225,7 +247,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
         }
         return challengeDTOList;
-
     }
 
     // 자녀의 돈길 리스트 가져오기 API
