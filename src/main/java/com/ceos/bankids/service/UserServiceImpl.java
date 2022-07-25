@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
         Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
         cookie.setMaxAge(14 * 24 * 60 * 60);
         cookie.setSecure(true);
-        cookie.setHttpOnly(false);
+        cookie.setHttpOnly(true);
         cookie.setPath("/");
 
         response.addCookie(cookie);

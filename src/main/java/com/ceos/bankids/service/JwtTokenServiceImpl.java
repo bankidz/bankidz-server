@@ -36,8 +36,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .setIssuedAt(now)
             .setSubject(tokenDTO.getId().toString())
 //            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(2880).toMillis()))
-//            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(40320).toMillis()))
-            .setExpiration(new Date(now.getTime() + Duration.ofSeconds(30).toMillis()))
+            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(40320).toMillis()))
             .claim("id", tokenDTO.getId())
             .claim("roles", "USER")
             .signWith(SignatureAlgorithm.HS256,
@@ -52,8 +51,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return Jwts.builder()
             .setIssuedAt(now)
             .setSubject(id.toString())
-//            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(20160).toMillis()))
-            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(1).toMillis()))
+            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(20160).toMillis()))
             .claim("id", id)
             .claim("roles", "USER")
             .signWith(SignatureAlgorithm.HS256,
