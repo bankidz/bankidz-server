@@ -25,6 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         "/webjars/**"
     };
     private final JwtTokenServiceImpl jwtTokenService;
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     @Override
@@ -34,6 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenService);
+
         http.httpBasic().disable()
             .cors().configurationSource(corsConfigurationSource())
             .and()
@@ -46,8 +50,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/user/refresh").permitAll()
             .anyRequest().authenticated()
             .and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenService),
-                UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
     }
 
     @Bean
