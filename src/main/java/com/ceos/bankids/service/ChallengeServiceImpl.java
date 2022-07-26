@@ -60,6 +60,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
 
+        userRoleValidation(user, true);
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
             .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
                 && challengeUser.getChallenge().getIsAchieved() == 1).count();
@@ -139,6 +140,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO deleteChallenge(User user, Long challengeId) {
 
+        userRoleValidation(user, true);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
@@ -190,6 +192,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public List<ChallengeDTO> readChallenge(User user, String status) {
 
+        userRoleValidation(user, true);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
@@ -217,9 +220,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 } else if (interestRate == 30L) {
                     risk = 1L;
                 }
-                System.out.println("falseCnt = " + falseCnt);
-                System.out.println("risk = " + risk);
-                
+
                 for (Progress progress : progressList) {
                     if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
                         if (!progress.getIsAchieved()) {
@@ -254,6 +255,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public List<KidChallengeListDTO> readKidChallenge(User user) {
 
+        userRoleValidation(user, false);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
@@ -309,19 +311,22 @@ public class ChallengeServiceImpl implements ChallengeService {
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest) {
 
+        userRoleValidation(user, false);
         ChallengeUser findChallengeUser = challengeUserRepository.findByChallengeId(challengeId)
             .orElseThrow(() -> new BadRequestException("존재하지 않는 돈길입니다."));
         User cUser = findChallengeUser.getUser();
         Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(cUser.getId());
         Optional<FamilyUser> familyUser1 = familyUserRepository.findByUserId(user.getId());
+        Challenge challenge = findChallengeUser.getChallenge();
+
         familyUser.ifPresent(f -> {
             familyUser1.ifPresent(f1 -> {
-                if (f.getFamily() != f1.getFamily() || user.getIsKid()) {
+                if (f.getFamily() != f1.getFamily() || user != challenge.getContractUser()) {
                     throw new ForbiddenException("권한이 없습니다.");
                 }
             });
         });
-        Challenge challenge = findChallengeUser.getChallenge();
+
         List<ProgressDTO> progressDTOList = new ArrayList<>();
         if (challenge.getStatus() != 1L) {
             throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
@@ -391,6 +396,12 @@ public class ChallengeServiceImpl implements ChallengeService {
         });
 
         return new WeekDTO(currentPrice[0], totalPrice[0]);
+    }
+
+    public void userRoleValidation(User user, Boolean approveRole) {
+        if (user.getIsKid() != approveRole) {
+            throw new ForbiddenException("접근 불가능한 API 입니다.");
+        }
     }
 }
 
