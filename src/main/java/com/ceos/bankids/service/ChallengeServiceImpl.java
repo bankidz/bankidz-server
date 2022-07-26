@@ -319,14 +319,16 @@ public class ChallengeServiceImpl implements ChallengeService {
         User cUser = findChallengeUser.getUser();
         Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(cUser.getId());
         Optional<FamilyUser> familyUser1 = familyUserRepository.findByUserId(user.getId());
+        Challenge challenge = findChallengeUser.getChallenge();
+
         familyUser.ifPresent(f -> {
             familyUser1.ifPresent(f1 -> {
-                if (f.getFamily() != f1.getFamily() || user.getIsKid()) {
+                if (f.getFamily() != f1.getFamily() || user != challenge.getContractUser()) {
                     throw new ForbiddenException("권한이 없습니다.");
                 }
             });
         });
-        Challenge challenge = findChallengeUser.getChallenge();
+
         List<ProgressDTO> progressDTOList = new ArrayList<>();
         if (challenge.getStatus() != 1L) {
             throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
