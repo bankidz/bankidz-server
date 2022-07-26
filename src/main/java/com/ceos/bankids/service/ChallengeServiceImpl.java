@@ -220,8 +220,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 } else if (interestRate == 30L) {
                     risk = 1L;
                 }
-                System.out.println("falseCnt = " + falseCnt);
-                System.out.println("risk = " + risk);
 
                 for (Progress progress : progressList) {
                     if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
