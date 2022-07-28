@@ -186,7 +186,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
             return null;
         } else {
-            throw new NotFoundException("챌린지가 없습니다.");
+            throw new BadRequestException("챌린지가 없습니다.");
         }
     }
 
