@@ -415,7 +415,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
-        if (value == 4) {
+        if (value == 7) {
             throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
     }
