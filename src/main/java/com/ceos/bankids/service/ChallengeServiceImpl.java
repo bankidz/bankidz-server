@@ -29,6 +29,7 @@ import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,6 +61,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
 
+        sundayValidation();
         userRoleValidation(user, true);
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
             .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
@@ -140,6 +142,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO deleteChallenge(User user, Long challengeId) {
 
+        sundayValidation();
         userRoleValidation(user, true);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
@@ -311,6 +314,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest) {
 
+        sundayValidation();
         userRoleValidation(user, false);
         ChallengeUser findChallengeUser = challengeUserRepository.findByChallengeId(challengeId)
             .orElseThrow(() -> new BadRequestException("존재하지 않는 돈길입니다."));
@@ -401,6 +405,18 @@ public class ChallengeServiceImpl implements ChallengeService {
     public void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException("접근 불가능한 API 입니다.");
+        }
+    }
+
+    public void sundayValidation() {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
+        int value = dayOfWeek.getValue();
+        if (value == 4) {
+            throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
     }
 }
