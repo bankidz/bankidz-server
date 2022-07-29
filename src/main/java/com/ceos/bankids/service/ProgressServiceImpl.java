@@ -37,10 +37,13 @@ public class ProgressServiceImpl implements ProgressService {
     private final KidRepository kidRepository;
     private final ParentRepository parentRepository;
 
+    // 돈길 걷기 API
     @Transactional
     @Override
     public ProgressDTO updateProgress(User user, Long challengeId,
         ProgressRequest progressRequest) {
+
+        userRoleValidation(user, true);
         Long weeks = progressRequest.getWeeks();
         Optional<Progress> progress = progressRepository.findByChallengeIdAndWeeks(
             challengeId, weeks);
@@ -88,6 +91,12 @@ public class ProgressServiceImpl implements ProgressService {
             return new ProgressDTO(progress.get());
         } else {
             throw new BadRequestException("존재하지 않는 프로그레스 입니다.");
+        }
+    }
+
+    public void userRoleValidation(User user, Boolean approveRole) {
+        if (user.getIsKid() != approveRole) {
+            throw new ForbiddenException("접근 불가능한 API 입니다.");
         }
     }
 }
