@@ -13,6 +13,7 @@ import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.DeleteChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -140,7 +141,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 삭제 API (2주에 한번)
     @Transactional
     @Override
-    public ChallengeDTO deleteChallenge(User user, Long challengeId) {
+    public DeleteChallengeDTO deleteChallenge(User user, Long challengeId) {
 
         sundayValidation();
         userRoleValidation(user, true);
@@ -185,7 +186,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeUserRepository.delete(deleteChallengeUser);
             challengeRepository.delete(deleteChallenge);
 
-            return null;
+            return new DeleteChallengeDTO(deleteChallenge);
         } else {
             throw new BadRequestException("챌린지가 없습니다.");
         }
