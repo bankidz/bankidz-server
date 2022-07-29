@@ -225,12 +225,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                 } else if (interestRate == 30L) {
                     risk = 1L;
                 }
-
                 for (Progress progress : progressList) {
                     if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
                         if (!progress.getIsAchieved()) {
                             falseCnt += 1;
-                            if (falseCnt >= risk) {
+                            if (falseCnt > risk) {
                                 challenge.setIsAchieved(0L);
                                 challenge.setStatus(0L);
                                 challengeRepository.save(challenge);
@@ -238,8 +237,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                                 break;
                             }
                         }
-                        System.out.println(
-                            "progress.getIsAchieved() = " + progress.getIsAchieved());
                         progressDTOList.add(new ProgressDTO(progress));
                         createdAtCal.add(Calendar.DATE, 7);
                     }
