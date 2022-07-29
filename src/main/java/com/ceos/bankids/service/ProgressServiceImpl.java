@@ -47,7 +47,6 @@ public class ProgressServiceImpl implements ProgressService {
         Long weeks = progressRequest.getWeeks();
         Optional<Progress> progress = progressRepository.findByChallengeIdAndWeeks(
             challengeId, weeks);
-        System.out.println("progress = " + progress);
         Optional<ChallengeUser> challengeUser = challengeUserRepository.findByChallengeId(
             challengeId);
         challengeUser.ifPresent(c -> {
@@ -82,10 +81,16 @@ public class ProgressServiceImpl implements ProgressService {
                 });
                 p.setIsAchieved(true);
                 progressRepository.save(p);
+                challenge.setInterestAmount(challenge.getInterestRate() * challenge.getWeekPrice()
+                    + challenge.getInterestAmount());
+                challengeRepository.save(challenge);
                 if (Objects.equals(weeks, challenge.getWeeks())) {
                     challenge.setStatus(0L);
                     challenge.setIsAchieved(2L);
                     challengeRepository.save(challenge);
+                    Kid kid = user.getKid();
+                    kid.setSavings(kid.getSavings() + challenge.getInterestAmount());
+                    kidRepository.save(kid);
                 }
             });
             return new ProgressDTO(progress.get());

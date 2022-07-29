@@ -62,6 +62,10 @@ public class Challenge extends AbstractTimestamp {
     @Column(nullable = false)
     private Long interestRate;
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long interestAmount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "targetItemId", nullable = false)
     private TargetItem targetItem;
