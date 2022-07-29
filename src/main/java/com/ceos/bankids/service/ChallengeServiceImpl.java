@@ -167,10 +167,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
                 deleteCal.add(Calendar.DATE, 14);
-                System.out.println(
-                    "deleteCal.getTime().toString() = " + deleteCal.getTime().toString());
-                System.out.println("nowCal = " + nowCal.getTime());
-                if (nowCal.getTime().getTime() <= deleteCal.getTime().getTime()) {
+                if (nowCal.getTime().getTime() <= deleteCal.getTime().getTime()
+                    && deleteChallenge.getStatus() != 0) {
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 }
                 Long datetime = System.currentTimeMillis();
@@ -180,6 +178,9 @@ public class ChallengeServiceImpl implements ChallengeService {
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
+            if (deleteChallenge.getStatus() == 0 && deleteChallenge.getIsAchieved() == 1) {
+                commentRepository.delete(deleteChallenge.getComment());
+            }
             progressRepository.deleteAll(progressList);
             challengeUserRepository.delete(deleteChallengeUser);
             challengeRepository.delete(deleteChallenge);
@@ -325,7 +326,8 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         familyUser.ifPresent(f -> {
             familyUser1.ifPresent(f1 -> {
-                if (f.getFamily() != f1.getFamily() || user != challenge.getContractUser()) {
+                if (f.getFamily() != f1.getFamily()
+                    || user.getId() != challenge.getContractUser().getId()) {
                     throw new ForbiddenException("권한이 없습니다.");
                 }
             });
