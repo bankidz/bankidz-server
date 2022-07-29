@@ -81,6 +81,7 @@ public class ProgressControllerTest {
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
             .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .interestAmount(0L)
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -191,9 +192,10 @@ public class ProgressControllerTest {
 
         TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
 
-        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(newParent)
             .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .interestAmount(0L)
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -212,7 +214,7 @@ public class ProgressControllerTest {
             .id(2L)
             .challenge(newChallenge)
             .weeks(2L)
-            .isAchieved(true)
+            .isAchieved(false)
             .build();
 
         Progress newProgress2 = Progress.builder()
@@ -237,6 +239,8 @@ public class ProgressControllerTest {
 
         List<FamilyUser> familyUserList = List.of(newFamilyUser, newFamilyUser1);
 
+        Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(), 1L))
+            .thenReturn(Optional.ofNullable(newProgress));
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(1L))
             .thenReturn(Optional.of(newChallenge));
@@ -259,7 +263,7 @@ public class ProgressControllerTest {
             .thenReturn(Optional.of(newChallenge));
 
         //when
-        ProgressRequest progressRequest = new ProgressRequest(3L);
+        ProgressRequest progressRequest = new ProgressRequest(1L);
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
             mockKidRepository, mockParentRepository);
@@ -279,7 +283,7 @@ public class ProgressControllerTest {
         Assertions.assertEquals(parent.getSavings(), newChallenge.getWeekPrice());
 
         Assertions.assertEquals(newProgress.getChallenge().getId(), pCaptor.getValue());
-        Assertions.assertEquals(newProgress2.getWeeks(), wCaptor.getValue());
+        Assertions.assertEquals(newProgress.getWeeks(), wCaptor.getValue());
         System.out.println("newChallenge = " + newChallenge.getStatus());
 
         Assertions.assertNotEquals(progressDTO, result.getData());

@@ -6,6 +6,7 @@ import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Comment;
+import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
@@ -375,6 +376,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public WeekDTO readWeekInfo(User user) {
 
+        userRoleValidation(user, true);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
@@ -408,6 +410,25 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new WeekDTO(currentPrice[0], totalPrice[0]);
     }
 
+    // 자녀의 주차 정보 가져오기 API
+    @Transactional
+    @Override
+    public WeekDTO readKidWeekInfo(User user, String kidName) {
+
+        userRoleValidation(user, false);
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new BadRequestException("유저의 가족이 없습니다."));
+        Family family = familyUser.getFamily();
+        User kid = familyUserRepository.findByFamily(family).stream()
+            .map(FamilyUser::getUser).filter(fUser -> Objects.equals(fUser.getUsername(), kidName))
+            .findFirst()
+            .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
+        if (!kid.getIsKid()) {
+            throw new BadRequestException("자식의 이름을 입력해주세요");
+        }
+        return readWeekInfo(kid);
+    }
+
     public void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException("접근 불가능한 API 입니다.");
@@ -425,5 +446,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
     }
+
 }
 

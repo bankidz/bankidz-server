@@ -28,4 +28,6 @@ public interface ChallengeService {
 
     public WeekDTO readWeekInfo(User user);
 
+    public WeekDTO readKidWeekInfo(User user, String kidName);
+
 }
