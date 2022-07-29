@@ -225,12 +225,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                 } else if (interestRate == 30L) {
                     risk = 1L;
                 }
-
                 for (Progress progress : progressList) {
                     if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
                         if (!progress.getIsAchieved()) {
                             falseCnt += 1;
-                            if (falseCnt >= risk) {
+                            if (falseCnt > risk) {
                                 challenge.setIsAchieved(0L);
                                 challenge.setStatus(0L);
                                 challengeRepository.save(challenge);
@@ -238,8 +237,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                                 break;
                             }
                         }
-                        System.out.println(
-                            "progress.getIsAchieved() = " + progress.getIsAchieved());
                         progressDTOList.add(new ProgressDTO(progress));
                         createdAtCal.add(Calendar.DATE, 7);
                     }
@@ -339,6 +336,12 @@ public class ChallengeServiceImpl implements ChallengeService {
             throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
         }
         if (kidChallengeRequest.getAccept()) {
+            long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
+                .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
+                    && challengeUser.getChallenge().getIsAchieved() == 1).count();
+            if (count >= 5) {
+                throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
+            }
             Kid kid = cUser.getKid();
             challenge.setStatus(2L);
             challengeRepository.save(challenge);
