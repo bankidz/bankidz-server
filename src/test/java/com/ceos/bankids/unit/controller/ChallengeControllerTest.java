@@ -17,6 +17,7 @@ import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.DeleteChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -1177,6 +1178,8 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
+        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
@@ -1197,7 +1200,7 @@ public class ChallengeControllerTest {
 
         Assertions.assertEquals(newChallengeUser, cuCaptor.getValue());
 
-        Assertions.assertEquals(CommonResponse.onSuccess(null), result);
+        Assertions.assertEquals(CommonResponse.onSuccess(newDeleteChallengeDTO), result);
     }
 
     @Test
@@ -1277,6 +1280,7 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
+        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
@@ -1297,7 +1301,7 @@ public class ChallengeControllerTest {
 
         Assertions.assertEquals(newChallengeUser, cuCaptor.getValue());
 
-        Assertions.assertEquals(CommonResponse.onSuccess(null), result);
+        Assertions.assertEquals(CommonResponse.onSuccess(newDeleteChallengeDTO), result);
     }
 
     @Test
@@ -1382,6 +1386,8 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
+        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
@@ -1402,7 +1408,7 @@ public class ChallengeControllerTest {
 
         Assertions.assertEquals(newChallengeUser, cuCaptor.getValue());
 
-        Assertions.assertEquals(CommonResponse.onSuccess(null), result);
+        Assertions.assertEquals(CommonResponse.onSuccess(newDeleteChallengeDTO), result);
     }
 
     @Test
