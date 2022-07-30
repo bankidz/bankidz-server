@@ -158,6 +158,17 @@ public class ChallengeServiceImpl implements ChallengeService {
             Kid kid = deleteChallengeUser.getUser().getKid();
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("권한이 없습니다.");
+            } else if (deleteChallenge.getStatus() == 0) {
+                if (deleteChallenge.getIsAchieved() == 0) {
+                    kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                    List<Progress> failureProgressList = deleteChallenge.getProgressList();
+                    progressRepository.deleteAll(failureProgressList);
+                } else if (deleteChallenge.getIsAchieved() == 1) {
+                    commentRepository.delete(deleteChallenge.getComment());
+                }
+                challengeUserRepository.delete(deleteChallengeUser);
+                challengeRepository.delete(deleteChallenge);
+                return new DeleteChallengeDTO(deleteChallenge);
             } else if (kid.getDeleteChallenge() == null) {
                 Long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
@@ -180,9 +191,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
-            if (deleteChallenge.getStatus() == 0 && deleteChallenge.getIsAchieved() == 1) {
-                commentRepository.delete(deleteChallenge.getComment());
-            }
             progressRepository.deleteAll(progressList);
             challengeUserRepository.delete(deleteChallengeUser);
             challengeRepository.delete(deleteChallenge);
