@@ -86,7 +86,10 @@ public class ProgressServiceImpl implements ProgressService {
                     challenge.setStatus(0L);
                     challenge.setIsAchieved(2L);
                     Kid kid = user.getKid();
-                    kid.setSavings(kid.getSavings() + challenge.getSuccessWeeks());
+                    long interestAmount =
+                        (challenge.getTotalPrice() * challenge.getInterestRate() / 10
+                            * challenge.getWeeks()) * challenge.getSuccessWeeks();
+                    kid.setSavings(kid.getSavings() + challenge.getTotalPrice() + interestAmount);
                     kidRepository.save(kid);
                 }
                 challengeRepository.save(challenge);

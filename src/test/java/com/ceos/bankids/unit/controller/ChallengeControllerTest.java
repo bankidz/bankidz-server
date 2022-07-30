@@ -1412,6 +1412,113 @@ public class ChallengeControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 삭제 시, 삭제한지 2주가 경과되지 않은 유저가 실패한 돈길 삭제를 시도 했을 때 정상적으로 없어지는지 테스트")
+    public void testIfDeleteFailureChallengeIsNull() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+        Kid newKid = Kid.builder().user(newUser).savings(0L).achievedChallenge(0L)
+            .totalChallenge(0L).build();
+        newUser.setKid(newKid);
+
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp timestamp = Timestamp.valueOf(now);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(timestamp);
+        cal.add(Calendar.DATE, -15);
+
+        ReflectionTestUtils.setField(
+            newKid,
+            Kid.class,
+            "deleteChallenge",
+            Timestamp.valueOf(now),
+            Timestamp.class
+        );
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(0L).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Comment newComment = Comment.builder().id(1L).challenge(newChallenge).user(newParent)
+            .content("아쉽구나").build();
+
+        newChallenge.setComment(newComment);
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
+            .challenge(newChallenge).build();
+
+        Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallenge));
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
+            .thenReturn(newChallengeUser);
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser));
+
+        List<Progress> progressList = Arrays.asList(newProgress);
+        newChallenge.setProgressList(progressList);
+
+        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
+            mockKidRepository, mockParentRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+        Long challengeId = newChallenge.getId();
+        CommonResponse result = challengeController.deleteChallenge(newUser, challengeId);
+
+        //then
+        ArgumentCaptor<ChallengeUser> cuCaptor = ArgumentCaptor.forClass(ChallengeUser.class);
+        ArgumentCaptor<Challenge> cCaptor = ArgumentCaptor.forClass(Challenge.class);
+
+        Mockito.verify(mockChallengeUserRepository, Mockito.times(1)).delete(cuCaptor.capture());
+        Mockito.verify(mockChallengeRepository, Mockito.times(1)).delete(cCaptor.capture());
+
+        Assertions.assertEquals(newChallenge, cCaptor.getValue());
+
+        Assertions.assertEquals(newChallengeUser, cuCaptor.getValue());
+
+        Assertions.assertEquals(CommonResponse.onSuccess(newDeleteChallengeDTO), result);
+    }
+
+    @Test
     @DisplayName("챌린지 삭제 시, 챌린지를 생성한 유저가 아닌 경우 403 에러 테스트")
     public void testIfNotAuthUserDeleteChallengeForbidden() {
 
