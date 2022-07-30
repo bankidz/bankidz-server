@@ -81,18 +81,15 @@ public class ProgressServiceImpl implements ProgressService {
                 });
                 p.setIsAchieved(true);
                 progressRepository.save(p);
-                challenge.setInterestAmount(
-                    challenge.getInterestRate() * challenge.getTotalPrice() / 10
-                        * challenge.getWeeks());
-                challengeRepository.save(challenge);
+                challenge.setSuccessWeeks(challenge.getSuccessWeeks() + 1);
                 if (Objects.equals(weeks, challenge.getWeeks())) {
                     challenge.setStatus(0L);
                     challenge.setIsAchieved(2L);
-                    challengeRepository.save(challenge);
                     Kid kid = user.getKid();
-                    kid.setSavings(kid.getSavings() + challenge.getInterestAmount());
+                    kid.setSavings(kid.getSavings() + challenge.getSuccessWeeks());
                     kidRepository.save(kid);
                 }
+                challengeRepository.save(challenge);
             });
             return new ProgressDTO(progress.get());
         } else {

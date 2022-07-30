@@ -81,7 +81,7 @@ public class ProgressControllerTest {
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
             .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
-            .interestAmount(0L)
+            .successWeeks(0L)
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -195,7 +195,7 @@ public class ProgressControllerTest {
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(newParent)
             .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
-            .interestAmount(0L)
+            .successWeeks(0L)
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
             .interestRate(challengeRequest.getInterestRate()).build();
