@@ -13,6 +13,8 @@ import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ProgressDTO;
+import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
@@ -82,7 +84,7 @@ public class ProgressControllerTest {
             .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .successWeeks(0L)
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
-            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
             .interestRate(challengeRequest.getInterestRate()).build();
 
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
@@ -257,4 +259,509 @@ public class ProgressControllerTest {
         Assertions.assertNotEquals(progressDTO, result.getData());
     }
 
+    @Test
+    @DisplayName("돈길 걷기 요청 시, 부모 유저가 접근했을 때, 403 에러")
+    public void testIfSavingsProgressParentUserForbiddenErr() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        Kid newKid = Kid.builder().user(newUser).savings(0L).build();
+        newUser.setKid(newKid);
+
+        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        newParent.setParent(parent);
+
+        newParent.setParent(parent);
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .successWeeks(0L)
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder()
+            .id(1L)
+            .challenge(newChallenge)
+            .weeks(1L)
+            .isAchieved(false)
+            .build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
+
+        List<Progress> progressList = List.of(newProgress);
+        newChallenge.setProgressList(progressList);
+
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallengeUser));
+        Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(),
+            newProgress.getWeeks())).thenReturn(Optional.of(newProgress));
+
+        //when
+        ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
+        ProgressController progressController = new ProgressController(progressService);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress);
+
+        //then
+        Assertions.assertThrows(ForbiddenException.class,
+            () -> progressController.patchProgress(newParent, newChallenge.getId()));
+    }
+
+    @Test
+    @DisplayName("돈길 걷기 요청 시, 걷고 있는 돈길이 아닐 때, 400 에러")
+    public void testIfSavingsProgressNotRunningChallengeForbiddenErr() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        Kid newKid = Kid.builder().user(newUser).savings(0L).build();
+        newUser.setKid(newKid);
+
+        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        newParent.setParent(parent);
+
+        newParent.setParent(parent);
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(0L).totalPrice(challengeRequest.getTotalPrice())
+            .successWeeks(0L)
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder()
+            .id(1L)
+            .challenge(newChallenge)
+            .weeks(1L)
+            .isAchieved(false)
+            .build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
+
+        List<Progress> progressList = List.of(newProgress);
+        newChallenge.setProgressList(progressList);
+
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallengeUser));
+        Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(),
+            newProgress.getWeeks())).thenReturn(Optional.of(newProgress));
+
+        //when
+        ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
+        ProgressController progressController = new ProgressController(progressService);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress);
+
+        //then
+        Assertions.assertThrows(BadRequestException.class,
+            () -> progressController.patchProgress(newUser, newChallenge.getId()));
+    }
+
+    @Test
+    @DisplayName("돈길 걷기 요청 시, 돈길의 주차를 넘어서는 주차에 접근할 때, 400 에러")
+    public void testIfSavingsProgressBetterThanChallengeWeeksBadRequestErr() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            30000L, 10000L, 3L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        Kid newKid = Kid.builder().user(newUser).savings(0L).build();
+        newUser.setKid(newKid);
+
+        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        newParent.setParent(parent);
+
+        newParent.setParent(parent);
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .successWeeks(2L)
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder()
+            .id(1L)
+            .challenge(newChallenge)
+            .weeks(1L)
+            .isAchieved(true)
+            .build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now().minusDays(120)),
+            Timestamp.class
+        );
+
+        Progress newProgress1 = Progress.builder()
+            .id(2L)
+            .challenge(newChallenge)
+            .weeks(2L)
+            .isAchieved(true)
+            .build();
+
+        Progress newProgress2 = Progress.builder()
+            .id(3L)
+            .challenge(newChallenge)
+            .weeks(3L)
+            .isAchieved(false)
+            .build();
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+        progressList.add(newProgress1);
+        progressList.add(newProgress2);
+
+        newChallenge.setProgressList(progressList);
+
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallengeUser));
+        Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(),
+            newProgress2.getWeeks())).thenReturn(Optional.of(newProgress2));
+
+        //when
+        ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
+        ProgressController progressController = new ProgressController(progressService);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress2);
+
+        //then
+        Assertions.assertThrows(BadRequestException.class,
+            () -> progressController.patchProgress(newUser,
+                newChallenge.getId()));
+    }
+
+    @Test
+    @DisplayName("돈길 걷기 요청 시, 이미 걸은 주차일 때, 400 에러")
+    public void testIfSavingsProgressAlreadyRunningWeeksBadRequestErr() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            30000L, 10000L, 3L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        Kid newKid = Kid.builder().user(newUser).savings(0L).build();
+        newUser.setKid(newKid);
+
+        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        newParent.setParent(parent);
+
+        newParent.setParent(parent);
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .successWeeks(2L)
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder()
+            .id(1L)
+            .challenge(newChallenge)
+            .weeks(1L)
+            .isAchieved(true)
+            .build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now().minusDays(15)),
+            Timestamp.class
+        );
+
+        Progress newProgress1 = Progress.builder()
+            .id(2L)
+            .challenge(newChallenge)
+            .weeks(2L)
+            .isAchieved(true)
+            .build();
+
+        Progress newProgress2 = Progress.builder()
+            .id(3L)
+            .challenge(newChallenge)
+            .weeks(3L)
+            .isAchieved(true)
+            .build();
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+        progressList.add(newProgress1);
+        progressList.add(newProgress2);
+
+        newChallenge.setProgressList(progressList);
+
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallengeUser));
+        Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(),
+            newProgress2.getWeeks())).thenReturn(Optional.of(newProgress2));
+
+        //when
+        ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
+        ProgressController progressController = new ProgressController(progressService);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress2);
+
+        //then
+        Assertions.assertThrows(BadRequestException.class,
+            () -> progressController.patchProgress(newUser,
+                newChallenge.getId()));
+    }
+
+    @Test
+    @DisplayName("돈길 걷기 요청 시, 권한이 없는 유저가 접근했을 때, 403 에러")
+    public void testIfSavingsProgressNotAuthUserForbiddenErr() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            30000L, 10000L, 3L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newUser1 = User.builder().id(3L).username("user2").isFemale(true).birthday("19990213")
+            .authenticationCode("code2").provider("kakao").isKid(true).refreshToken("torken")
+            .build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        Kid newKid = Kid.builder().user(newUser).savings(0L).build();
+        newUser.setKid(newKid);
+
+        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        newParent.setParent(parent);
+
+        newParent.setParent(parent);
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .successWeeks(2L)
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder()
+            .id(1L)
+            .challenge(newChallenge)
+            .weeks(1L)
+            .isAchieved(true)
+            .build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now().minusDays(15)),
+            Timestamp.class
+        );
+
+        Progress newProgress1 = Progress.builder()
+            .id(2L)
+            .challenge(newChallenge)
+            .weeks(2L)
+            .isAchieved(true)
+            .build();
+
+        Progress newProgress2 = Progress.builder()
+            .id(3L)
+            .challenge(newChallenge)
+            .weeks(3L)
+            .isAchieved(true)
+            .build();
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+        progressList.add(newProgress1);
+        progressList.add(newProgress2);
+
+        newChallenge.setProgressList(progressList);
+
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallenge));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.of(newChallengeUser));
+        Mockito.when(mockProgressRepository.findByChallengeIdAndWeeks(newChallenge.getId(),
+            newProgress2.getWeeks())).thenReturn(Optional.of(newProgress2));
+
+        //when
+        ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
+            mockChallengeUserRepository, mockChallengeRepository, mockFamilyUserRepository,
+            mockKidRepository, mockParentRepository);
+        ProgressController progressController = new ProgressController(progressService);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress2);
+
+        //then
+        Assertions.assertThrows(ForbiddenException.class,
+            () -> progressController.patchProgress(newUser1,
+                newChallenge.getId()));
+    }
 }

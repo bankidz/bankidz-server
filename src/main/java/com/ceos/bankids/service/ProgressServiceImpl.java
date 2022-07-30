@@ -48,10 +48,10 @@ public class ProgressServiceImpl implements ProgressService {
             challengeId);
         challengeUser.ifPresent(c -> {
             if (c.getUser().getId() != user.getId()) {
-                throw new ForbiddenException("유저는 해당 돈길에 접근 할 수 없습니다.");
+                throw new ForbiddenException("해당 유저는 해당 돈길에 접근 할 수 없습니다.");
             }
         });
-        if (challenge.getStatus() != 2 && challenge.getIsAchieved() != 1) {
+        if (challenge.getStatus() != 2 || challenge.getIsAchieved() != 1) {
             throw new BadRequestException("걷고있는 돈길이 아닙니다.");
         }
 
