@@ -71,7 +71,7 @@ public class ChallengeDTO {
         this.interestRate = challenge.getInterestRate();
         this.totalPrice = challenge.getTotalPrice();
         this.weekPrice = challenge.getWeekPrice();
-        this.interestRate = challenge.getInterestAmount();
+        this.interestAmount = challenge.getInterestAmount();
         this.weeks = challenge.getWeeks();
         this.createdAt = challenge.getCreatedAt();
         this.status = challenge.getStatus();

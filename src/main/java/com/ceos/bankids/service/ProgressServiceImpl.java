@@ -81,8 +81,9 @@ public class ProgressServiceImpl implements ProgressService {
                 });
                 p.setIsAchieved(true);
                 progressRepository.save(p);
-                challenge.setInterestAmount(challenge.getInterestRate() * challenge.getWeekPrice()
-                    + challenge.getInterestAmount());
+                challenge.setInterestAmount(
+                    challenge.getInterestRate() * challenge.getTotalPrice() / 10
+                        * challenge.getWeeks());
                 challengeRepository.save(challenge);
                 if (Objects.equals(weeks, challenge.getWeeks())) {
                     challenge.setStatus(0L);

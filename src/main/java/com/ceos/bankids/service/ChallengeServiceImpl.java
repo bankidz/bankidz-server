@@ -230,17 +230,15 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
                         if (!progress.getIsAchieved()) {
                             falseCnt += 1;
-                            if (falseCnt > risk) {
-                                challenge.setIsAchieved(0L);
-                                challenge.setStatus(0L);
-                                challengeRepository.save(challenge);
-                                progressDTOList.removeAll(progressDTOList);
-                                break;
-                            }
                         }
                         progressDTOList.add(new ProgressDTO(progress));
                         createdAtCal.add(Calendar.DATE, 7);
                     }
+                }
+                if (falseCnt > risk) {
+                    challenge.setIsAchieved(0L);
+                    challenge.setStatus(0L);
+                    challengeRepository.save(challenge);
                 }
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                     r.getChallenge().getComment()));
@@ -340,6 +338,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
                 .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
                     && challengeUser.getChallenge().getIsAchieved() == 1).count();
+            System.out.println("count = " + count);
             if (count >= 5) {
                 throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
             }
@@ -420,12 +419,11 @@ public class ChallengeServiceImpl implements ChallengeService {
             .orElseThrow(() -> new BadRequestException("유저의 가족이 없습니다."));
         Family family = familyUser.getFamily();
         User kid = familyUserRepository.findByFamily(family).stream()
-            .map(FamilyUser::getUser).filter(fUser -> Objects.equals(fUser.getUsername(), kidName))
+            .map(FamilyUser::getUser)
+            .filter(fUser -> Objects.equals(fUser.getUsername(), kidName) && fUser.getIsKid())
             .findFirst()
             .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
-        if (!kid.getIsKid()) {
-            throw new BadRequestException("자식의 이름을 입력해주세요");
-        }
+
         return readWeekInfo(kid);
     }
 
