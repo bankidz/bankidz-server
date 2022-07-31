@@ -214,60 +214,66 @@ public class ChallengeServiceImpl implements ChallengeService {
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
-            if (status.equals("accept") && r.getChallenge().getStatus() == 2L) {
-                List<ProgressDTO> progressDTOList = new ArrayList<>();
-                List<Progress> progressList = r.getChallenge().getProgressList();
-                Progress progress1 = progressList.stream().findFirst()
-                    .orElseThrow(BadRequestException::new);
-                Timestamp createdAt1 = progress1.getCreatedAt();
-                Calendar createdAtCal = Calendar.getInstance();
-                createdAtCal.setTime(createdAt1);
-                Challenge challenge = r.getChallenge();
-                Long interestRate = challenge.getInterestRate();
-                Long risk = 0L;
-                Long falseCnt = 0L;
-                if (interestRate == 10L) {
-                    risk = challenge.getWeeks();
-                } else if (interestRate == 20L) {
-                    risk = 3L;
-                } else if (interestRate == 30L) {
-                    risk = 1L;
-                }
-                for (Progress progress : progressList) {
-                    if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
-                        if (!progress.getIsAchieved()) {
-                            falseCnt += 1;
+            System.out.println("r.getChallenge().getId() = " + r.getChallenge().getId());
+            System.out.println("r.getChallenge().getStatus() = " + r.getChallenge().getStatus());
+            System.out.println(
+                "r.getChallenge().getIsAchieved() = " + r.getChallenge().getIsAchieved());
+            if (status.equals("accept")) {
+                if (r.getChallenge().getStatus() == 2L) {
+                    List<ProgressDTO> progressDTOList = new ArrayList<>();
+                    List<Progress> progressList = r.getChallenge().getProgressList();
+                    Progress progress1 = progressList.stream().findFirst()
+                        .orElseThrow(BadRequestException::new);
+                    Timestamp createdAt1 = progress1.getCreatedAt();
+                    Calendar createdAtCal = Calendar.getInstance();
+                    createdAtCal.setTime(createdAt1);
+                    Challenge challenge = r.getChallenge();
+                    Long interestRate = challenge.getInterestRate();
+                    Long risk = 0L;
+                    Long falseCnt = 0L;
+                    if (interestRate == 10L) {
+                        risk = challenge.getWeeks();
+                    } else if (interestRate == 20L) {
+                        risk = 3L;
+                    } else if (interestRate == 30L) {
+                        risk = 1L;
+                    }
+                    for (Progress progress : progressList) {
+                        if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                            if (!progress.getIsAchieved()) {
+                                falseCnt += 1;
+                            }
+                            progressDTOList.add(new ProgressDTO(progress));
+                            createdAtCal.add(Calendar.DATE, 7);
                         }
-                        progressDTOList.add(new ProgressDTO(progress));
-                        createdAtCal.add(Calendar.DATE, 7);
                     }
-                }
-                if (falseCnt > risk) {
-                    challenge.setIsAchieved(0L);
-                    challenge.setStatus(0L);
-                    challengeRepository.save(challenge);
-                }
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-                    r.getChallenge().getComment()));
-            } else if (Objects.equals(status, "accept") && r.getChallenge().getStatus() == 0
-                && r.getChallenge().getIsAchieved() == 0) {
-                List<Progress> progressList = r.getChallenge().getProgressList();
-                List<ProgressDTO> progressDTOList = new ArrayList<>();
-                Progress progress1 = progressList.stream().findFirst()
-                    .orElseThrow(BadRequestException::new);
-                Timestamp createdAt1 = progress1.getCreatedAt();
-                Calendar createdAtCal = Calendar.getInstance();
-                createdAtCal.setTime(createdAt1);
-                Challenge challenge = r.getChallenge();
-                for (Progress progress : progressList) {
-                    if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
-                        progressDTOList.add(new ProgressDTO(progress));
-                        createdAtCal.add(Calendar.DATE, 7);
+                    if (falseCnt > risk) {
+                        challenge.setIsAchieved(0L);
+                        challenge.setStatus(0L);
+                        challengeRepository.save(challenge);
                     }
+                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+                        r.getChallenge().getComment()));
+                } else if (r.getChallenge().getStatus() == 0
+                    && r.getChallenge().getIsAchieved() == 0) {
+                    List<Progress> progressList = r.getChallenge().getProgressList();
+                    List<ProgressDTO> progressDTOList = new ArrayList<>();
+                    Progress progress1 = progressList.stream().findFirst()
+                        .orElseThrow(BadRequestException::new);
+                    Timestamp createdAt1 = progress1.getCreatedAt();
+                    Calendar createdAtCal = Calendar.getInstance();
+                    createdAtCal.setTime(createdAt1);
+                    Challenge challenge = r.getChallenge();
+                    for (Progress progress : progressList) {
+                        if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                            progressDTOList.add(new ProgressDTO(progress));
+                            createdAtCal.add(Calendar.DATE, 7);
+                        }
+                    }
+                    challengeDTOList.add(
+                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                            .getComment()));
                 }
-                challengeDTOList.add(
-                    new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                        .getComment()));
             } else if ((status.equals("pending"))
                 && r.getChallenge().getStatus() != 2L) {
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
