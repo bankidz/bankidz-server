@@ -4,7 +4,6 @@ import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
-import com.ceos.bankids.dto.DeleteChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import java.util.List;
@@ -17,7 +16,7 @@ public interface ChallengeService {
 
     public ChallengeDTO detailChallenge(User user, Long challengeId);
 
-    public DeleteChallengeDTO deleteChallenge(User user, Long challengeId);
+    public ChallengeDTO deleteChallenge(User user, Long challengeId);
 
     public List<ChallengeDTO> readChallenge(User user, String status);
 

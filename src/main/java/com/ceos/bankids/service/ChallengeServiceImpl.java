@@ -14,7 +14,6 @@ import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
-import com.ceos.bankids.dto.DeleteChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -142,7 +141,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 삭제 API (2주에 한번)
     @Transactional
     @Override
-    public DeleteChallengeDTO deleteChallenge(User user, Long challengeId) {
+    public ChallengeDTO deleteChallenge(User user, Long challengeId) {
 
         sundayValidation();
         userRoleValidation(user, true);
@@ -168,7 +167,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 }
                 challengeUserRepository.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
-                return new DeleteChallengeDTO(deleteChallenge);
+                return new ChallengeDTO(deleteChallenge, null, null);
             } else if (kid.getDeleteChallenge() == null) {
                 Long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
@@ -195,7 +194,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeUserRepository.delete(deleteChallengeUser);
             challengeRepository.delete(deleteChallenge);
 
-            return new DeleteChallengeDTO(deleteChallenge);
+            return new ChallengeDTO(deleteChallenge, null, null);
         } else {
             throw new BadRequestException("챌린지가 없습니다.");
         }
@@ -250,6 +249,25 @@ public class ChallengeServiceImpl implements ChallengeService {
                 }
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                     r.getChallenge().getComment()));
+            } else if (Objects.equals(status, "accept") && r.getChallenge().getStatus() == 0
+                && r.getChallenge().getIsAchieved() == 0) {
+                List<Progress> progressList = r.getChallenge().getProgressList();
+                List<ProgressDTO> progressDTOList = new ArrayList<>();
+                Progress progress1 = progressList.stream().findFirst()
+                    .orElseThrow(BadRequestException::new);
+                Timestamp createdAt1 = progress1.getCreatedAt();
+                Calendar createdAtCal = Calendar.getInstance();
+                createdAtCal.setTime(createdAt1);
+                Challenge challenge = r.getChallenge();
+                for (Progress progress : progressList) {
+                    if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                        progressDTOList.add(new ProgressDTO(progress));
+                        createdAtCal.add(Calendar.DATE, 7);
+                    }
+                }
+                challengeDTOList.add(
+                    new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                        .getComment()));
             } else if ((status.equals("pending"))
                 && r.getChallenge().getStatus() != 2L) {
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,

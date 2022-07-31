@@ -5,7 +5,6 @@ import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
-import com.ceos.bankids.dto.DeleteChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
@@ -57,12 +56,12 @@ public class ChallengeController {
 
     @ApiOperation(value = "돈길 포기하기")
     @DeleteMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<DeleteChallengeDTO> deleteChallenge(
+    public CommonResponse<ChallengeDTO> deleteChallenge(
         @AuthenticationPrincipal User authUser,
         @PathVariable Long challengeId) {
 
         log.info("api = 돈길 포기하기, user = {} challengeId = {}", authUser.getUsername(), challengeId);
-        DeleteChallengeDTO deleteChallengeDTO = challengeService.deleteChallenge(authUser,
+        ChallengeDTO deleteChallengeDTO = challengeService.deleteChallenge(authUser,
             challengeId);
 
         return CommonResponse.onSuccess(deleteChallengeDTO);
