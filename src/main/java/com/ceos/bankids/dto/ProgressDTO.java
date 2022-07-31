@@ -1,11 +1,13 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Progress;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+@ApiModel(value = "주차 정보 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode
