@@ -17,7 +17,6 @@ import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
-import com.ceos.bankids.dto.DeleteChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -1178,7 +1177,7 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
-        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+        ChallengeDTO newDeleteChallengeDTO = new ChallengeDTO(newChallenge, null, null);
 
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
@@ -1280,7 +1279,7 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
-        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+        ChallengeDTO newDeleteChallengeDTO = new ChallengeDTO(newChallenge, null, null);
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
@@ -1386,7 +1385,7 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
-        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+        ChallengeDTO newDeleteChallengeDTO = new ChallengeDTO(newChallenge, null, null);
 
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
@@ -1493,7 +1492,7 @@ public class ChallengeControllerTest {
         List<Progress> progressList = Arrays.asList(newProgress);
         newChallenge.setProgressList(progressList);
 
-        DeleteChallengeDTO newDeleteChallengeDTO = new DeleteChallengeDTO(newChallenge);
+        ChallengeDTO newDeleteChallengeDTO = new ChallengeDTO(newChallenge, null, null);
 
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
@@ -1888,6 +1887,149 @@ public class ChallengeControllerTest {
             .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge1 = Challenge.builder().title(challengeRequest1.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest1.getTotalPrice())
+            .weekPrice(challengeRequest1.getWeekPrice()).weeks(challengeRequest1.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest1.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        ChallengeUser newChallengeUser1 = ChallengeUser.builder().challenge(newChallenge1)
+            .member("parent").user(newUser).build();
+
+        List<ChallengeUser> challengeUserList = new ArrayList<>();
+        challengeUserList.add(newChallengeUser);
+        challengeUserList.add(newChallengeUser1);
+
+        Progress progress = Progress.builder().id(3L).isAchieved(false).weeks(1L)
+            .challenge(newChallenge).build();
+
+        Progress progress1 = Progress.builder().id(4L).isAchieved(false).weeks(2L)
+            .challenge(newChallenge).build();
+
+        Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(false)
+            .challenge(newChallenge1).build();
+
+        Progress newProgress1 = Progress.builder().id(2L).weeks(2L).isAchieved(false)
+            .challenge(newChallenge1).build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
+
+        ReflectionTestUtils.setField(
+            progress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now().minusWeeks(2)),
+            Timestamp.class
+        );
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+        progressList.add(newProgress1);
+
+        List<Progress> progressList1 = new ArrayList<>();
+        progressList1.add(progress);
+        progressList1.add(progress1);
+
+        newChallenge.setProgressList(progressList1);
+
+        newChallenge1.setProgressList(progressList);
+
+        ProgressDTO progressDTO = new ProgressDTO(newProgress);
+        ProgressDTO progressDTO1 = new ProgressDTO(progress);
+        ProgressDTO progressDTO2 = new ProgressDTO(progress1);
+
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        progressDTOList.add(progressDTO);
+
+        Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
+        Mockito.when(mockChallengeRepository.save(newChallenge1)).thenReturn(newChallenge1);
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
+            .thenReturn(newChallengeUser);
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser1))
+            .thenReturn(newChallengeUser1);
+        Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(challengeUserList);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
+            mockKidRepository, mockParentRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+        CommonResponse result1 = challengeController.getListChallenge(newUser, "accept");
+
+        //then
+        List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+        List<ProgressDTO> resultProgressDTOList = new ArrayList<>();
+        resultProgressDTOList.add(progressDTO1);
+        resultProgressDTOList.add(progressDTO2);
+
+        challengeDTOList.add(
+            new ChallengeDTO(newChallengeUser.getChallenge(), resultProgressDTOList, null));
+        challengeDTOList.add(
+            new ChallengeDTO(newChallengeUser1.getChallenge(), progressDTOList, null));
+
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTOList).getData(),
+            result1.getData());
+        System.out.println("result1 = " + result1.getData());
+
+    }
+
+    @Test
+    @DisplayName("챌린지 리스트 가져오기 시, 이자율에 따른 실패한 돈길이 이미 있을 때 테스트")
+    public void testIfGetListChallengeChallengeIsAlreadyFailureTest() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L);
+
+        ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품",
+            "에어팟 펜슬 사기",
+            20L, 100000L, 10000L, 10L);
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(0L).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
             .interestRate(challengeRequest.getInterestRate()).build();
 
         Challenge newChallenge1 = Challenge.builder().title(challengeRequest1.getTitle())
