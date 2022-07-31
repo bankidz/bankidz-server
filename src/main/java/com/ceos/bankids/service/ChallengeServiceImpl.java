@@ -6,6 +6,7 @@ import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Comment;
+import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
@@ -157,6 +158,17 @@ public class ChallengeServiceImpl implements ChallengeService {
             Kid kid = deleteChallengeUser.getUser().getKid();
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("권한이 없습니다.");
+            } else if (deleteChallenge.getStatus() == 0) {
+                if (deleteChallenge.getIsAchieved() == 0) {
+                    kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                    List<Progress> failureProgressList = deleteChallenge.getProgressList();
+                    progressRepository.deleteAll(failureProgressList);
+                } else if (deleteChallenge.getIsAchieved() == 1) {
+                    commentRepository.delete(deleteChallenge.getComment());
+                }
+                challengeUserRepository.delete(deleteChallengeUser);
+                challengeRepository.delete(deleteChallenge);
+                return new DeleteChallengeDTO(deleteChallenge);
             } else if (kid.getDeleteChallenge() == null) {
                 Long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
@@ -179,9 +191,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
-            if (deleteChallenge.getStatus() == 0 && deleteChallenge.getIsAchieved() == 1) {
-                commentRepository.delete(deleteChallenge.getComment());
-            }
             progressRepository.deleteAll(progressList);
             challengeUserRepository.delete(deleteChallengeUser);
             challengeRepository.delete(deleteChallenge);
@@ -229,17 +238,15 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
                         if (!progress.getIsAchieved()) {
                             falseCnt += 1;
-                            if (falseCnt > risk) {
-                                challenge.setIsAchieved(0L);
-                                challenge.setStatus(0L);
-                                challengeRepository.save(challenge);
-                                progressDTOList.removeAll(progressDTOList);
-                                break;
-                            }
                         }
                         progressDTOList.add(new ProgressDTO(progress));
                         createdAtCal.add(Calendar.DATE, 7);
                     }
+                }
+                if (falseCnt > risk) {
+                    challenge.setIsAchieved(0L);
+                    challenge.setStatus(0L);
+                    challengeRepository.save(challenge);
                 }
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                     r.getChallenge().getComment()));
@@ -339,6 +346,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
                 .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
                     && challengeUser.getChallenge().getIsAchieved() == 1).count();
+            System.out.println("count = " + count);
             if (count >= 5) {
                 throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
             }
@@ -375,6 +383,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public WeekDTO readWeekInfo(User user) {
 
+        userRoleValidation(user, true);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
@@ -408,6 +417,24 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new WeekDTO(currentPrice[0], totalPrice[0]);
     }
 
+    // 자녀의 주차 정보 가져오기 API
+    @Transactional
+    @Override
+    public WeekDTO readKidWeekInfo(User user, String kidName) {
+
+        userRoleValidation(user, false);
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new BadRequestException("유저의 가족이 없습니다."));
+        Family family = familyUser.getFamily();
+        User kid = familyUserRepository.findByFamily(family).stream()
+            .map(FamilyUser::getUser)
+            .filter(fUser -> Objects.equals(fUser.getUsername(), kidName) && fUser.getIsKid())
+            .findFirst()
+            .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
+
+        return readWeekInfo(kid);
+    }
+
     public void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException("접근 불가능한 API 입니다.");
@@ -421,9 +448,10 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
-        if (value == 7) {
+        if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
             throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
     }
+
 }
 

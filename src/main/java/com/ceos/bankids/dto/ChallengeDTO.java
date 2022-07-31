@@ -43,6 +43,9 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "10000")
     private Long weekPrice;
 
+    @ApiModelProperty(example = "0")
+    private Long successWeeks;
+
     @ApiModelProperty(example = "15")
     private Long weeks;
 
@@ -68,6 +71,7 @@ public class ChallengeDTO {
         this.interestRate = challenge.getInterestRate();
         this.totalPrice = challenge.getTotalPrice();
         this.weekPrice = challenge.getWeekPrice();
+        this.successWeeks = challenge.getSuccessWeeks();
         this.weeks = challenge.getWeeks();
         this.createdAt = challenge.getCreatedAt();
         this.status = challenge.getStatus();

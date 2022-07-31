@@ -113,4 +113,15 @@ public class ChallengeController {
 
         return CommonResponse.onSuccess(weekDTO);
     }
+
+    @ApiOperation(value = "자녀의 주차 정보 가져오기")
+    @GetMapping(value = "/kid/progress", produces = "application/json; charset=utf-8")
+    public CommonResponse<WeekDTO> getKidWeekInfo(@AuthenticationPrincipal User authUser,
+        @RequestParam String kidName) {
+
+        log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidName);
+        WeekDTO weekDTO = challengeService.readKidWeekInfo(authUser, kidName);
+
+        return CommonResponse.onSuccess(weekDTO);
+    }
 }
