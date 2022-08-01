@@ -40,7 +40,7 @@ public class FamilyServiceImpl implements FamilyService {
                 throw new BadRequestException("삭제된 가족입니다.");
             }
             List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(
-                familyUser.get().getFamily());
+                familyUser.get().getFamily(), user);
             FamilyDTO familyDTO = new FamilyDTO(familyUser.get().getFamily(), familyUserDTOList);
 
             return familyDTO;
@@ -57,7 +57,7 @@ public class FamilyServiceImpl implements FamilyService {
                 .build();
             fuRepo.save(newFamilyUser);
 
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily);
+            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily, user);
             FamilyDTO familyDTO = new FamilyDTO(newFamily, familyUserDTOList);
 
             return familyDTO;
@@ -66,10 +66,11 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FamilyUserDTO> getFamilyUserList(Family family) {
+    public List<FamilyUserDTO> getFamilyUserList(Family family, User user) {
         List<FamilyUser> familyUser = fuRepo.findByFamily(family);
 
         List<FamilyUserDTO> userDTOList = familyUser.stream().map(FamilyUser::getUser)
+            .filter(u -> !u.getId().equals(user.getId()))
             .map(FamilyUserDTO::new)
             .collect(Collectors.toList());
 
@@ -85,7 +86,7 @@ public class FamilyServiceImpl implements FamilyService {
             if (family.isEmpty()) {
                 throw new BadRequestException("삭제된 가족입니다.");
             }
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get());
+            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get(), user);
             FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
             return familyDTO;
         } else {
