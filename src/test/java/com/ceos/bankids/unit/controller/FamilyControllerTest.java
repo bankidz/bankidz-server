@@ -103,7 +103,6 @@ public class FamilyControllerTest {
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
         FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<FamilyUser>();
-        familyUserList.add(familyUser1);
         familyUserList.add(familyUser2);
 
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
@@ -147,7 +146,6 @@ public class FamilyControllerTest {
         Family family = Family.builder().code("code").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<>();
-        familyUserList.add(familyUser1);
 
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
@@ -209,7 +207,6 @@ public class FamilyControllerTest {
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
         FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<FamilyUser>();
-        familyUserList.add(familyUser1);
         familyUserList.add(familyUser2);
 
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
