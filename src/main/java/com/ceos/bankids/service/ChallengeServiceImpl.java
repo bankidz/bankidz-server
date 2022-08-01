@@ -214,10 +214,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
-            System.out.println("r.getChallenge().getId() = " + r.getChallenge().getId());
-            System.out.println("r.getChallenge().getStatus() = " + r.getChallenge().getStatus());
-            System.out.println(
-                "r.getChallenge().getIsAchieved() = " + r.getChallenge().getIsAchieved());
             if (status.equals("accept")) {
                 if (r.getChallenge().getStatus() == 2L) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
@@ -406,7 +402,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 자녀의 주차 정보 가져오기 API
     @Transactional
     @Override
-    public WeekDTO readKidWeekInfo(User user, String kidName) {
+    public WeekDTO readKidWeekInfo(User user, Long kidId) {
 
         userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
@@ -414,7 +410,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         Family family = familyUser.getFamily();
         User kid = familyUserRepository.findByFamily(family).stream()
             .map(FamilyUser::getUser)
-            .filter(fUser -> Objects.equals(fUser.getUsername(), kidName) && fUser.getIsKid())
+            .filter(fUser -> fUser.getIsKid() && Objects.equals(fUser.getKid().getId(), kidId))
             .findFirst()
             .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
 
