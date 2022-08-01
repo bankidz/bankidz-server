@@ -14,7 +14,7 @@ public interface FamilyService {
 
     public FamilyDTO postNewFamily(User user);
 
-    public List<FamilyUserDTO> getFamilyUserList(Family family);
+    public List<FamilyUserDTO> getFamilyUserList(Family family, User user);
 
     public FamilyDTO getFamily(User user);
 

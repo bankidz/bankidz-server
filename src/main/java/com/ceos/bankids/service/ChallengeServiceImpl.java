@@ -286,56 +286,18 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 자녀의 돈길 리스트 가져오기 API
     @Transactional
     @Override
-    public List<KidChallengeListDTO> readKidChallenge(User user) {
+    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
 
         userRoleValidation(user, false);
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
-        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
-        List<KidChallengeListDTO> kidChallengeListDTOList = new ArrayList<>();
-        familyUser.ifPresent(c -> {
-            List<FamilyUser> familyUserList = familyUserRepository.findByFamily(c.getFamily());
-            familyUserList.forEach(familyUser1 -> {
-                List<ChallengeDTO> challengeList = new ArrayList<>();
-                if (familyUser1.getUser().getIsKid()) {
-                    List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
-                        familyUser1.getUser().getId());
-                    challengeUserList.forEach(challengeUser -> {
-                        List<ProgressDTO> progressDTOList = new ArrayList<>();
-                        Long status = challengeUser.getChallenge().getStatus();
-                        if (status == 2L) {
-                            List<Progress> progressList = challengeUser.getChallenge()
-                                .getProgressList();
-                            Progress progress1 = progressList.get(0);
-                            Timestamp createdAt = progress1.getCreatedAt();
-                            Calendar createdAtCal = Calendar.getInstance();
-                            createdAtCal.setTime(createdAt);
-                            progressList
-                                .forEach(progress -> {
-                                    if (createdAtCal.getTime().getTime() <= nowCal.getTime()
-                                        .getTime()) {
-                                        progressDTOList.add(new ProgressDTO(progress));
-                                    }
-                                    createdAtCal.add(Calendar.DATE, 7);
-                                });
-                            challengeList.add(
-                                new ChallengeDTO(challengeUser.getChallenge(), progressDTOList,
-                                    challengeUser.getChallenge().getComment()));
-                        } else {
-                            challengeList.add(new ChallengeDTO(challengeUser.getChallenge(), null,
-                                challengeUser.getChallenge()
-                                    .getComment()));
-                        }
-                    });
-                    kidChallengeListDTOList.add(
-                        new KidChallengeListDTO(familyUser1.getUser(), challengeList));
-                }
-            });
-        });
-
-        return kidChallengeListDTOList;
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(BadRequestException::new);
+        Family family = familyUser.getFamily();
+        User kid = familyUserRepository.findByFamily(family).stream()
+            .filter(f -> f.getUser().getIsKid() && Objects.equals(
+                f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
+            .orElseThrow(BadRequestException::new);
+        List<ChallengeDTO> challengeDTOList = readChallenge(kid, status);
+        return new KidChallengeListDTO(kid, challengeDTOList);
     }
 
     // 돈길 수락 / 거절 API
@@ -472,7 +434,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
-        if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
+        if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
             throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
     }
