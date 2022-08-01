@@ -2242,6 +2242,13 @@ public class ChallengeControllerTest {
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
             .interestRate(challengeRequest1.getInterestRate()).build();
 
+        Challenge newChallenge3 = Challenge.builder().id(4L).title("마우스 사기")
+            .contractUser(newParent)
+            .isAchieved(2L).totalPrice(30000L)
+            .weekPrice(10000L).weeks(3L)
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(0L)
+            .interestRate(challengeRequest1.getInterestRate()).build();
+
         ChallengeUser newChallengeUser = ChallengeUser.builder().id(1L).challenge(newChallenge)
             .member("parent").user(newUser).build();
 
@@ -2249,6 +2256,9 @@ public class ChallengeControllerTest {
             .member("parent").user(newUser).build();
 
         ChallengeUser newChallengeUser2 = ChallengeUser.builder().id(3L).challenge(newChallenge2)
+            .member("parent").user(newUser).build();
+
+        ChallengeUser newChallengeUser3 = ChallengeUser.builder().id(4L).challenge(newChallenge3)
             .member("parent").user(newUser).build();
 
         Family newFamily = Family.builder().id(1L)
@@ -2262,6 +2272,34 @@ public class ChallengeControllerTest {
 
         Progress newProgress = Progress.builder().id(1L).challenge(newChallenge1).isAchieved(false)
             .weeks(1L).build();
+
+        Progress successProgress = Progress.builder().id(5L).challenge(newChallenge3)
+            .isAchieved(true).weeks(1L).build();
+
+        Progress successProgress1 = Progress.builder().id(6L).challenge(newChallenge3)
+            .isAchieved(true).weeks(2L).build();
+
+        Progress successProgress2 = Progress.builder().id(7L).challenge(newChallenge3)
+            .isAchieved(true).weeks(3L).build();
+
+        List<Progress> successProgressList = List.of(successProgress, successProgress1,
+            successProgress2);
+
+        newChallenge3.setProgressList(successProgressList);
+
+        ProgressDTO progressDTO = new ProgressDTO(successProgress);
+        ProgressDTO progressDTO1 = new ProgressDTO(successProgress1);
+        ProgressDTO progressDTO2 = new ProgressDTO(successProgress2);
+
+        List<ProgressDTO> successProgressDTOList = List.of(progressDTO, progressDTO1, progressDTO2);
+
+        ReflectionTestUtils.setField(
+            successProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now().minusDays(22L)),
+            Timestamp.class
+        );
 
         ReflectionTestUtils.setField(
             newProgress,
@@ -2292,6 +2330,7 @@ public class ChallengeControllerTest {
         challengeUserList.add(newChallengeUser);
         challengeUserList.add(newChallengeUser1);
         challengeUserList.add(newChallengeUser2);
+        challengeUserList.add(newChallengeUser3);
 
         List<FamilyUser> familyUserList = new ArrayList<>();
         familyUserList.add(newFamilyUser);
@@ -2301,8 +2340,10 @@ public class ChallengeControllerTest {
         List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
 
         challengeDTOList.add(new ChallengeDTO(newChallenge, null, null));
-        challengeDTOList1.add(new ChallengeDTO(newChallenge1, progressDTOList, null));
         challengeDTOList.add(new ChallengeDTO(newChallenge2, null, newComment));
+
+        challengeDTOList1.add(new ChallengeDTO(newChallenge1, progressDTOList, null));
+        challengeDTOList1.add(new ChallengeDTO(newChallenge3, successProgressDTOList, null));
 
         Mockito.when(mockFamilyUserRepository.findByUserId(newParent.getId()))
             .thenReturn(Optional.of(newFamilyUser));
