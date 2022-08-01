@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -250,28 +251,38 @@ public class ChallengeServiceImpl implements ChallengeService {
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
-                } else if (r.getChallenge().getStatus() == 0
-                    && r.getChallenge().getIsAchieved() == 0) {
-                    List<Progress> progressList = r.getChallenge().getProgressList();
-                    List<ProgressDTO> progressDTOList = new ArrayList<>();
-                    Progress progress1 = progressList.stream().findFirst()
-                        .orElseThrow(BadRequestException::new);
-                    Timestamp createdAt1 = progress1.getCreatedAt();
-                    Calendar createdAtCal = Calendar.getInstance();
-                    createdAtCal.setTime(createdAt1);
-                    Challenge challenge = r.getChallenge();
-                    for (Progress progress : progressList) {
-                        if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
-                            progressDTOList.add(new ProgressDTO(progress));
-                            createdAtCal.add(Calendar.DATE, 7);
+                } else if (r.getChallenge().getStatus() == 0) {
+                    if (r.getChallenge().getIsAchieved() == 0) {
+                        List<Progress> progressList = r.getChallenge().getProgressList();
+                        List<ProgressDTO> progressDTOList = new ArrayList<>();
+                        Progress progress1 = progressList.stream().findFirst()
+                            .orElseThrow(BadRequestException::new);
+                        Timestamp createdAt1 = progress1.getCreatedAt();
+                        Calendar createdAtCal = Calendar.getInstance();
+                        createdAtCal.setTime(createdAt1);
+                        Challenge challenge = r.getChallenge();
+                        for (Progress progress : progressList) {
+                            if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                                progressDTOList.add(new ProgressDTO(progress));
+                                createdAtCal.add(Calendar.DATE, 7);
+                            }
                         }
+                        challengeDTOList.add(
+                            new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                                .getComment()));
+                    } else if (r.getChallenge().getIsAchieved() == 2) {
+                        List<Progress> progressList = r.getChallenge().getProgressList();
+                        List<ProgressDTO> progressDTOList = progressList.stream()
+                            .map(ProgressDTO::new).collect(
+                                Collectors.toList());
+                        challengeDTOList.add(
+                            new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                                .getComment()));
                     }
-                    challengeDTOList.add(
-                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                            .getComment()));
                 }
             } else if ((status.equals("pending"))
-                && r.getChallenge().getStatus() != 2L) {
+                && (r.getChallenge().getStatus() == 1 || (r.getChallenge().getStatus() == 0
+                && r.getChallenge().getIsAchieved() == 1))) {
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
                     r.getChallenge().getComment()));
             }
