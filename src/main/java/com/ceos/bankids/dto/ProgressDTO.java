@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "주차 정보 DTO")
+@ApiModel(value = "progress 정보 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode
