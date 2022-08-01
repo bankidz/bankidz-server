@@ -2207,6 +2207,11 @@ public class ChallengeControllerTest {
         User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
 
+        Kid newKid = Kid.builder().id(1L).totalChallenge(0L).achievedChallenge(0L).level(0L)
+            .savings(0L).user(newUser).build();
+
+        newUser.setKid(newKid);
+
         User newParent = User.builder().id(2L).username("user1").isFemale(true).birthday("19990623")
             .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token")
             .build();
@@ -2293,20 +2298,18 @@ public class ChallengeControllerTest {
         familyUserList.add(newFamilyUser1);
 
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+        List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
 
         challengeDTOList.add(new ChallengeDTO(newChallenge, null, null));
-        challengeDTOList.add(new ChallengeDTO(newChallenge1, progressDTOList, null));
+        challengeDTOList1.add(new ChallengeDTO(newChallenge1, progressDTOList, null));
         challengeDTOList.add(new ChallengeDTO(newChallenge2, null, newComment));
 
+        Mockito.when(mockFamilyUserRepository.findByUserId(newParent.getId()))
+            .thenReturn(Optional.of(newFamilyUser));
+        Mockito.when(mockFamilyUserRepository.findByFamily(newFamily))
+            .thenReturn(familyUserList);
         Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
             .thenReturn(challengeUserList);
-        Mockito.when(mockFamilyUserRepository.findByUserId(newParent.getId()))
-            .thenReturn(Optional.ofNullable(newFamilyUser));
-        Mockito.when(mockFamilyUserRepository.findByUserId(newUser.getId()))
-            .thenReturn(Optional.ofNullable(newFamilyUser1));
-        assert newFamilyUser != null;
-        Mockito.when(mockFamilyUserRepository.findByFamily(newFamilyUser.getFamily()))
-            .thenReturn(familyUserList);
 
         //when
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
@@ -2314,19 +2317,21 @@ public class ChallengeControllerTest {
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
             mockKidRepository, mockParentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        CommonResponse result = challengeController.getListKidChallenge(newParent);
+        CommonResponse result = challengeController.getListKidChallenge(newParent, newUser.getKid()
+            .getId(), "accept");
+        CommonResponse result1 = challengeController.getListKidChallenge(newParent,
+            newUser.getKid().getId(), "pending");
 
         //then
-        List<KidChallengeListDTO> kidChallengeListDTOList = new ArrayList<>();
-        kidChallengeListDTOList.add(new KidChallengeListDTO(newUser, challengeDTOList));
-        kidChallengeListDTOList
-            .forEach(s -> {
-                System.out.println("s.getChallengeList() = " + s.getChallengeList());
-                System.out.println("s.getUserName() = " + s.getUserName());
-            });
+        KidChallengeListDTO kidChallengeListDTOResult = new KidChallengeListDTO(newUser,
+            challengeDTOList);
+        KidChallengeListDTO kidChallengeListDTO = new KidChallengeListDTO(newUser,
+            challengeDTOList1);
 
-        Assertions.assertEquals(CommonResponse.onSuccess(kidChallengeListDTOList).getData(),
+        Assertions.assertEquals(CommonResponse.onSuccess(kidChallengeListDTO).getData(),
             result.getData());
+        Assertions.assertEquals(CommonResponse.onSuccess(kidChallengeListDTOResult).getData(),
+            result1.getData());
     }
 
     @Test

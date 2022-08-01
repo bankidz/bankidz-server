@@ -20,7 +20,7 @@ public interface ChallengeService {
 
     public List<ChallengeDTO> readChallenge(User user, String status);
 
-    public List<KidChallengeListDTO> readKidChallenge(User user);
+    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
 
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest);

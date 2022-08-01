@@ -79,12 +79,15 @@ public class ChallengeController {
     }
 
     @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
-    @GetMapping(value = "/kid", produces = "application/json; charset=utf-8")
-    public CommonResponse<List<KidChallengeListDTO>> getListKidChallenge(
-        @AuthenticationPrincipal User authUser) {
+    @GetMapping(value = "/kid/{kidId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<KidChallengeListDTO> getListKidChallenge(
+        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
+        @RequestParam String status) {
 
-        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}", authUser.getUsername());
-        List<KidChallengeListDTO> kidChallengeList = challengeService.readKidChallenge(authUser);
+        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
+            authUser.getUsername(), kidId, status);
+        KidChallengeListDTO kidChallengeList = challengeService.readKidChallenge(authUser, kidId,
+            status);
 
         return CommonResponse.onSuccess(kidChallengeList);
     }
