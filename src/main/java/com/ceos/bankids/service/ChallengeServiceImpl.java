@@ -179,9 +179,13 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
-                deleteCal.add(Calendar.DATE, 14);
-                if (nowCal.getTime().getTime() <= deleteCal.getTime().getTime()
-                    && deleteChallenge.getStatus() != 0) {
+                int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
+                int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+                int l = deleteCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? lastDeleteWeek - 1
+                    : lastDeleteWeek;
+                int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
+                    : currentWeek;
+                if (deleteCal.get(Calendar.YEAR) <= nowCal.get(Calendar.YEAR) && l + 2 >= c) {
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 }
                 Long datetime = System.currentTimeMillis();
@@ -207,10 +211,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     public List<ChallengeDTO> readChallenge(User user, String status) {
 
         userRoleValidation(user, true);
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -366,10 +366,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     public WeekDTO readWeekInfo(User user) {
 
         userRoleValidation(user, true);
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
         Long[] currentPrice = {0L};
         Long[] totalPrice = {0L};
         List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
@@ -411,13 +407,13 @@ public class ChallengeServiceImpl implements ChallengeService {
         return readWeekInfo(kid);
     }
 
-    public void userRoleValidation(User user, Boolean approveRole) {
+    private void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException("접근 불가능한 API 입니다.");
         }
     }
 
-    public void sundayValidation() {
+    private void sundayValidation() {
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
