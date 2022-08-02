@@ -397,8 +397,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Timestamp createdAt = progress1.getCreatedAt();
                 Calendar createdAtCal = Calendar.getInstance();
                 createdAtCal.setTime(createdAt);
-                long diffSec = (nowCal.getTimeInMillis() - createdAtCal.getTimeInMillis()) / 1000;
-                long diffWeeks = diffSec / (24 * 60 * 60 * 7) + 1;
+                int diffWeeks = nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(
+                    Calendar.WEEK_OF_YEAR) + 1;
                 progressList.forEach(progress -> {
                     if (progress.getWeeks() == diffWeeks) {
                         totalPrice[0] += challenge.getWeekPrice();
