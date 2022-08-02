@@ -219,15 +219,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 if (r.getChallenge().getStatus() == 2L) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
                     List<Progress> progressList = r.getChallenge().getProgressList();
-                    Progress progress1 = progressList.stream().findFirst()
-                        .orElseThrow(BadRequestException::new);
-                    Timestamp createdAt1 = progress1.getCreatedAt();
-                    Calendar createdAtCal = Calendar.getInstance();
-                    createdAtCal.setTime(createdAt1);
-
-                    int diffWeeks =
-                        nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(Calendar.WEEK_OF_YEAR)
-                            + 1;
+                    int diffWeeks = timeLogic(progressList);
                     Challenge challenge = r.getChallenge();
                     Long interestRate = challenge.getInterestRate();
                     Long risk = 0L;
@@ -258,13 +250,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (r.getChallenge().getIsAchieved() == 0) {
                         List<Progress> progressList = r.getChallenge().getProgressList();
                         List<ProgressDTO> progressDTOList = new ArrayList<>();
-                        Progress progress1 = progressList.stream().findFirst()
-                            .orElseThrow(BadRequestException::new);
-                        Timestamp createdAt1 = progress1.getCreatedAt();
-                        Calendar createdAtCal = Calendar.getInstance();
-                        createdAtCal.setTime(createdAt1);
-                        int diffWeeks = nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(
-                            Calendar.WEEK_OF_YEAR) + 1;
+                        int diffWeeks = timeLogic(progressList);
                         for (Progress progress : progressList) {
                             if (progress.getWeeks() <= diffWeeks) {
                                 progressDTOList.add(new ProgressDTO(progress));
@@ -392,13 +378,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             Challenge challenge = challengeUser.getChallenge();
             if (challenge.getStatus() == 2 && challenge.getIsAchieved() == 1) {
                 List<Progress> progressList = challenge.getProgressList();
-                Progress progress1 = progressList.stream().findFirst()
-                    .orElseThrow(BadRequestException::new);
-                Timestamp createdAt = progress1.getCreatedAt();
-                Calendar createdAtCal = Calendar.getInstance();
-                createdAtCal.setTime(createdAt);
-                int diffWeeks = nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(
-                    Calendar.WEEK_OF_YEAR) + 1;
+                int diffWeeks = timeLogic(progressList);
                 progressList.forEach(progress -> {
                     if (progress.getWeeks() == diffWeeks) {
                         totalPrice[0] += challenge.getWeekPrice();
@@ -447,6 +427,22 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
             throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
+    }
+
+    private int timeLogic(List<Progress> progressList) {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
+        int dayOfWeek = nowCal.get(Calendar.DAY_OF_WEEK);
+        Progress progress1 = progressList.stream().findFirst()
+            .orElseThrow(BadRequestException::new);
+        Timestamp createdAt1 = progress1.getCreatedAt();
+        Calendar createdAtCal = Calendar.getInstance();
+        createdAtCal.setTime(createdAt1);
+        return dayOfWeek == 1 ? nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(
+            Calendar.WEEK_OF_YEAR)
+            : nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(Calendar.WEEK_OF_YEAR) + 1;
     }
 
 }
