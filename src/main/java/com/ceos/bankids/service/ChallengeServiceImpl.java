@@ -224,6 +224,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                     Timestamp createdAt1 = progress1.getCreatedAt();
                     Calendar createdAtCal = Calendar.getInstance();
                     createdAtCal.setTime(createdAt1);
+
+                    int diffWeeks =
+                        nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(Calendar.WEEK_OF_YEAR)
+                            + 1;
                     Challenge challenge = r.getChallenge();
                     Long interestRate = challenge.getInterestRate();
                     Long risk = 0L;
@@ -236,12 +240,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                         risk = 1L;
                     }
                     for (Progress progress : progressList) {
-                        if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                        if (progress.getWeeks() <= diffWeeks) {
                             if (!progress.getIsAchieved()) {
                                 falseCnt += 1;
                             }
                             progressDTOList.add(new ProgressDTO(progress));
-                            createdAtCal.add(Calendar.DATE, 7);
                         }
                     }
                     if (falseCnt > risk) {
@@ -260,11 +263,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                         Timestamp createdAt1 = progress1.getCreatedAt();
                         Calendar createdAtCal = Calendar.getInstance();
                         createdAtCal.setTime(createdAt1);
-                        Challenge challenge = r.getChallenge();
+                        int diffWeeks = nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(
+                            Calendar.WEEK_OF_YEAR) + 1;
                         for (Progress progress : progressList) {
-                            if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                            if (progress.getWeeks() <= diffWeeks) {
                                 progressDTOList.add(new ProgressDTO(progress));
-                                createdAtCal.add(Calendar.DATE, 7);
                             }
                         }
                         challengeDTOList.add(
