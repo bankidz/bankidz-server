@@ -66,8 +66,8 @@ public class ProgressServiceImpl implements ProgressService {
         Calendar createdAtCal = Calendar.getInstance();
         createdAtCal.setTime(createdAt);
 
-        long diff = nowCal.getTimeInMillis() - createdAtCal.getTimeInMillis();
-        long diffWeeks = (diff / (7 * 24 * 60 * 60 * 1000)) + 1;
+        int diffWeeks =
+            nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(Calendar.WEEK_OF_YEAR) + 1;
 
         if (diffWeeks > challenge.getWeeks()) {
             throw new BadRequestException("돈길 주차 정보를 확인해 주세요");
@@ -80,7 +80,8 @@ public class ProgressServiceImpl implements ProgressService {
             kid.setSavings(kid.getSavings() + challenge.getTotalPrice() + interestAmount);
         }
 
-        Progress progress = progressRepository.findByChallengeIdAndWeeks(challengeId, diffWeeks)
+        Progress progress = progressRepository.findByChallengeIdAndWeeks(challengeId,
+                (long) diffWeeks)
             .orElseThrow(BadRequestException::new);
         if (progress.getIsAchieved()) {
             throw new BadRequestException("이번주는 이미 저축했습니다.");
