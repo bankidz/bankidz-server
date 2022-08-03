@@ -71,7 +71,7 @@ public class ChallengeControllerTest {
         //given
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -97,7 +97,7 @@ public class ChallengeControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice()).filename("test")
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -167,7 +167,7 @@ public class ChallengeControllerTest {
         //given
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -347,7 +347,7 @@ public class ChallengeControllerTest {
         //given
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -497,7 +497,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -517,7 +517,7 @@ public class ChallengeControllerTest {
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(newParent)
-            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice()).filename("test")
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
             .interestRate(challengeRequest.getInterestRate()).build();
@@ -570,7 +570,7 @@ public class ChallengeControllerTest {
         Assertions.assertEquals(newChallenge, cCaptor.getValue());
 
         Assertions.assertEquals(newChallengeUser, cuCaptor.getValue());
-        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTO), result);
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTO).getData(), result.getData());
     }
 
     @Test
@@ -593,7 +593,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "선물", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -665,7 +665,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "형제와 경쟁 하기", "전자제품",
             "에어팟 사기", 30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -740,7 +740,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -801,7 +801,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -877,11 +877,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "아이펜슬 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1009,7 +1009,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser1 = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1073,7 +1073,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser1 = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1133,7 +1133,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1221,7 +1221,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1304,6 +1304,109 @@ public class ChallengeControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 삭제 시, 삭제한지 2주가 경과된 유저가 시도 했을 때 (해가 넘어갈 시) 정상적으로 없어지는지 테스트")
+    public void testIfDeleteTwoWeeksDiffYearUserChallengeIsNull() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L, "test");
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+        Kid newKid = Kid.builder().user(newUser).savings(0L).achievedChallenge(0L)
+            .totalChallenge(0L).build();
+        newUser.setKid(newKid);
+
+        LocalDateTime now = LocalDateTime.of(2022, 6, 10, 3, 3);
+        Timestamp timestamp = Timestamp.valueOf(now);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(timestamp);
+        cal.add(Calendar.DATE, -15);
+
+        ReflectionTestUtils.setField(
+            newKid,
+            Kid.class,
+            "deleteChallenge",
+            Timestamp.valueOf(now.minusYears(1)),
+            Timestamp.class
+        );
+
+        System.out.println("newKid.getDeleteChallenge() = " + newKid.getDeleteChallenge());
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
+            .challenge(newChallenge).build();
+
+        Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
+        Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallenge));
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
+            .thenReturn(newChallengeUser);
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser));
+        Mockito.when(mockChallengeUserRepository.findByChallengeId(newChallenge.getId()))
+            .thenReturn(Optional.ofNullable(newChallengeUser));
+
+        List<Progress> progressList = Arrays.asList(newProgress);
+        newChallenge.setProgressList(progressList);
+
+        ChallengeDTO newDeleteChallengeDTO = new ChallengeDTO(newChallenge, null, null);
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
+            mockKidRepository, mockParentRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+        Long challengeId = newChallenge.getId();
+        CommonResponse result = challengeController.deleteChallenge(newUser, challengeId);
+
+        //then
+        ArgumentCaptor<ChallengeUser> cuCaptor = ArgumentCaptor.forClass(ChallengeUser.class);
+        ArgumentCaptor<Challenge> cCaptor = ArgumentCaptor.forClass(Challenge.class);
+
+        Mockito.verify(mockChallengeUserRepository, Mockito.times(1)).delete(cuCaptor.capture());
+        Mockito.verify(mockChallengeRepository, Mockito.times(1)).delete(cCaptor.capture());
+
+        Assertions.assertEquals(newChallenge, cCaptor.getValue());
+
+        Assertions.assertEquals(newChallengeUser, cuCaptor.getValue());
+
+        Assertions.assertEquals(CommonResponse.onSuccess(newDeleteChallengeDTO), result);
+    }
+
+    @Test
     @DisplayName("챌린지 삭제 시, 삭제한지 2주가 경과되지 않은 유저가 거절당한 돈길 삭제를 시도 했을 때 정상적으로 없어지는지 테스트")
     public void testIfDeleteRejectChallengeIsNull() {
 
@@ -1322,7 +1425,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1429,7 +1532,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1536,7 +1639,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser1 = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1600,7 +1703,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser1 = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1678,7 +1781,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser1 = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1745,11 +1848,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품",
             "에어팟 펜슬 사기",
-            10L, 100000L, 10000L, 10L);
+            10L, 100000L, 10000L, 10L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -1845,6 +1948,124 @@ public class ChallengeControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 리스트 가져오기 테스트 시 작년에 생성한 progress 정보 가져오기")
+    public void testIfLastYearGetListChallengeTest() {
+
+        //given
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L,
+            150000L, 10000L, 15L, "test");
+
+        ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품",
+            "에어팟 펜슬 사기",
+            10L, 100000L, 10000L, 10L, "test");
+
+        User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
+
+        User newParent = User.builder().id(2L).username("parent1").isFemale(true)
+            .birthday("19990521")
+            .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
+            .build();
+
+        ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
+            .category("이자율 받기").build();
+
+        TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
+
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest.getTotalPrice())
+            .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(1L)
+            .interestRate(challengeRequest.getInterestRate()).build();
+
+        Challenge newChallenge1 = Challenge.builder().title(challengeRequest1.getTitle())
+            .contractUser(newParent)
+            .isAchieved(1L).totalPrice(challengeRequest1.getTotalPrice())
+            .weekPrice(challengeRequest1.getWeekPrice()).weeks(challengeRequest1.getWeeks())
+            .challengeCategory(newChallengeCategory).targetItem(newTargetItem).status(2L)
+            .interestRate(challengeRequest1.getInterestRate()).build();
+
+        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
+            .member("parent").user(newUser).build();
+
+        ChallengeUser newChallengeUser1 = ChallengeUser.builder().challenge(newChallenge1)
+            .member("parent").user(newUser).build();
+
+        List<ChallengeUser> challengeUserList = new ArrayList<>();
+        challengeUserList.add(newChallengeUser);
+        challengeUserList.add(newChallengeUser1);
+
+        Progress newProgress = Progress.builder().id(1L).weeks(1L).isAchieved(true)
+            .challenge(newChallenge1).build();
+
+        ReflectionTestUtils.setField(
+            newProgress,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now().minusYears(1)),
+            Timestamp.class
+        );
+
+        List<Progress> progressList = new ArrayList<>();
+        progressList.add(newProgress);
+
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        progressDTOList.add(new ProgressDTO(newProgress));
+
+        newChallenge1.setProgressList(progressList);
+
+        Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
+        Mockito.when(mockChallengeRepository.save(newChallenge1)).thenReturn(newChallenge1);
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser))
+            .thenReturn(newChallengeUser);
+        Mockito.when(mockChallengeUserRepository.save(newChallengeUser1))
+            .thenReturn(newChallengeUser1);
+        Mockito.when(mockChallengeUserRepository.findByUserId(newUser.getId()))
+            .thenReturn(challengeUserList);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
+            mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
+            mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
+            mockKidRepository, mockParentRepository);
+        ChallengeController challengeController = new ChallengeController(challengeService);
+        CommonResponse result = challengeController.getListChallenge(newUser, "pending");
+        CommonResponse result1 = challengeController.getListChallenge(newUser, "accept");
+
+        //then
+        List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+        List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
+        for (ChallengeUser r : challengeUserList) {
+            if (r.getChallenge().getStatus() != 2L) {
+                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null, null));
+
+            } else {
+                challengeDTOList1.add(new ChallengeDTO(r.getChallenge(), progressDTOList, null));
+            }
+        }
+
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTOList).getData(),
+            result.getData());
+        Assertions.assertEquals(CommonResponse.onSuccess(challengeDTOList1).getData(),
+            result1.getData());
+
+    }
+
+    @Test
     @DisplayName("챌린지 리스트 가져오기 시, 이자율에 따른 실패 테스트")
     public void testIfGetListChallengeChallengeIsFailureTest() {
 
@@ -1863,11 +2084,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품",
             "에어팟 펜슬 사기",
-            20L, 100000L, 10000L, 10L);
+            20L, 100000L, 10000L, 10L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -2006,11 +2227,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품",
             "에어팟 펜슬 사기",
-            20L, 100000L, 10000L, 10L);
+            20L, 100000L, 10000L, 10L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -2198,11 +2419,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "아이팟 사기",
             30L,
-            1500L, 100L, 15L);
+            1500L, 100L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -2394,11 +2615,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "아이팟 사기",
             30L,
-            1500L, 100L, 15L);
+            1500L, 100L, 15L, "test");
 
         KidChallengeRequest successKidChallengeRequest = new KidChallengeRequest(true, null);
         KidChallengeRequest falseKidChallengeRequest = new KidChallengeRequest(false, "아쉽다");
@@ -2531,11 +2752,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "아이팟 사기",
             30L,
-            1500L, 100L, 15L);
+            1500L, 100L, 15L, "test");
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
 
@@ -2640,7 +2861,7 @@ public class ChallengeControllerTest {
         //given
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
 
@@ -2794,11 +3015,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            1500L, 100L, 15L);
+            1500L, 100L, 15L, "test");
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
 
@@ -2913,11 +3134,11 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         ChallengeRequest challengeRequest1 = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            1500L, 100L, 15L);
+            1500L, 100L, 15L, "test");
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
 
@@ -3021,7 +3242,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -3114,7 +3335,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -3223,7 +3444,7 @@ public class ChallengeControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();

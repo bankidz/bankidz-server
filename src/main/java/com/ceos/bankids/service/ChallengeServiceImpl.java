@@ -451,14 +451,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
         System.out.println("progress1 = " + progress1.getChallenge().getId());
         System.out.println("nowCal.get(Calendar.YEAR) = " + nowCal.get(Calendar.YEAR));
-        if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
-            System.out.println("통과");
-            int diffYears = nowCal.get(Calendar.YEAR) - createdAtCal.get(Calendar.YEAR);
-            System.out.println("diffYears = " + diffYears);
-            currentWeek =
-                diffYears * createdAtCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + currentWeek;
-            System.out.println("바뀐 currentWeek = " + currentWeek);
-        }
+        currentWeek = ProgressServiceImpl.getCurrentWeek(nowCal, createdAtCal, currentWeek);
         System.out.println("createdWeek = " + createdWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
