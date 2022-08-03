@@ -227,7 +227,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     Long diffWeeks =
                         timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
-                            .getWeeks() : (long) timeLogic(progressList);
+                            .getWeeks() + 1 : (long) timeLogic(progressList);
                     System.out.println("diffWeeks = " + diffWeeks);
                     Challenge challenge = r.getChallenge();
                     Long interestRate = challenge.getInterestRate();
@@ -242,13 +242,13 @@ public class ChallengeServiceImpl implements ChallengeService {
                     }
                     for (Progress progress : progressList) {
                         if (progress.getWeeks() <= diffWeeks) {
-                            if (!progress.getIsAchieved()) {
+                            if (!progress.getIsAchieved() && progress.getWeeks() < diffWeeks) {
                                 falseCnt += 1;
                             }
                             progressDTOList.add(new ProgressDTO(progress));
                         }
                     }
-                    if (falseCnt > risk) {
+                    if (falseCnt >= risk) {
                         challenge.setIsAchieved(0L);
                         challenge.setStatus(0L);
                         challengeRepository.save(challenge);
