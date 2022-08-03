@@ -64,8 +64,6 @@ public class ChallengeDTO {
 
     private String fileName;
 
-    private Timestamp approvedAt;
-
     public ChallengeDTO(Challenge challenge, List<ProgressDTO> progressDTOList, Comment comment) {
         this.id = challenge.getId();
         this.isMom = challenge.getContractUser().getIsFemale();
