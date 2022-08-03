@@ -21,7 +21,7 @@ public class S3Controller {
     private final S3ServiceImpl s3Service;
 
     @ApiOperation(value = "preSignedUrl 받아오기")
-    @GetMapping(value = "url", produces = "application/json; charset=utf-8")
+    @GetMapping(value = "/url", produces = "application/json; charset=utf-8")
     public CommonResponse<PreSignedDTO> getPreSignedUrl(@AuthenticationPrincipal User authUser) {
 
         log.info("api = preSignedUrl 받아오기 user = {}", authUser.getUsername());

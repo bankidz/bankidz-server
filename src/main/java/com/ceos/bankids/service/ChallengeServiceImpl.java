@@ -97,7 +97,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .isAchieved(1L)
             .status(1L).interestRate(challengeRequest.getInterestRate())
-            .challengeCategory(challengeCategory).targetItem(targetItem).build();
+            .challengeCategory(challengeCategory).targetItem(targetItem).filename("test").build();
         challengeRepository.save(newChallenge);
 
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
@@ -181,12 +181,18 @@ public class ChallengeServiceImpl implements ChallengeService {
                 deleteCal.setTime(deleteChallengeTimestamp);
                 int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
                 int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+                int diffYears = nowCal.get(Calendar.YEAR) - deleteCal.get(Calendar.YEAR);
                 int l = deleteCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? lastDeleteWeek - 1
                     : lastDeleteWeek;
                 int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
                     : currentWeek;
-                if (deleteCal.get(Calendar.YEAR) <= nowCal.get(Calendar.YEAR) && l + 2 >= c) {
+                if (diffYears == 0 && l + 2 >= c) {
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                } else if (diffYears > 0) {
+                    int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
+                    if (l + 2 >= newC) {
+                        throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                    }
                 }
                 Long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
@@ -219,7 +225,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                 if (r.getChallenge().getStatus() == 2L) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
                     List<Progress> progressList = r.getChallenge().getProgressList();
-                    int diffWeeks = timeLogic(progressList);
+                    Long diffWeeks =
+                        timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
+                            .getWeeks() : (long) timeLogic(progressList);
+                    System.out.println("diffWeeks = " + diffWeeks);
                     Challenge challenge = r.getChallenge();
                     Long interestRate = challenge.getInterestRate();
                     Long risk = 0L;
@@ -250,7 +259,9 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (r.getChallenge().getIsAchieved() == 0) {
                         List<Progress> progressList = r.getChallenge().getProgressList();
                         List<ProgressDTO> progressDTOList = new ArrayList<>();
-                        int diffWeeks = timeLogic(progressList);
+                        Long diffWeeks =
+                            timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
+                                .getWeeks() : (long) timeLogic(progressList);
                         for (Progress progress : progressList) {
                             if (progress.getWeeks() <= diffWeeks) {
                                 progressDTOList.add(new ProgressDTO(progress));
@@ -436,10 +447,21 @@ public class ChallengeServiceImpl implements ChallengeService {
         Timestamp createdAt1 = progress1.getCreatedAt();
         Calendar createdAtCal = Calendar.getInstance();
         createdAtCal.setTime(createdAt1);
-        return dayOfWeek == 1 ? nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(
-            Calendar.WEEK_OF_YEAR)
-            : nowCal.get(Calendar.WEEK_OF_YEAR) - createdAtCal.get(Calendar.WEEK_OF_YEAR) + 1;
+        int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
+        int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+        System.out.println("progress1 = " + progress1.getChallenge().getId());
+        System.out.println("nowCal.get(Calendar.YEAR) = " + nowCal.get(Calendar.YEAR));
+        if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
+            System.out.println("통과");
+            int diffYears = nowCal.get(Calendar.YEAR) - createdAtCal.get(Calendar.YEAR);
+            System.out.println("diffYears = " + diffYears);
+            currentWeek =
+                diffYears * createdAtCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + currentWeek;
+            System.out.println("바뀐 currentWeek = " + currentWeek);
+        }
+        System.out.println("createdWeek = " + createdWeek);
+        return dayOfWeek == 1 ? currentWeek - createdWeek
+            : currentWeek - createdWeek + 1;
     }
-
 }
 
