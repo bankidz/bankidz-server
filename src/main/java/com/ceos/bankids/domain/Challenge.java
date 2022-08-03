@@ -66,6 +66,9 @@ public class Challenge extends AbstractTimestamp {
     @ColumnDefault("0")
     private Long successWeeks;
 
+    @Column(nullable = false)
+    private String fileName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "targetItemId", nullable = false)
     private TargetItem targetItem;
@@ -99,6 +102,7 @@ public class Challenge extends AbstractTimestamp {
         Long status,
         Long interestRate,
         Long successWeeks,
+        String filename,
         ChallengeCategory challengeCategory,
         User contractUser,
         TargetItem targetItem,
@@ -141,6 +145,7 @@ public class Challenge extends AbstractTimestamp {
         this.status = status;
         this.interestRate = interestRate;
         this.successWeeks = successWeeks;
+        this.fileName = filename;
         this.challengeCategory = challengeCategory;
         this.contractUser = contractUser;
         this.targetItem = targetItem;

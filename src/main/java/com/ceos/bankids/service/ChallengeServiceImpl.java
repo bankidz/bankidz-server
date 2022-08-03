@@ -97,7 +97,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .isAchieved(1L)
             .status(1L).interestRate(challengeRequest.getInterestRate())
-            .challengeCategory(challengeCategory).targetItem(targetItem).build();
+            .challengeCategory(challengeCategory).targetItem(targetItem).filename("test").build();
         challengeRepository.save(newChallenge);
 
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
@@ -179,10 +179,20 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
-                deleteCal.add(Calendar.DATE, 14);
-                if (nowCal.getTime().getTime() <= deleteCal.getTime().getTime()
-                    && deleteChallenge.getStatus() != 0) {
+                int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
+                int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+                int diffYears = nowCal.get(Calendar.YEAR) - deleteCal.get(Calendar.YEAR);
+                int l = deleteCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? lastDeleteWeek - 1
+                    : lastDeleteWeek;
+                int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
+                    : currentWeek;
+                if (diffYears == 0 && l + 2 >= c) {
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                } else if (diffYears > 0) {
+                    int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
+                    if (l + 2 >= newC) {
+                        throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                    }
                 }
                 Long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
@@ -207,10 +217,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     public List<ChallengeDTO> readChallenge(User user, String status) {
 
         userRoleValidation(user, true);
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -219,11 +225,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                 if (r.getChallenge().getStatus() == 2L) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
                     List<Progress> progressList = r.getChallenge().getProgressList();
-                    Progress progress1 = progressList.stream().findFirst()
-                        .orElseThrow(BadRequestException::new);
-                    Timestamp createdAt1 = progress1.getCreatedAt();
-                    Calendar createdAtCal = Calendar.getInstance();
-                    createdAtCal.setTime(createdAt1);
+                    Long diffWeeks =
+                        timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
+                            .getWeeks() : (long) timeLogic(progressList);
+                    System.out.println("diffWeeks = " + diffWeeks);
                     Challenge challenge = r.getChallenge();
                     Long interestRate = challenge.getInterestRate();
                     Long risk = 0L;
@@ -236,12 +241,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                         risk = 1L;
                     }
                     for (Progress progress : progressList) {
-                        if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                        if (progress.getWeeks() <= diffWeeks) {
                             if (!progress.getIsAchieved()) {
                                 falseCnt += 1;
                             }
                             progressDTOList.add(new ProgressDTO(progress));
-                            createdAtCal.add(Calendar.DATE, 7);
                         }
                     }
                     if (falseCnt > risk) {
@@ -255,16 +259,12 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (r.getChallenge().getIsAchieved() == 0) {
                         List<Progress> progressList = r.getChallenge().getProgressList();
                         List<ProgressDTO> progressDTOList = new ArrayList<>();
-                        Progress progress1 = progressList.stream().findFirst()
-                            .orElseThrow(BadRequestException::new);
-                        Timestamp createdAt1 = progress1.getCreatedAt();
-                        Calendar createdAtCal = Calendar.getInstance();
-                        createdAtCal.setTime(createdAt1);
-                        Challenge challenge = r.getChallenge();
+                        Long diffWeeks =
+                            timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
+                                .getWeeks() : (long) timeLogic(progressList);
                         for (Progress progress : progressList) {
-                            if (createdAtCal.getTime().getTime() <= nowCal.getTime().getTime()) {
+                            if (progress.getWeeks() <= diffWeeks) {
                                 progressDTOList.add(new ProgressDTO(progress));
-                                createdAtCal.add(Calendar.DATE, 7);
                             }
                         }
                         challengeDTOList.add(
@@ -349,7 +349,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             kid.setTotalChallenge(kid.getTotalChallenge() + 1);
             kidRepository.save(kid);
             Parent parent = user.getParent();
-            parent.setTotalChallenge(parent.getTotalChallenge() + 1);
             parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
             parentRepository.save(parent);
             for (int i = 1; i <= challenge.getWeeks(); i++) {
@@ -377,10 +376,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     public WeekDTO readWeekInfo(User user) {
 
         userRoleValidation(user, true);
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
         Long[] currentPrice = {0L};
         Long[] totalPrice = {0L};
         List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
@@ -389,13 +384,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             Challenge challenge = challengeUser.getChallenge();
             if (challenge.getStatus() == 2 && challenge.getIsAchieved() == 1) {
                 List<Progress> progressList = challenge.getProgressList();
-                Progress progress1 = progressList.stream().findFirst()
-                    .orElseThrow(BadRequestException::new);
-                Timestamp createdAt = progress1.getCreatedAt();
-                Calendar createdAtCal = Calendar.getInstance();
-                createdAtCal.setTime(createdAt);
-                long diffSec = (nowCal.getTimeInMillis() - createdAtCal.getTimeInMillis()) / 1000;
-                long diffWeeks = diffSec / (24 * 60 * 60 * 7) + 1;
+                int diffWeeks = timeLogic(progressList);
                 progressList.forEach(progress -> {
                     if (progress.getWeeks() == diffWeeks) {
                         totalPrice[0] += challenge.getWeekPrice();
@@ -428,13 +417,13 @@ public class ChallengeServiceImpl implements ChallengeService {
         return readWeekInfo(kid);
     }
 
-    public void userRoleValidation(User user, Boolean approveRole) {
+    private void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException("접근 불가능한 API 입니다.");
         }
     }
 
-    public void sundayValidation() {
+    private void sundayValidation() {
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
@@ -446,5 +435,25 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
     }
 
+    private int timeLogic(List<Progress> progressList) {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
+        int dayOfWeek = nowCal.get(Calendar.DAY_OF_WEEK);
+        Progress progress1 = progressList.stream().findFirst()
+            .orElseThrow(BadRequestException::new);
+        Timestamp createdAt1 = progress1.getCreatedAt();
+        Calendar createdAtCal = Calendar.getInstance();
+        createdAtCal.setTime(createdAt1);
+        int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
+        int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+        System.out.println("progress1 = " + progress1.getChallenge().getId());
+        System.out.println("nowCal.get(Calendar.YEAR) = " + nowCal.get(Calendar.YEAR));
+        currentWeek = ProgressServiceImpl.getCurrentWeek(nowCal, createdAtCal, currentWeek);
+        System.out.println("createdWeek = " + createdWeek);
+        return dayOfWeek == 1 ? currentWeek - createdWeek
+            : currentWeek - createdWeek + 1;
+    }
 }
 

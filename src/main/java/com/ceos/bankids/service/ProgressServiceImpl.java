@@ -36,6 +36,18 @@ public class ProgressServiceImpl implements ProgressService {
     private final KidRepository kidRepository;
     private final ParentRepository parentRepository;
 
+    static int getCurrentWeek(Calendar nowCal, Calendar createdAtCal, int currentWeek) {
+        if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
+            System.out.println("통과");
+            int diffYears = nowCal.get(Calendar.YEAR) - createdAtCal.get(Calendar.YEAR);
+            System.out.println("diffYears = " + diffYears);
+            currentWeek =
+                diffYears * createdAtCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + currentWeek;
+            System.out.println("바뀐 currentWeek = " + currentWeek);
+        }
+        return currentWeek;
+    }
+
     //돈길 걷기 API
     @Transactional
     @Override
@@ -56,19 +68,8 @@ public class ProgressServiceImpl implements ProgressService {
         }
 
         Kid kid = user.getKid();
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
-        List<Progress> progressList = challenge.getProgressList();
-        Timestamp createdAt = progressList.stream().findFirst()
-            .orElseThrow(BadRequestException::new).getCreatedAt();
-        Calendar createdAtCal = Calendar.getInstance();
-        createdAtCal.setTime(createdAt);
-
-        long diff = nowCal.getTimeInMillis() - createdAtCal.getTimeInMillis();
-        long diffWeeks = (diff / (7 * 24 * 60 * 60 * 1000)) + 1;
-
+        Long diffWeeks = (long) timeLogic(challenge.getProgressList());
+        System.out.println("diffWeeks = " + diffWeeks);
         if (diffWeeks > challenge.getWeeks()) {
             throw new BadRequestException("돈길 주차 정보를 확인해 주세요");
         } else if (diffWeeks == challenge.getWeeks()) {
@@ -98,5 +99,25 @@ public class ProgressServiceImpl implements ProgressService {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException("접근 불가능한 API 입니다.");
         }
+    }
+
+    private int timeLogic(List<Progress> progressList) {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
+        int dayOfWeek = nowCal.get(Calendar.DAY_OF_WEEK);
+        Progress progress1 = progressList.stream().findFirst()
+            .orElseThrow(BadRequestException::new);
+        Timestamp createdAt1 = progress1.getCreatedAt();
+        Calendar createdAtCal = Calendar.getInstance();
+        createdAtCal.setTime(createdAt1);
+        int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
+        int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+        currentWeek = getCurrentWeek(nowCal, createdAtCal, currentWeek);
+        System.out.println("currentWeek = " + currentWeek);
+        System.out.println("createdWeek = " + createdWeek);
+        return dayOfWeek == 1 ? currentWeek - createdWeek
+            : currentWeek - createdWeek + 1;
     }
 }

@@ -317,7 +317,6 @@ public class UserControllerTest {
             .build();
         Parent parent = Parent.builder()
             .user(user)
-            .savings(0L)
             .build();
         UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", true, false);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -551,10 +550,8 @@ public class UserControllerTest {
             .refreshToken("token")
             .build();
         Parent parent = Parent.builder()
-            .totalChallenge(0L)
             .acceptedRequest(0L)
             .totalRequest(0L)
-            .savings(0L)
             .user(user)
             .build();
         user.setParent(parent);

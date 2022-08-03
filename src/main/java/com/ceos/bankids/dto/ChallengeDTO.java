@@ -62,6 +62,8 @@ public class ChallengeDTO {
 
     private Comment comment;
 
+    private String fileName;
+
     public ChallengeDTO(Challenge challenge, List<ProgressDTO> progressDTOList, Comment comment) {
         this.id = challenge.getId();
         this.isMom = challenge.getContractUser().getIsFemale();
@@ -78,5 +80,6 @@ public class ChallengeDTO {
         this.status = challenge.getStatus();
         this.progressList = progressDTOList;
         this.comment = comment;
+        this.fileName = challenge.getFileName();
     }
 }
