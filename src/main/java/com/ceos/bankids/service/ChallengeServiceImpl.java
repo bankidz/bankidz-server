@@ -304,7 +304,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                 f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
             .orElseThrow(BadRequestException::new);
         List<ChallengeDTO> challengeDTOList = readChallenge(kid, status);
-        return new KidChallengeListDTO(kid, challengeDTOList);
+        List<ChallengeDTO> resultList = challengeDTOList.stream()
+            .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
+                Collectors.toList());
+        return new KidChallengeListDTO(kid, resultList);
     }
 
     // 돈길 수락 / 거절 API
