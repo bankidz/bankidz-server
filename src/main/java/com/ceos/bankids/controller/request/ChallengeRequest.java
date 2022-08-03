@@ -61,4 +61,8 @@ public class ChallengeRequest {
     @Max(value = 15, message = "주차수가 너무 많습니다.")
     private Long weeks;
 
+    @ApiModelProperty(example = "fileName")
+    @NotNull(message = "사인 이미지 이름을 입력해주세요")
+    private String fileName;
+
 }

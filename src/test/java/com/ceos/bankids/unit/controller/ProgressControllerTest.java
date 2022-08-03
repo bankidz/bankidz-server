@@ -56,7 +56,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -156,7 +156,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            30000L, 10000L, 3L);
+            30000L, 10000L, 3L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -277,7 +277,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -366,7 +366,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            150000L, 10000L, 15L);
+            150000L, 10000L, 15L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -455,7 +455,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            30000L, 10000L, 3L);
+            30000L, 10000L, 3L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -563,7 +563,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            30000L, 10000L, 3L);
+            30000L, 10000L, 3L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
@@ -671,7 +671,7 @@ public class ProgressControllerTest {
 
         ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
             30L,
-            30000L, 10000L, 3L);
+            30000L, 10000L, 3L, "test");
 
         User newUser = User.builder().id(1L).username("user1").isFemale(true).birthday("19990521")
             .authenticationCode("code").provider("kakao").isKid(true).refreshToken("token").build();
