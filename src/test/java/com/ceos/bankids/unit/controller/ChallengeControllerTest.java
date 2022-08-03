@@ -2508,17 +2508,27 @@ public class ChallengeControllerTest {
 
         newChallenge3.setProgressList(successProgressList);
 
-        ProgressDTO progressDTO = new ProgressDTO(successProgress);
-        ProgressDTO progressDTO1 = new ProgressDTO(successProgress1);
-        ProgressDTO progressDTO2 = new ProgressDTO(successProgress2);
-
-        List<ProgressDTO> successProgressDTOList = List.of(progressDTO, progressDTO1, progressDTO2);
-
         ReflectionTestUtils.setField(
             successProgress,
             AbstractTimestamp.class,
             "createdAt",
             Timestamp.valueOf(LocalDateTime.now().minusDays(22L)),
+            Timestamp.class
+        );
+
+        ReflectionTestUtils.setField(
+            successProgress1,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
+            Timestamp.class
+        );
+
+        ReflectionTestUtils.setField(
+            successProgress2,
+            AbstractTimestamp.class,
+            "createdAt",
+            Timestamp.valueOf(LocalDateTime.now()),
             Timestamp.class
         );
 
@@ -2529,6 +2539,12 @@ public class ChallengeControllerTest {
             Timestamp.valueOf(LocalDateTime.now()),
             Timestamp.class
         );
+
+        ProgressDTO progressDTO = new ProgressDTO(successProgress);
+        ProgressDTO progressDTO1 = new ProgressDTO(successProgress1);
+        ProgressDTO progressDTO2 = new ProgressDTO(successProgress2);
+
+        List<ProgressDTO> successProgressDTOList = List.of(progressDTO, progressDTO1, progressDTO2);
 
         Progress newProgress1 = Progress.builder().id(2L).challenge(newChallenge1).isAchieved(false)
             .weeks(2L).build();

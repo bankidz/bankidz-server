@@ -1,8 +1,10 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Progress;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.sql.Timestamp;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -22,9 +24,14 @@ public class ProgressDTO {
     @ApiModelProperty(example = "true")
     private Boolean isAchieved;
 
+    @ApiModelProperty(example = "2022/05/05 06:33:13")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Timestamp approvedAt;
+
     public ProgressDTO(Progress progress) {
         this.challengeId = progress.getChallenge().getId();
         this.weeks = progress.getWeeks();
         this.isAchieved = progress.getIsAchieved();
+        this.approvedAt = progress.getCreatedAt();
     }
 }

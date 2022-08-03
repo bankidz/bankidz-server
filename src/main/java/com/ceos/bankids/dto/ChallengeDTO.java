@@ -50,8 +50,8 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "15")
     private Long weeks;
 
-    @ApiModelProperty(example = "2022-07-05 05:05:05")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    @ApiModelProperty(example = "2022/07/05 05:05:05")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
     private Timestamp createdAt;
 
     @ApiModelProperty(example = "1")
