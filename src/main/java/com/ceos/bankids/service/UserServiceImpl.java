@@ -67,10 +67,8 @@ public class UserServiceImpl implements UserService {
                 kRepo.save(newKid);
             } else {
                 Parent newParent = Parent.builder()
-                    .totalChallenge(0L)
                     .acceptedRequest(0L)
                     .totalRequest(0L)
-                    .savings(0L)
                     .user(user.get())
                     .build();
                 pRepo.save(newParent);

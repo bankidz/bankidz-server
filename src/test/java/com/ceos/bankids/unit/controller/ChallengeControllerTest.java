@@ -81,8 +81,8 @@ public class ChallengeControllerTest {
             .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token1")
             .build();
 
-        Parent parent = Parent.builder().user(newParent).totalChallenge(0L).totalRequest(0L)
-            .acceptedRequest(0L).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).totalRequest(0L)
+            .acceptedRequest(0L).build();
         newParent.setParent(parent);
 
         User newFather = User.builder().id(3L).username("parent2").isFemale(false)
@@ -177,8 +177,8 @@ public class ChallengeControllerTest {
             .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token1")
             .build();
 
-        Parent parent = Parent.builder().user(newParent).totalChallenge(0L).totalRequest(0L)
-            .acceptedRequest(0L).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).totalRequest(0L)
+            .acceptedRequest(0L).build();
         newParent.setParent(parent);
 
         User newFather = User.builder().id(3L).username("parent2").isFemale(false)
@@ -506,8 +506,8 @@ public class ChallengeControllerTest {
             .birthday("19990623")
             .authenticationCode("code").provider("kakao").isKid(false).refreshToken("token")
             .build();
-        Parent parent = Parent.builder().user(newParent).totalChallenge(0L).totalRequest(0L)
-            .acceptedRequest(0L).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).totalRequest(0L)
+            .acceptedRequest(0L).build();
         newParent.setParent(parent);
 
         ChallengeCategory newChallengeCategory = ChallengeCategory.builder().id(1L)
@@ -2635,7 +2635,7 @@ public class ChallengeControllerTest {
             .authenticationCode("code1").provider("kakao").isKid(false).refreshToken("token")
             .build();
 
-        Parent parent = Parent.builder().totalChallenge(0L).savings(0L).acceptedRequest(0L)
+        Parent parent = Parent.builder().acceptedRequest(0L)
             .totalRequest(0L).user(newParent).build();
         newParent.setParent(parent);
 
