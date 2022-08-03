@@ -236,9 +236,9 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (interestRate == 10L) {
                         risk = challenge.getWeeks();
                     } else if (interestRate == 20L) {
-                        risk = 3L;
+                        risk = 4L;
                     } else if (interestRate == 30L) {
-                        risk = 1L;
+                        risk = 2L;
                     }
                     for (Progress progress : progressList) {
                         if (progress.getWeeks() <= diffWeeks) {
