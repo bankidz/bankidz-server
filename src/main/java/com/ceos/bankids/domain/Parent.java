@@ -48,10 +48,8 @@ public class Parent extends AbstractTimestamp {
     @Builder
     public Parent(
         Long id,
-        Long totalChallenge,
         Long acceptedRequest,
         Long totalRequest,
-        Long savings,
         User user
     ) {
         if (user == null) {

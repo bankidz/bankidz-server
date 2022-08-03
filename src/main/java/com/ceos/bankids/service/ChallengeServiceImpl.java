@@ -349,7 +349,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             kid.setTotalChallenge(kid.getTotalChallenge() + 1);
             kidRepository.save(kid);
             Parent parent = user.getParent();
-            parent.setTotalChallenge(parent.getTotalChallenge() + 1);
             parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
             parentRepository.save(parent);
             for (int i = 1; i <= challenge.getWeeks(); i++) {

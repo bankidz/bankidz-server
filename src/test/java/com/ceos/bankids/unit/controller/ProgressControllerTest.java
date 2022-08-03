@@ -69,7 +69,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
@@ -169,7 +169,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
@@ -290,7 +290,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
@@ -379,7 +379,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
@@ -468,7 +468,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
@@ -576,7 +576,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
@@ -688,7 +688,7 @@ public class ProgressControllerTest {
         Kid newKid = Kid.builder().user(newUser).savings(0L).build();
         newUser.setKid(newKid);
 
-        Parent parent = Parent.builder().user(newParent).savings(0L).build();
+        Parent parent = Parent.builder().user(newParent).build();
         newParent.setParent(parent);
 
         newParent.setParent(parent);
