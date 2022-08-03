@@ -35,19 +35,11 @@ public class Parent extends AbstractTimestamp {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private Long totalChallenge;
-
-    @Column(nullable = false)
-    @ColumnDefault("0")
     private Long acceptedRequest;
 
     @Column(nullable = false)
     @ColumnDefault("0")
     private Long totalRequest;
-
-    @Column(nullable = false)
-    @ColumnDefault("0")
-    private Long savings;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -66,10 +58,8 @@ public class Parent extends AbstractTimestamp {
             throw new BadRequestException("유저는 필수값입니다.");
         }
         this.id = id;
-        this.totalChallenge = totalChallenge;
         this.acceptedRequest = acceptedRequest;
         this.totalRequest = totalRequest;
-        this.savings = savings;
         this.user = user;
     }
 }
