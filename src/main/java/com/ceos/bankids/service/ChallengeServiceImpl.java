@@ -228,7 +228,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                     Long diffWeeks =
                         timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
                             .getWeeks() + 1 : (long) timeLogic(progressList);
-                    System.out.println("diffWeeks = " + diffWeeks);
                     Challenge challenge = r.getChallenge();
                     Long interestRate = challenge.getInterestRate();
                     Long risk = 0L;
@@ -304,10 +303,13 @@ public class ChallengeServiceImpl implements ChallengeService {
                 f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
             .orElseThrow(BadRequestException::new);
         List<ChallengeDTO> challengeDTOList = readChallenge(kid, status);
-        List<ChallengeDTO> resultList = challengeDTOList.stream()
-            .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
-                Collectors.toList());
-        return new KidChallengeListDTO(kid, resultList);
+        if (Objects.equals(status, "pending")) {
+            List<ChallengeDTO> resultList = challengeDTOList.stream()
+                .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
+                    Collectors.toList());
+            return new KidChallengeListDTO(kid, resultList);
+        }
+        return new KidChallengeListDTO(kid, challengeDTOList);
     }
 
     // 돈길 수락 / 거절 API
@@ -342,7 +344,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
                 .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
                     && challengeUser.getChallenge().getIsAchieved() == 1).count();
-            System.out.println("count = " + count);
             if (count >= 5) {
                 throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
             }
@@ -451,10 +452,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         createdAtCal.setTime(createdAt1);
         int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
         int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
-        System.out.println("progress1 = " + progress1.getChallenge().getId());
-        System.out.println("nowCal.get(Calendar.YEAR) = " + nowCal.get(Calendar.YEAR));
         currentWeek = ProgressServiceImpl.getCurrentWeek(nowCal, createdAtCal, currentWeek);
-        System.out.println("createdWeek = " + createdWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
     }
