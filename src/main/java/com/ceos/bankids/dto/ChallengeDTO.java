@@ -44,6 +44,7 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "10000")
     private Long weekPrice;
 
+    //succeededWeeks
     @ApiModelProperty(example = "0")
     private Long successWeeks;
 
