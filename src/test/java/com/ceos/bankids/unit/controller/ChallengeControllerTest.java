@@ -18,6 +18,7 @@ import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -3432,7 +3433,7 @@ public class ChallengeControllerTest {
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
             mockKidRepository, mockParentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        CommonResponse<WeekDTO> result = challengeController.getKidWeekInfo(newParent,
+        CommonResponse<KidWeekDTO> result = challengeController.getKidWeekInfo(newParent,
             newUser.getKid().getId());
 
         //then

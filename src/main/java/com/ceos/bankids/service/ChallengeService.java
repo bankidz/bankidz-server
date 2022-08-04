@@ -5,6 +5,7 @@ import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,6 @@ public interface ChallengeService {
 
     public WeekDTO readWeekInfo(User user);
 
-    public WeekDTO readKidWeekInfo(User user, Long kidId);
+    public KidWeekDTO readKidWeekInfo(User user, Long kidId);
 
 }
