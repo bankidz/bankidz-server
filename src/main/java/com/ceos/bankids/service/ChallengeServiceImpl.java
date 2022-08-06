@@ -275,8 +275,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                         }
                     }
                     if (falseCnt >= risk) {
-                        challenge.setIsAchieved(0L);
-                        challenge.setStatus(0L);
+                        challenge.setChallengeStatus(failed);
                         challengeRepository.save(challenge);
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
@@ -362,18 +361,19 @@ public class ChallengeServiceImpl implements ChallengeService {
         });
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
-        if (challenge.getStatus() != 1L) {
+        if (challenge.getChallengeStatus() != pending) {
             throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
         }
         if (kidChallengeRequest.getAccept()) {
             long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
-                .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
-                    && challengeUser.getChallenge().getIsAchieved() == 1).count();
+                .filter(
+                    challengeUser -> challengeUser.getChallenge().getChallengeStatus() == walking)
+                .count();
             if (count >= 5) {
                 throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
             }
             Kid kid = cUser.getKid();
-            challenge.setStatus(2L);
+            challenge.setChallengeStatus(walking);
             challengeRepository.save(challenge);
             kid.setTotalChallenge(kid.getTotalChallenge() + 1);
             kidRepository.save(kid);
@@ -390,9 +390,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         } else {
             Comment newComment = Comment.builder().challenge(challenge).content(
                 kidChallengeRequest.getComment()).user(user).build();
-            challenge.setStatus(0L);
-            commentRepository.save(newComment);
+            challenge.setChallengeStatus(rejected);
             challenge.setComment(newComment);
+            commentRepository.save(newComment);
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
