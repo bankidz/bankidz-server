@@ -411,7 +411,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             user.getId());
         challengeUserList.forEach(challengeUser -> {
             Challenge challenge = challengeUser.getChallenge();
-            if (challenge.getStatus() == 2 && challenge.getIsAchieved() == 1) {
+            if (challenge.getChallengeStatus() == walking) {
                 List<Progress> progressList = challenge.getProgressList();
                 int diffWeeks = timeLogic(progressList);
                 progressList.forEach(progress -> {
