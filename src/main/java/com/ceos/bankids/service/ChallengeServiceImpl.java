@@ -97,7 +97,8 @@ public class ChallengeServiceImpl implements ChallengeService {
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .isAchieved(1L)
             .status(1L).interestRate(challengeRequest.getInterestRate())
-            .challengeCategory(challengeCategory).targetItem(targetItem).filename("test").build();
+            .challengeCategory(challengeCategory).targetItem(targetItem)
+            .filename(challengeRequest.getFileName()).build();
         challengeRepository.save(newChallenge);
 
         ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
