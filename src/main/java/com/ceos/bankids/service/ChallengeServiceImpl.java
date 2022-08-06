@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
@@ -48,6 +49,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChallengeServiceImpl implements ChallengeService {
 
+    private static final ChallengeStatus pending = ChallengeStatus.PENDING;
+    private static final ChallengeStatus walking = ChallengeStatus.WALKING;
+    private static final ChallengeStatus achieved = ChallengeStatus.ACHIEVED;
+    private static final ChallengeStatus failed = ChallengeStatus.FAILED;
+    private static final ChallengeStatus rejected = ChallengeStatus.REJECTED;
     private final ChallengeRepository challengeRepository;
     private final ChallengeCategoryRepository challengeCategoryRepository;
     private final TargetItemRepository targetItemRepository;
@@ -66,8 +72,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         sundayValidation();
         userRoleValidation(user, true);
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
-            .filter(challengeUser -> challengeUser.getChallenge().getStatus() == 2
-                && challengeUser.getChallenge().getIsAchieved() == 1).count();
+            .filter(challengeUser -> challengeUser.getChallenge().getChallengeStatus()
+                == ChallengeStatus.WALKING).count();
         if (count >= 5) {
             throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
         }
@@ -95,8 +101,8 @@ public class ChallengeServiceImpl implements ChallengeService {
             .contractUser(contractUser)
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
-            .isAchieved(1L)
-            .status(1L).interestRate(challengeRequest.getInterestRate())
+            .challengeStatus(pending)
+            .interestRate(challengeRequest.getInterestRate())
             .challengeCategory(challengeCategory).targetItem(targetItem)
             .filename(challengeRequest.getFileName()).build();
         challengeRepository.save(newChallenge);
@@ -157,18 +163,37 @@ public class ChallengeServiceImpl implements ChallengeService {
             ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
             Challenge deleteChallenge = deleteChallengeUser.getChallenge();
             Kid kid = deleteChallengeUser.getUser().getKid();
+            FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+                .orElseThrow(BadRequestException::new);
+            List<User> parentUserList = familyUserRepository.findByFamily(familyUser.getFamily())
+                .stream()
+                .map(FamilyUser::getUser)
+                .filter(familyUser1User -> !familyUser1User.getIsKid())
+                .collect(Collectors.toList());
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("권한이 없습니다.");
-            } else if (deleteChallenge.getStatus() == 0) {
-                if (deleteChallenge.getIsAchieved() == 0) {
-                    kid.setTotalChallenge(kid.getTotalChallenge() - 1);
-                    List<Progress> failureProgressList = deleteChallenge.getProgressList();
-                    progressRepository.deleteAll(failureProgressList);
-                } else if (deleteChallenge.getIsAchieved() == 1) {
-                    commentRepository.delete(deleteChallenge.getComment());
-                }
+            } else if (deleteChallenge.getChallengeStatus()
+                == failed) {        // Todo: 부모 측 컬럼 조건 확실히 한 다음 추가
+                kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                List<Progress> failureProgressList = deleteChallenge.getProgressList();
+                progressRepository.deleteAll(failureProgressList);
                 challengeUserRepository.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
+                kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kidRepository.save(kid);
+                return new ChallengeDTO(deleteChallenge, null, null);
+            } else if (deleteChallenge.getChallengeStatus() == rejected) {
+                commentRepository.delete(deleteChallenge.getComment());
+                challengeUserRepository.delete(deleteChallengeUser);
+                challengeRepository.delete(deleteChallenge);
+                kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kidRepository.save(kid);
+                return new ChallengeDTO(deleteChallenge, null, null);
+            } else if (deleteChallenge.getChallengeStatus() == pending) {
+                challengeUserRepository.delete(deleteChallengeUser);
+                challengeRepository.delete(deleteChallenge);
+                kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kidRepository.save(kid);
                 return new ChallengeDTO(deleteChallenge, null, null);
             } else if (kid.getDeleteChallenge() == null) {
                 Long datetime = System.currentTimeMillis();
@@ -176,7 +201,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                 kid.setDeleteChallenge(timestamp);
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
                 kidRepository.save(kid);
-            } else if (!kid.getDeleteChallenge().equals(null)) {
+            } else if (deleteChallenge.getChallengeStatus() == walking && !kid.getDeleteChallenge()
+                .equals(null)) {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
