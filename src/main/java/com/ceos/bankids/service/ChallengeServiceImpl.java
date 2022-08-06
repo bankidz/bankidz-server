@@ -249,7 +249,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
             if (status.equals("accept")) {
-                if (r.getChallenge().getStatus() == 2L) {
+                if (r.getChallenge().getChallengeStatus() == walking) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     Long diffWeeks =
@@ -281,34 +281,32 @@ public class ChallengeServiceImpl implements ChallengeService {
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
-                } else if (r.getChallenge().getStatus() == 0) {
-                    if (r.getChallenge().getIsAchieved() == 0) {
-                        List<Progress> progressList = r.getChallenge().getProgressList();
-                        List<ProgressDTO> progressDTOList = new ArrayList<>();
-                        Long diffWeeks =
-                            timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
-                                .getWeeks() : (long) timeLogic(progressList);
-                        for (Progress progress : progressList) {
-                            if (progress.getWeeks() <= diffWeeks) {
-                                progressDTOList.add(new ProgressDTO(progress));
-                            }
+                } else if (r.getChallenge().getChallengeStatus() == failed) {
+                    List<Progress> progressList = r.getChallenge().getProgressList();
+                    List<ProgressDTO> progressDTOList = new ArrayList<>();
+                    Long diffWeeks =
+                        timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
+                            .getWeeks() : (long) timeLogic(progressList);
+                    for (Progress progress : progressList) {
+                        if (progress.getWeeks() <= diffWeeks) {
+                            progressDTOList.add(new ProgressDTO(progress));
                         }
-                        challengeDTOList.add(
-                            new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                                .getComment()));
-                    } else if (r.getChallenge().getIsAchieved() == 2) {
-                        List<Progress> progressList = r.getChallenge().getProgressList();
-                        List<ProgressDTO> progressDTOList = progressList.stream()
-                            .map(ProgressDTO::new).collect(
-                                Collectors.toList());
-                        challengeDTOList.add(
-                            new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                                .getComment()));
                     }
+                    challengeDTOList.add(
+                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                            .getComment()));
+                } else if (r.getChallenge().getChallengeStatus() == achieved) {
+                    List<Progress> progressList = r.getChallenge().getProgressList();
+                    List<ProgressDTO> progressDTOList = progressList.stream()
+                        .map(ProgressDTO::new).collect(
+                            Collectors.toList());
+                    challengeDTOList.add(
+                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                            .getComment()));
                 }
             } else if ((status.equals("pending"))
-                && (r.getChallenge().getStatus() == 1 || (r.getChallenge().getStatus() == 0
-                && r.getChallenge().getIsAchieved() == 1))) {
+                && (r.getChallenge().getChallengeStatus() == pending
+                || r.getChallenge().getChallengeStatus() == rejected)) {
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
                     r.getChallenge().getComment()));
             }
