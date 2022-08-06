@@ -49,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChallengeServiceImpl implements ChallengeService {
 
+    // Enum ChallengeStatus
     private static final ChallengeStatus pending = ChallengeStatus.PENDING;
     private static final ChallengeStatus walking = ChallengeStatus.WALKING;
     private static final ChallengeStatus achieved = ChallengeStatus.ACHIEVED;

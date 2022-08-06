@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
@@ -10,14 +11,13 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
-import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +29,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProgressServiceImpl implements ProgressService {
 
+    // Enum ChallengeStatus
+    private static final ChallengeStatus pending = ChallengeStatus.PENDING;
+    private static final ChallengeStatus walking = ChallengeStatus.WALKING;
+    private static final ChallengeStatus achieved = ChallengeStatus.ACHIEVED;
+    private static final ChallengeStatus failed = ChallengeStatus.FAILED;
+    private static final ChallengeStatus rejected = ChallengeStatus.REJECTED;
     private final ProgressRepository progressRepository;
     private final ChallengeUserRepository challengeUserRepository;
     private final ChallengeRepository challengeRepository;
-    private final FamilyUserRepository familyUserRepository;
     private final KidRepository kidRepository;
-    private final ParentRepository parentRepository;
 
     static int getCurrentWeek(Calendar nowCal, Calendar createdAtCal, int currentWeek) {
         if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
@@ -59,20 +63,19 @@ public class ProgressServiceImpl implements ProgressService {
         Optional<ChallengeUser> challengeUser = challengeUserRepository.findByChallengeId(
             challengeId);
         challengeUser.ifPresent(c -> {
-            if (c.getUser().getId() != user.getId()) {
+            if (!Objects.equals(c.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("해당 유저는 해당 돈길에 접근 할 수 없습니다.");
             }
         });
-        if (challenge.getStatus() != 2 || challenge.getIsAchieved() != 1) {
+        if (challenge.getChallengeStatus() != walking) {
             throw new BadRequestException("걷고있는 돈길이 아닙니다.");
         }
 
         Kid kid = user.getKid();
         Long diffWeeks = (long) timeLogic(challenge.getProgressList());
-        System.out.println("diffWeeks = " + diffWeeks);
         if (diffWeeks > challenge.getWeeks()) {
             throw new BadRequestException("돈길 주차 정보를 확인해 주세요");
-        } else if (diffWeeks == challenge.getWeeks()) {
+        } else if (diffWeeks.equals(challenge.getWeeks())) {
             challenge.setStatus(0L);
             challenge.setIsAchieved(2L);
             long interestAmount =
