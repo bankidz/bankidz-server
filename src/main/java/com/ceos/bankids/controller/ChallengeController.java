@@ -6,6 +6,7 @@ import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -106,12 +107,12 @@ public class ChallengeController {
 
     @ApiOperation(value = "자녀의 주차 정보 가져오기")
     @GetMapping(value = "/kid/progress/{kidId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<WeekDTO> getKidWeekInfo(@AuthenticationPrincipal User authUser,
+    public CommonResponse<KidWeekDTO> getKidWeekInfo(@AuthenticationPrincipal User authUser,
         @PathVariable Long kidId) {
 
         log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
-        WeekDTO weekDTO = challengeService.readKidWeekInfo(authUser, kidId);
+        KidWeekDTO kidWeekDTO = challengeService.readKidWeekInfo(authUser, kidId);
 
-        return CommonResponse.onSuccess(weekDTO);
+        return CommonResponse.onSuccess(kidWeekDTO);
     }
 }

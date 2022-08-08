@@ -16,6 +16,7 @@ import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -401,7 +402,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 자녀의 주차 정보 가져오기 API
     @Transactional
     @Override
-    public WeekDTO readKidWeekInfo(User user, Long kidId) {
+    public KidWeekDTO readKidWeekInfo(User user, Long kidId) {
 
         userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
@@ -413,7 +414,9 @@ public class ChallengeServiceImpl implements ChallengeService {
             .findFirst()
             .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
 
-        return readWeekInfo(kid);
+        WeekDTO weekDTO = readWeekInfo(kid);
+
+        return new KidWeekDTO(kid.getKid(), weekDTO);
     }
 
     private void userRoleValidation(User user, Boolean approveRole) {
