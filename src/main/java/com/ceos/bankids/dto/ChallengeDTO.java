@@ -32,9 +32,6 @@ public class ChallengeDTO {
     @ApiModelProperty(example = "부모와 함께 하기")
     private String challengeCategory;
 
-    @ApiModelProperty(example = "1")
-    private Long isAchieved;
-
     @ApiModelProperty(example = "30")
     private Long interestRate;
 
@@ -55,9 +52,6 @@ public class ChallengeDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
     private Timestamp createdAt;
 
-    @ApiModelProperty(example = "1")
-    private Long status;
-
     @ApiModelProperty(example = "true")
     private List<ProgressDTO> progressList;
 
@@ -71,14 +65,12 @@ public class ChallengeDTO {
         this.title = challenge.getTitle();
         this.itemName = challenge.getTargetItem().getName();
         this.challengeCategory = challenge.getChallengeCategory().getCategory();
-        this.isAchieved = challenge.getIsAchieved();
         this.interestRate = challenge.getInterestRate();
         this.totalPrice = challenge.getTotalPrice();
         this.weekPrice = challenge.getWeekPrice();
         this.successWeeks = challenge.getSuccessWeeks();
         this.weeks = challenge.getWeeks();
         this.createdAt = challenge.getCreatedAt();
-        this.status = challenge.getStatus();
         this.progressList = progressDTOList;
         this.comment = comment;
         this.fileName = challenge.getFileName();

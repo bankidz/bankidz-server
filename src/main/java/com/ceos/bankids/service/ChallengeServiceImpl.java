@@ -20,7 +20,6 @@ import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
-import com.ceos.bankids.exception.NotFoundException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
@@ -55,6 +54,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private static final ChallengeStatus achieved = ChallengeStatus.ACHIEVED;
     private static final ChallengeStatus failed = ChallengeStatus.FAILED;
     private static final ChallengeStatus rejected = ChallengeStatus.REJECTED;
+
     private final ChallengeRepository challengeRepository;
     private final ChallengeCategoryRepository challengeCategoryRepository;
     private final TargetItemRepository targetItemRepository;
@@ -119,34 +119,6 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeDTO(newChallenge, null, null);
     }
 
-    // 돈길 상세 정보 API
-    @Transactional
-    @Override
-    public ChallengeDTO detailChallenge(User user, Long challengeId) {
-        Optional<ChallengeUser> challengeUserRow = challengeUserRepository.findByChallengeId(
-            challengeId);
-        if (challengeUserRow.isPresent()) {
-            ChallengeUser challengeUser = challengeUserRow.get();
-            if (!Objects.equals(challengeUser.getUser().getId(), user.getId())) {
-                throw new ForbiddenException("권한이 없습니다.");
-            }
-            Challenge findChallenge = challengeUser.getChallenge();
-            List<ProgressDTO> progressDTOList = new ArrayList<>();
-            if (findChallenge.getStatus() == 2L) {
-                List<Progress> progressList = findChallenge.getProgressList();
-                progressList.forEach(
-                    progress -> progressDTOList.add(new ProgressDTO(progress)));
-                return new ChallengeDTO(findChallenge, progressDTOList, null);
-            } else if (findChallenge.getStatus() == 0L) {
-                return new ChallengeDTO(findChallenge, null, findChallenge.getComment());
-            } else {
-                return new ChallengeDTO(findChallenge, null, null);
-            }
-        } else {
-            throw new NotFoundException("챌린지가 없습니다.");
-        }
-    }
-
     // 돈길 삭제 API (2주에 한번)
     @Transactional
     @Override
@@ -164,13 +136,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
             Challenge deleteChallenge = deleteChallengeUser.getChallenge();
             Kid kid = deleteChallengeUser.getUser().getKid();
-            FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-                .orElseThrow(BadRequestException::new);
-            List<User> parentUserList = familyUserRepository.findByFamily(familyUser.getFamily())
-                .stream()
-                .map(FamilyUser::getUser)
-                .filter(familyUser1User -> !familyUser1User.getIsKid())
-                .collect(Collectors.toList());
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException("권한이 없습니다.");
             } else if (deleteChallenge.getChallengeStatus()
@@ -205,6 +170,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else if (deleteChallenge.getChallengeStatus() == walking && !kid.getDeleteChallenge()
                 .equals(null)) {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
+                System.out.println("deleteChallengeTimestamp = " + deleteChallengeTimestamp);
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
                 int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
@@ -215,6 +181,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                 int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
                     : currentWeek;
                 if (diffYears == 0 && l + 2 >= c) {
+                    System.out.println("lastDeleteWeek = " + lastDeleteWeek);
+                    System.out.println("c = " + c);
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 } else if (diffYears > 0) {
                     int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
@@ -276,6 +244,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                         }
                     }
                     if (falseCnt >= risk) {
+                        System.out.println("challenge.getId() = " + challenge.getId());
                         challenge.setChallengeStatus(failed);
                         challengeRepository.save(challenge);
                     }
@@ -460,7 +429,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
-        if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
+        if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
             throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
         }
     }

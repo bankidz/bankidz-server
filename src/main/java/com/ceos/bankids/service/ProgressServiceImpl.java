@@ -70,25 +70,24 @@ public class ProgressServiceImpl implements ProgressService {
         if (challenge.getChallengeStatus() != walking) {
             throw new BadRequestException("걷고있는 돈길이 아닙니다.");
         }
-
         Kid kid = user.getKid();
         Long diffWeeks = (long) timeLogic(challenge.getProgressList());
+        Progress progress = progressRepository.findByChallengeIdAndWeeks(challengeId, diffWeeks)
+            .orElseThrow(BadRequestException::new);
+        if (progress.getIsAchieved()) {
+            throw new BadRequestException("이번주는 이미 저축했습니다.");
+        }
         if (diffWeeks > challenge.getWeeks()) {
-            throw new BadRequestException("돈길 주차 정보를 확인해 주세요");
+            throw new BadRequestException("걸을 수 있는 돈길이 없습니다.");
         } else if (diffWeeks.equals(challenge.getWeeks())) {
-            challenge.setStatus(0L);
-            challenge.setIsAchieved(2L);
+            System.out.println("통과");
+            challenge.setChallengeStatus(achieved);
             long interestAmount =
                 (challenge.getTotalPrice() * challenge.getInterestRate() / (100
                     * challenge.getWeeks()) * (challenge.getSuccessWeeks() + 1));
             kid.setSavings(kid.getSavings() + challenge.getTotalPrice() + interestAmount);
         }
 
-        Progress progress = progressRepository.findByChallengeIdAndWeeks(challengeId, diffWeeks)
-            .orElseThrow(BadRequestException::new);
-        if (progress.getIsAchieved()) {
-            throw new BadRequestException("이번주는 이미 저축했습니다.");
-        }
         progress.setIsAchieved(true);
         challenge.setSuccessWeeks(challenge.getSuccessWeeks() + 1);
         challengeRepository.save(challenge);
