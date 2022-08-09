@@ -46,10 +46,6 @@ public class Challenge extends AbstractTimestamp {
     private String title;
 
     @Column(nullable = false)
-    @ColumnDefault("1")
-    private Long isAchieved;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @ColumnDefault("PENDING")
     private ChallengeStatus challengeStatus;
@@ -62,10 +58,6 @@ public class Challenge extends AbstractTimestamp {
 
     @Column(nullable = false)
     private Long weeks;
-
-    @Column(nullable = false)
-    @ColumnDefault("1")
-    private Long status;
 
     @Column(nullable = false)
     private Long interestRate;
@@ -146,13 +138,11 @@ public class Challenge extends AbstractTimestamp {
         }
 
         this.id = id;
-        this.isAchieved = isAchieved;
         this.challengeStatus = challengeStatus;
         this.title = title;
         this.totalPrice = totalPrice;
         this.weekPrice = weekPrice;
         this.weeks = weeks;
-        this.status = status;
         this.interestRate = interestRate;
         this.successWeeks = successWeeks;
         this.fileName = filename;
