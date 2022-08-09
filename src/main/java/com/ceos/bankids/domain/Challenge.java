@@ -95,12 +95,10 @@ public class Challenge extends AbstractTimestamp {
     public Challenge(
         Long id,
         String title,
-        Long isAchieved,
         ChallengeStatus challengeStatus,
         Long totalPrice,
         Long weekPrice,
         Long weeks,
-        Long status,
         Long interestRate,
         Long successWeeks,
         String filename,
