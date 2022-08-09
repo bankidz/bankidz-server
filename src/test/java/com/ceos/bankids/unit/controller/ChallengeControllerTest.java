@@ -3046,7 +3046,7 @@ public class ChallengeControllerTest {
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
             mockKidRepository, mockParentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
-        CommonResponse<WeekDTO> result = challengeController.getKidWeekInfo(mom,
+        CommonResponse<KidWeekDTO> result = challengeController.getKidWeekInfo(mom,
             son.getKid().getId());
 
         //then

@@ -51,6 +51,7 @@ public class Challenge extends AbstractTimestamp {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("PENDING")
     private ChallengeStatus challengeStatus;
 
     @Column(nullable = false)
