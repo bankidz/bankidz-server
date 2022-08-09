@@ -1,5 +1,6 @@
 package com.ceos.bankids.dto;
 
+import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,6 +29,9 @@ public class ChallengeDTO {
 
     @ApiModelProperty(example = "전자제품")
     private String itemName;
+
+    @ApiModelProperty(example = "PENDING")
+    private ChallengeStatus challengeStatus;
 
     @ApiModelProperty(example = "부모와 함께 하기")
     private String challengeCategory;
@@ -63,6 +67,7 @@ public class ChallengeDTO {
         this.id = challenge.getId();
         this.isMom = challenge.getContractUser().getIsFemale();
         this.title = challenge.getTitle();
+        this.challengeStatus = challenge.getChallengeStatus();
         this.itemName = challenge.getTargetItem().getName();
         this.challengeCategory = challenge.getChallengeCategory().getCategory();
         this.interestRate = challenge.getInterestRate();
