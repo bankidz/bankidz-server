@@ -1807,7 +1807,7 @@ public class ChallengeControllerTest {
             middleProgress,
             AbstractTimestamp.class,
             "createdAt",
-            Timestamp.valueOf(LocalDateTime.now().minusDays(24)),
+            Timestamp.valueOf(LocalDateTime.now().minusDays(35)),
             Timestamp.class
         );
 
@@ -2437,8 +2437,6 @@ public class ChallengeControllerTest {
 
         //then
 
-        newChallenge.setStatus(2L);
-        newChallenge1.setStatus(0L);
         newChallenge1.setComment(newComment);
         ChallengeDTO successChallengeDTO = new ChallengeDTO(newChallenge, progressDTOList, null);
         ChallengeDTO falseChallengeDTO = new ChallengeDTO(newChallenge1, null, newComment);
@@ -3051,8 +3049,9 @@ public class ChallengeControllerTest {
 
         //then
         WeekDTO weekDTO1 = new WeekDTO(newChallenge.getWeekPrice(), newChallenge.getWeekPrice());
+        KidWeekDTO kidWeekDTO = new KidWeekDTO(sonKid, weekDTO1);
 
-        Assertions.assertEquals(weekDTO1, result.getData());
+        Assertions.assertEquals(kidWeekDTO, result.getData());
     }
 
     @Test
