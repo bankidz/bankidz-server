@@ -65,6 +65,7 @@ public class Kid extends AbstractTimestamp {
         Long savings,
         Long achievedChallenge,
         Long totalChallenge,
+        Timestamp deleteChallenge,
         Long level,
         User user
     ) {
@@ -75,6 +76,7 @@ public class Kid extends AbstractTimestamp {
         this.savings = savings;
         this.achievedChallenge = achievedChallenge;
         this.totalChallenge = totalChallenge;
+        this.deleteChallenge = deleteChallenge;
         this.level = level;
         this.user = user;
     }

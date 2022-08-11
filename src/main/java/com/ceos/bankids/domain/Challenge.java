@@ -1,10 +1,13 @@
 package com.ceos.bankids.domain;
 
+import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.exception.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -43,8 +46,9 @@ public class Challenge extends AbstractTimestamp {
     private String title;
 
     @Column(nullable = false)
-    @ColumnDefault("1")
-    private Long isAchieved;
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("PENDING")
+    private ChallengeStatus challengeStatus;
 
     @Column(nullable = false)
     private Long totalPrice;
@@ -54,10 +58,6 @@ public class Challenge extends AbstractTimestamp {
 
     @Column(nullable = false)
     private Long weeks;
-
-    @Column(nullable = false)
-    @ColumnDefault("1")
-    private Long status;
 
     @Column(nullable = false)
     private Long interestRate;
@@ -95,11 +95,10 @@ public class Challenge extends AbstractTimestamp {
     public Challenge(
         Long id,
         String title,
-        Long isAchieved,
+        ChallengeStatus challengeStatus,
         Long totalPrice,
         Long weekPrice,
         Long weeks,
-        Long status,
         Long interestRate,
         Long successWeeks,
         String filename,
@@ -137,12 +136,11 @@ public class Challenge extends AbstractTimestamp {
         }
 
         this.id = id;
-        this.isAchieved = isAchieved;
+        this.challengeStatus = challengeStatus;
         this.title = title;
         this.totalPrice = totalPrice;
         this.weekPrice = weekPrice;
         this.weeks = weeks;
-        this.status = status;
         this.interestRate = interestRate;
         this.successWeeks = successWeeks;
         this.fileName = filename;

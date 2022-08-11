@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,21 +36,10 @@ public class ChallengeController {
     @ApiOperation(value = "돈길 생성")
     @PostMapping(produces = "application/json; charset=utf-8")
     public CommonResponse<ChallengeDTO> postChallenge(@AuthenticationPrincipal User authUser,
-        @Valid @RequestBody ChallengeRequest challengeRequest, BindingResult bindingResult) {
+        @Valid @RequestBody ChallengeRequest challengeRequest) {
 
         log.info("api = 돈길 생성, req = {}", challengeRequest);
         ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengeRequest);
-        return CommonResponse.onSuccess(challengeDTO);
-    }
-
-    @ApiOperation(value = "돈길 정보 가져오기")
-    @GetMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<ChallengeDTO> getChallenge(@AuthenticationPrincipal User authUser,
-        @PathVariable Long challengeId) {
-
-        log.info("api = 돈길 정보 가져오기, user = {}", authUser.getUsername());
-        ChallengeDTO challengeDTO = challengeService.detailChallenge(authUser, challengeId);
-
         return CommonResponse.onSuccess(challengeDTO);
     }
 
