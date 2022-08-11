@@ -75,7 +75,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         userRoleValidation(user, true);
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
             .filter(challengeUser -> challengeUser.getChallenge().getChallengeStatus()
-                == ChallengeStatus.WALKING).count();
+                == walking).count();
         if (count >= 5) {
             throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
         }
