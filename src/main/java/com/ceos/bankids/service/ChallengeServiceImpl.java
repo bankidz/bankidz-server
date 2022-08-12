@@ -113,6 +113,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .member("parent").user(user).build();
         challengeUserRepository.save(newChallengeUser);
 
+        // 자녀가 제안한 총 돈길
         Parent parent = contractUser.getParent();
         parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
         parentRepository.save(parent);
@@ -325,7 +326,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         familyUser.ifPresent(f -> {
             familyUser1.ifPresent(f1 -> {
                 if (f.getFamily() != f1.getFamily()
-                    || user.getId() != challenge.getContractUser().getId()) {
+                    || !Objects.equals(user.getId(), challenge.getContractUser().getId())) {
                     throw new ForbiddenException("권한이 없습니다.");
                 }
             });
@@ -346,13 +347,18 @@ public class ChallengeServiceImpl implements ChallengeService {
             Kid kid = cUser.getKid();
             challenge.setChallengeStatus(walking);
             challengeRepository.save(challenge);
+
+            // 자녀의 총 돈길 + 1
             kid.setTotalChallenge(kid.getTotalChallenge() + 1);
             kidRepository.save(kid);
+
+            // 부모의 수락한 돈길 + 1
             Parent parent = user.getParent();
             parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
             parentRepository.save(parent);
+            
             for (int i = 1; i <= challenge.getWeeks(); i++) {
-                Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
+                Progress newProgress = Progress.builder().weeks((long) i)
                     .challenge(challenge)
                     .isAchieved(false).build();
                 progressDTOList.add(new ProgressDTO(newProgress));

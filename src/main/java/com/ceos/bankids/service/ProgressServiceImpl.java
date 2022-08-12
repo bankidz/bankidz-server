@@ -81,15 +81,12 @@ public class ProgressServiceImpl implements ProgressService {
             throw new BadRequestException("걸을 수 있는 돈길이 없습니다.");
         } else if (diffWeeks.equals(challenge.getWeeks())) {
             challenge.setChallengeStatus(achieved);
-            long interestAmount =
-                (challenge.getTotalPrice() * challenge.getInterestRate() / (100
-                    * challenge.getWeeks()) * (challenge.getSuccessWeeks() + 1));
-            kid.setSavings(kid.getSavings() + challenge.getTotalPrice() + interestAmount);
             kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
         }
 
         progress.setIsAchieved(true);
         challenge.setSuccessWeeks(challenge.getSuccessWeeks() + 1);
+        kid.setSavings(kid.getSavings() + challenge.getWeekPrice());
         challengeRepository.save(challenge);
         kidRepository.save(kid);
         progressRepository.save(progress);
