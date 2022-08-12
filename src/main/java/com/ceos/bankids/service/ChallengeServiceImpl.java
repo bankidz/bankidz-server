@@ -164,7 +164,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 kidRepository.save(kid);
                 return new ChallengeDTO(deleteChallenge, null, null);
             } else if (kid.getDeleteChallenge() == null) {
-                Long datetime = System.currentTimeMillis();
+                long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
@@ -183,8 +183,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
                     : currentWeek;
                 if (diffYears == 0 && l + 2 >= c) {
-                    System.out.println("lastDeleteWeek = " + lastDeleteWeek);
-                    System.out.println("c = " + c);
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 } else if (diffYears > 0) {
                     int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
@@ -192,10 +190,12 @@ public class ChallengeServiceImpl implements ChallengeService {
                         throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                     }
                 }
-                Long datetime = System.currentTimeMillis();
+                long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kid.setSavings(kid.getSavings()
+                    - deleteChallenge.getSuccessWeeks() * deleteChallenge.getWeekPrice());
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
@@ -356,7 +356,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             Parent parent = user.getParent();
             parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
             parentRepository.save(parent);
-            
+
             for (int i = 1; i <= challenge.getWeeks(); i++) {
                 Progress newProgress = Progress.builder().weeks((long) i)
                     .challenge(challenge)
