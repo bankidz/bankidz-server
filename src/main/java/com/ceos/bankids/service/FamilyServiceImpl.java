@@ -119,6 +119,42 @@ public class FamilyServiceImpl implements FamilyService {
         }
     }
 
+    @Override
+    @Transactional
+    public Boolean checkFamilyUser(User user, String code) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.isEmpty()) {
+                return false;
+            }
+            if (family.get().getCode() == code) {
+                throw new ForbiddenException("이미 해당 가족에 속해 있습니다.");
+            }
+
+            List<FamilyUser> familyUserList = fuRepo.findByFamily(family.get());
+            if (!user.getIsKid() && user.getIsFemale()) {
+                List<FamilyUser> checkMomList = familyUserList.stream()
+                    .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
+                    .collect(Collectors.toList());
+                if (checkMomList.size() == 1) {
+                    throw new ForbiddenException("가족에 엄마가 이미 존재합니다.");
+                }
+            } else if (!user.getIsKid() && !user.getIsFemale()) {
+                List<FamilyUser> checkDadList = familyUserList.stream()
+                    .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
+                    .collect(Collectors.toList());
+                if (checkDadList.size() == 1) {
+                    throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     class KidListDTOComparator implements Comparator<KidListDTO> {
 
         @Override
