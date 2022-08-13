@@ -75,7 +75,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         userRoleValidation(user, true);
         long count = challengeUserRepository.findByUserId(user.getId()).stream()
             .filter(challengeUser -> challengeUser.getChallenge().getChallengeStatus()
-                == ChallengeStatus.WALKING).count();
+                == walking).count();
         if (count >= 5) {
             throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
         }
@@ -113,6 +113,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .member("parent").user(user).build();
         challengeUserRepository.save(newChallengeUser);
 
+        // 자녀가 제안한 총 돈길
         Parent parent = contractUser.getParent();
         parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
         parentRepository.save(parent);
@@ -163,7 +164,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 kidRepository.save(kid);
                 return new ChallengeDTO(deleteChallenge, null, null);
             } else if (kid.getDeleteChallenge() == null) {
-                Long datetime = System.currentTimeMillis();
+                long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
@@ -182,8 +183,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
                     : currentWeek;
                 if (diffYears == 0 && l + 2 >= c) {
-                    System.out.println("lastDeleteWeek = " + lastDeleteWeek);
-                    System.out.println("c = " + c);
                     throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                 } else if (diffYears > 0) {
                     int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
@@ -191,10 +190,12 @@ public class ChallengeServiceImpl implements ChallengeService {
                         throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
                     }
                 }
-                Long datetime = System.currentTimeMillis();
+                long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
+                kid.setSavings(kid.getSavings()
+                    - deleteChallenge.getSuccessWeeks() * deleteChallenge.getWeekPrice());
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
@@ -325,7 +326,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         familyUser.ifPresent(f -> {
             familyUser1.ifPresent(f1 -> {
                 if (f.getFamily() != f1.getFamily()
-                    || user.getId() != challenge.getContractUser().getId()) {
+                    || !Objects.equals(user.getId(), challenge.getContractUser().getId())) {
                     throw new ForbiddenException("권한이 없습니다.");
                 }
             });
@@ -346,13 +347,18 @@ public class ChallengeServiceImpl implements ChallengeService {
             Kid kid = cUser.getKid();
             challenge.setChallengeStatus(walking);
             challengeRepository.save(challenge);
+
+            // 자녀의 총 돈길 + 1
             kid.setTotalChallenge(kid.getTotalChallenge() + 1);
             kidRepository.save(kid);
+
+            // 부모의 수락한 돈길 + 1
             Parent parent = user.getParent();
             parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
             parentRepository.save(parent);
+
             for (int i = 1; i <= challenge.getWeeks(); i++) {
-                Progress newProgress = Progress.builder().weeks(Long.valueOf(i))
+                Progress newProgress = Progress.builder().weeks((long) i)
                     .challenge(challenge)
                     .isAchieved(false).build();
                 progressDTOList.add(new ProgressDTO(newProgress));
