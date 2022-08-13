@@ -6,16 +6,12 @@ import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.UserDTO;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public interface UserService {
 
-    public UserDTO updateUserType(@AuthenticationPrincipal User authUser,
-        @Valid @RequestBody UserTypeRequest userTypeRequest);
+    public UserDTO updateUserType(User authUser, UserTypeRequest userTypeRequest);
 
     public LoginDTO issueNewTokens(User authUser, HttpServletResponse response);
 

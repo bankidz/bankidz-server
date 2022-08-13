@@ -80,7 +80,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
 
     @Override
-    public boolean validateToken(String token) {
+    public Boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
                 .setSigningKey(Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(

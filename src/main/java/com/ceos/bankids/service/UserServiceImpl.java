@@ -18,12 +18,9 @@ import java.util.Calendar;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUserType(@AuthenticationPrincipal User authUser,
-        @Valid @RequestBody UserTypeRequest userTypeRequest) {
+    public UserDTO updateUserType(User authUser, UserTypeRequest userTypeRequest) {
         Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
 
