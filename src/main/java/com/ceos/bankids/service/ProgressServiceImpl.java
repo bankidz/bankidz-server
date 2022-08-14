@@ -83,7 +83,9 @@ public class ProgressServiceImpl implements ProgressService {
             Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
             challenge.setChallengeStatus(achieved);
             kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
-            kid.setLevel(userLevel);
+            if (!Objects.equals(userLevel, kid.getLevel())) {
+                kid.setLevel(userLevel);
+            }
         }
 
         progress.setIsAchieved(true);
