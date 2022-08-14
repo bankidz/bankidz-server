@@ -80,8 +80,10 @@ public class ProgressServiceImpl implements ProgressService {
         if (diffWeeks > challenge.getWeeks()) {
             throw new BadRequestException("걸을 수 있는 돈길이 없습니다.");
         } else if (diffWeeks.equals(challenge.getWeeks())) {
+            Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
             challenge.setChallengeStatus(achieved);
             kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
+            kid.setLevel(userLevel);
         }
 
         progress.setIsAchieved(true);
@@ -118,5 +120,21 @@ public class ProgressServiceImpl implements ProgressService {
         System.out.println("createdWeek = " + createdWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
+    }
+
+    private Long userLevelUp(Long kidAchievedChallenge) {
+
+        if (1 <= kidAchievedChallenge && kidAchievedChallenge < 5) {
+            return 2L;
+        } else if (5 <= kidAchievedChallenge && kidAchievedChallenge < 10) {
+            return 3L;
+        } else if (10 <= kidAchievedChallenge && kidAchievedChallenge < 15) {
+            return 4L;
+        } else if (15 <= kidAchievedChallenge && kidAchievedChallenge < 20) {
+            return -1L;
+        } else if (20 <= kidAchievedChallenge) {
+            return 5L;
+        }
+        throw new IllegalArgumentException();
     }
 }
