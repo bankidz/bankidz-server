@@ -133,7 +133,7 @@ public class ProgressServiceImpl implements ProgressService {
         } else if (10 <= kidAchievedChallenge && kidAchievedChallenge < 15) {
             return 4L;
         } else if (15 <= kidAchievedChallenge && kidAchievedChallenge < 20) {
-            return -1L;
+            return -4L;
         } else if (20 <= kidAchievedChallenge) {
             return 5L;
         }
