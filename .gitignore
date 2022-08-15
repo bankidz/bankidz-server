@@ -44,3 +44,7 @@ src/main/resources/logback-spring.xml
 
 ### firebase-secret-key ###
 src/main/resources/bankidz1-firebase-adminsdk-y0b0n-5346479778.json
+
+**/.DS_STORE
+
+**/src/main/resources/
