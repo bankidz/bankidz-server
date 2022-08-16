@@ -18,11 +18,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FamilyServiceImpl implements FamilyService {
@@ -136,23 +134,18 @@ public class FamilyServiceImpl implements FamilyService {
             }
 
             List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
-            log.info(user.getIsKid().toString() + user.getIsFemale());
             if (!user.getIsKid() && user.getIsFemale()) {
                 List<FamilyUser> checkMomList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
-                System.out.println(familyUserList);
-                System.out.println(checkMomList);
-                if (checkMomList.size() == 1) {
+                if (!checkMomList.isEmpty()) {
                     throw new ForbiddenException("가족에 엄마가 이미 존재합니다.");
                 }
             } else if (!user.getIsKid() && !user.getIsFemale()) {
                 List<FamilyUser> checkDadList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
-                System.out.println(familyUserList);
-                System.out.println(checkDadList);
-                if (checkDadList.size() == 1) {
+                if (!checkDadList.isEmpty()) {
                     throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
                 }
             }
