@@ -173,7 +173,21 @@ public class FamilyServiceImpl implements FamilyService {
     @Override
     @Transactional
     public FamilyDTO postNewFamilyUser(User user, String code) {
-        return null;
+        Optional<Family> family = fRepo.findByCode(code);
+        if (family.isEmpty()) {
+            throw new BadRequestException("참여하려는 가족이 존재하지 않습니다.");
+        }
+
+        FamilyUser newFamilyUser = FamilyUser.builder()
+            .user(user)
+            .family(family.get())
+            .build();
+        fuRepo.save(newFamilyUser);
+
+        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get(), user);
+        FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
+
+        return familyDTO;
     }
 
     class KidListDTOComparator implements Comparator<KidListDTO> {

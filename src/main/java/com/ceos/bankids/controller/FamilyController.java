@@ -74,6 +74,6 @@ public class FamilyController {
         }
         FamilyDTO familyDTO = familyService.postNewFamilyUser(authUser, familyRequest.getCode());
 
-        return CommonResponse.onSuccess(null);
+        return CommonResponse.onSuccess(familyDTO);
     }
 }
