@@ -122,11 +122,11 @@ public class FamilyServiceImpl implements FamilyService {
     @Override
     @Transactional
     public FamilyDTO postNewFamilyUser(User user, String code) {
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
         Optional<Family> newFamily = fRepo.findByCode(code);
         if (newFamily.isEmpty()) {
             throw new BadRequestException("참여하려는 가족이 존재하지 않습니다.");
         }
+
         List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
         if (!user.getIsKid()) {
             if (user.getIsFemale() == null) {
@@ -147,6 +147,8 @@ public class FamilyServiceImpl implements FamilyService {
                 }
             }
         }
+
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.get().getCode() == code) {
