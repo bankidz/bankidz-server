@@ -11,6 +11,4 @@ public interface FamilyUserRepository extends JpaRepository<FamilyUser, Long> {
     public Optional<FamilyUser> findByUserId(Long id);
 
     public List<FamilyUser> findByFamily(Family family);
-
-    public void deleteById(Long id);
 }

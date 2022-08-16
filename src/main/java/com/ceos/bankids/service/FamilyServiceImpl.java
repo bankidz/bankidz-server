@@ -148,7 +148,7 @@ public class FamilyServiceImpl implements FamilyService {
                     throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
                 }
             }
-            fuRepo.deleteById(familyUser.get().getId());
+            fuRepo.delete(familyUser.get());
         }
     }
 
