@@ -104,6 +104,7 @@ public class FamilyControllerTest {
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
         FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<FamilyUser>();
+        familyUserList.add(familyUser1);
         familyUserList.add(familyUser2);
 
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
@@ -125,6 +126,7 @@ public class FamilyControllerTest {
 
         // then
         List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .filter(u -> !u.getId().equals(1L))
             .map(FamilyUserDTO::new).collect(Collectors.toList());
         FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
@@ -1100,7 +1102,46 @@ public class FamilyControllerTest {
     }
 
     @Test
-    @DisplayName("부모로 가족 참여 시 성별 선택 안되었을 때, 에러 처리 하는지 확인")
+    @DisplayName("가족 참여 시 참여하려는 가족이 없을 때, 에러 처리 하는지 확인")
+    public void testIfFamilyToJoinNotExistThenThrowBadRequestException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(null));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.postFamilyUser(user1, familyRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("예외) 부모로 가족 참여 시 성별 선택 안되었을 때, 에러 처리 하는지 확인")
     public void testIfUserIsParentButSexUnknownThenThrowBadRequestException() {
         // given
         User user1 = User.builder()
@@ -1159,45 +1200,6 @@ public class FamilyControllerTest {
             .thenReturn(Optional.ofNullable(null));
         familyUser1.setFamily(family2);
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
-
-        // when
-        FamilyServiceImpl familyService = new FamilyServiceImpl(
-            mockFamilyRepository,
-            mockFamilyUserRepository
-        );
-        FamilyController familyController = new FamilyController(
-            familyService
-        );
-
-        // then
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            familyController.postFamilyUser(user1, familyRequest);
-        });
-    }
-
-    @Test
-    @DisplayName("가족 참여 시 참여하려는 가족이 없을 때, 에러 처리 하는지 확인")
-    public void testIfFamilyToJoinNotExistThenThrowBadRequestException() {
-        // given
-        User user1 = User.builder()
-            .id(1L)
-            .username("user1")
-            .authenticationCode("code")
-            .provider("kakao")
-            .refreshToken("token")
-            .isKid(false)
-            .isFemale(false)
-            .build();
-
-        FamilyRequest familyRequest = new FamilyRequest("test");
-
-        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
-        Mockito.when(mockFamilyRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
-        Mockito.when(mockFamilyRepository.findByCode("test"))
-            .thenReturn(Optional.ofNullable(null));
-        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
-        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
-            .thenReturn(Optional.ofNullable(null));
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
