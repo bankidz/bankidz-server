@@ -127,21 +127,18 @@ public class FamilyServiceImpl implements FamilyService {
         if (newFamily.isEmpty()) {
             throw new BadRequestException("참여하려는 가족이 존재하지 않습니다.");
         }
-        if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
-            if (family.get().getCode() == code) {
-                throw new ForbiddenException("이미 해당 가족에 속해 있습니다.");
-            }
-
-            List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
-            if (!user.getIsKid() && user.getIsFemale()) {
+        List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
+        if (!user.getIsKid()) {
+            if (user.getIsFemale() == null) {
+                throw new BadRequestException("유저 타입이 바르게 선택되지 않았습니다.");
+            } else if (user.getIsFemale()) {
                 List<FamilyUser> checkMomList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
                 if (!checkMomList.isEmpty()) {
                     throw new ForbiddenException("가족에 엄마가 이미 존재합니다.");
                 }
-            } else if (!user.getIsKid() && !user.getIsFemale()) {
+            } else {
                 List<FamilyUser> checkDadList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
@@ -149,8 +146,15 @@ public class FamilyServiceImpl implements FamilyService {
                     throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
                 }
             }
+        }
+        if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.get().getCode() == code) {
+                throw new ForbiddenException("이미 해당 가족에 속해 있습니다.");
+            }
             fuRepo.delete(familyUser.get());
         }
+
         FamilyUser newFamilyUser = FamilyUser.builder()
             .user(user)
             .family(newFamily.get())
