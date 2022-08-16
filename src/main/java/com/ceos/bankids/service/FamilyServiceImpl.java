@@ -18,9 +18,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FamilyServiceImpl implements FamilyService {
@@ -121,22 +123,26 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public void checkAndDeleteFamilyUser(User user, String code) {
+    public FamilyDTO postNewFamilyUser(User user, String code) {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        Optional<Family> newFamily = fRepo.findByCode(code);
+        if (newFamily.isEmpty()) {
+            throw new BadRequestException("참여하려는 가족이 존재하지 않습니다.");
+        }
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
-            if (family.isEmpty()) {
-                return;
-            }
             if (family.get().getCode() == code) {
                 throw new ForbiddenException("이미 해당 가족에 속해 있습니다.");
             }
 
-            List<FamilyUser> familyUserList = fuRepo.findByFamily(family.get());
+            List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
+            log.info(user.getIsKid().toString() + user.getIsFemale());
             if (!user.getIsKid() && user.getIsFemale()) {
                 List<FamilyUser> checkMomList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
+                System.out.println(familyUserList);
+                System.out.println(checkMomList);
                 if (checkMomList.size() == 1) {
                     throw new ForbiddenException("가족에 엄마가 이미 존재합니다.");
                 }
@@ -144,33 +150,26 @@ public class FamilyServiceImpl implements FamilyService {
                 List<FamilyUser> checkDadList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
+                System.out.println(familyUserList);
+                System.out.println(checkDadList);
                 if (checkDadList.size() == 1) {
                     throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
                 }
             }
             fuRepo.delete(familyUser.get());
         }
-    }
-
-    @Override
-    @Transactional
-    public FamilyDTO postNewFamilyUser(User user, String code) {
-        Optional<Family> family = fRepo.findByCode(code);
-        if (family.isEmpty()) {
-            throw new BadRequestException("참여하려는 가족이 존재하지 않습니다.");
-        }
-
         FamilyUser newFamilyUser = FamilyUser.builder()
             .user(user)
-            .family(family.get())
+            .family(newFamily.get())
             .build();
         fuRepo.save(newFamilyUser);
 
-        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get(), user);
-        FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
+        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily.get(), user);
+        FamilyDTO familyDTO = new FamilyDTO(newFamily.get(), familyUserDTOList);
 
         return familyDTO;
     }
+
 
     class KidListDTOComparator implements Comparator<KidListDTO> {
 

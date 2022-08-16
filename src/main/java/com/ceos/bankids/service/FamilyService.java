@@ -19,7 +19,5 @@ public interface FamilyService {
 
     public List<KidListDTO> getKidListFromFamily(User user);
 
-    public void checkAndDeleteFamilyUser(User user, String code);
-    
     public FamilyDTO postNewFamilyUser(User user, String code);
 }
