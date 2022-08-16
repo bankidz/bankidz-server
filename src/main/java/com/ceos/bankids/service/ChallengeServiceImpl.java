@@ -215,11 +215,14 @@ public class ChallengeServiceImpl implements ChallengeService {
     public List<ChallengeDTO> readChallenge(User user, String status) {
 
         userRoleValidation(user, true);
+        if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
+            throw new BadRequestException("status 값을 확인해주세요");
+        }
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
-            if (status.equals("accept")) {
+            if (status.equals("walking")) {
                 if (r.getChallenge().getChallengeStatus() == walking) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
                     List<Progress> progressList = r.getChallenge().getProgressList();
