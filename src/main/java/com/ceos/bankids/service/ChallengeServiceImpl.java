@@ -223,6 +223,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 if (r.getChallenge().getChallengeStatus() == walking) {
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
                     List<Progress> progressList = r.getChallenge().getProgressList();
+                    Kid kid = user.getKid();
                     Long diffWeeks =
                         timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
                             .getWeeks() + 1 : (long) timeLogic(progressList);
@@ -246,9 +247,17 @@ public class ChallengeServiceImpl implements ChallengeService {
                         }
                     }
                     if (falseCnt >= risk) {
-                        System.out.println("challenge.getId() = " + challenge.getId());
                         challenge.setChallengeStatus(failed);
                         challengeRepository.save(challenge);
+                    } else if (diffWeeks > challenge.getWeeks()) {
+                        challenge.setChallengeStatus(achieved);
+                        Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
+                        kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
+                        if (!Objects.equals(userLevel, kid.getLevel())) {
+                            kid.setLevel(userLevel);
+                        }
+                        challengeRepository.save(challenge);
+                        kidRepository.save(kid);
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
@@ -459,6 +468,22 @@ public class ChallengeServiceImpl implements ChallengeService {
         currentWeek = ProgressServiceImpl.getCurrentWeek(nowCal, createdAtCal, currentWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
+    }
+
+    private Long userLevelUp(Long kidAchievedChallenge) {
+
+        if (1 <= kidAchievedChallenge && kidAchievedChallenge < 5) {
+            return 2L;
+        } else if (5 <= kidAchievedChallenge && kidAchievedChallenge < 10) {
+            return 3L;
+        } else if (10 <= kidAchievedChallenge && kidAchievedChallenge < 15) {
+            return 4L;
+        } else if (15 <= kidAchievedChallenge && kidAchievedChallenge < 20) {
+            return -4L;
+        } else if (20 <= kidAchievedChallenge) {
+            return 5L;
+        }
+        throw new IllegalArgumentException();
     }
 }
 
