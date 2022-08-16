@@ -148,11 +148,32 @@ public class FamilyServiceImpl implements FamilyService {
                     throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
                 }
             }
-
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteFamilyUser(User user) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.isPresent()) {
+                fuRepo.deleteById(familyUser.get().getId());
+            } else {
+                throw new BadRequestException("기존 가족이 존재하지 않습니다.");
+            }
+        } else {
+            throw new BadRequestException("기존 가족이 존재하지 않습니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public FamilyDTO postNewFamilyUser(User user, String code) {
+        return null;
     }
 
     class KidListDTOComparator implements Comparator<KidListDTO> {
