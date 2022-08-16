@@ -68,10 +68,7 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 참여하기, user = {}", authUser.getUsername());
-        Boolean isFamilyUser = familyService.checkFamilyUser(authUser, familyRequest.getCode());
-        if (isFamilyUser) {
-            familyService.deleteFamilyUser(authUser);
-        }
+        familyService.checkAndDeleteFamilyUser(authUser, familyRequest.getCode());
         FamilyDTO familyDTO = familyService.postNewFamilyUser(authUser, familyRequest.getCode());
 
         return CommonResponse.onSuccess(familyDTO);

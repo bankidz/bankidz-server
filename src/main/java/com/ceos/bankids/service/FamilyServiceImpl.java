@@ -121,12 +121,12 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public Boolean checkFamilyUser(User user, String code) {
+    public void checkAndDeleteFamilyUser(User user, String code) {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.isEmpty()) {
-                return false;
+                return;
             }
             if (family.get().getCode() == code) {
                 throw new ForbiddenException("이미 해당 가족에 속해 있습니다.");
@@ -148,25 +148,7 @@ public class FamilyServiceImpl implements FamilyService {
                     throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
                 }
             }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteFamilyUser(User user) {
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
-        if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
-            if (family.isPresent()) {
-                fuRepo.deleteById(familyUser.get().getId());
-            } else {
-                throw new BadRequestException("기존 가족이 존재하지 않습니다.");
-            }
-        } else {
-            throw new BadRequestException("기존 가족이 존재하지 않습니다.");
+            fuRepo.deleteById(familyUser.get().getId());
         }
     }
 
