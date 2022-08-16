@@ -87,7 +87,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
             .orElseThrow(() -> new BadRequestException("해당 부모가 없습니다.")).getUser();
 
-        String category = challengeRequest.getCategory();
+        String category = challengeRequest.getChallengeCategory();
         String name = challengeRequest.getItemName();
         ChallengeCategory challengeCategory = challengeCategoryRepository.findByCategory(category);
         TargetItem targetItem = targetItemRepository.findByName(name);
