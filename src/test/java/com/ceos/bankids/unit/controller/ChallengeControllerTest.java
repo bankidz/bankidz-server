@@ -872,7 +872,7 @@ public class ChallengeControllerTest {
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(walking)
-            .interestRate(challengeRequest.getInterestRate())
+            .interestRate(challengeRequest.getInterestRate()).successWeeks(0L)
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem)
             .filename(challengeRequest.getFileName()).build();
 
@@ -963,7 +963,7 @@ public class ChallengeControllerTest {
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(walking)
-            .interestRate(challengeRequest.getInterestRate())
+            .interestRate(challengeRequest.getInterestRate()).successWeeks(0L)
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem)
             .filename(challengeRequest.getFileName()).build();
 
@@ -1555,7 +1555,7 @@ public class ChallengeControllerTest {
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
             "pending");
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -1592,6 +1592,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+
+        son.setKid(sonKid);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -1663,13 +1665,13 @@ public class ChallengeControllerTest {
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
             "pending");
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
         for (ChallengeUser r : challengeUserList) {
-            if (r.getChallenge().getChallengeStatus() != walking) {
+            if (r.getChallenge().getChallengeStatus() == pending) {
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null, null));
 
             } else {
@@ -1864,7 +1866,7 @@ public class ChallengeControllerTest {
             mockKidRepository, mockParentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -1994,7 +1996,7 @@ public class ChallengeControllerTest {
             mockKidRepository, mockParentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -2080,7 +2082,7 @@ public class ChallengeControllerTest {
             mockKidRepository, mockParentRepository);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -2315,7 +2317,7 @@ public class ChallengeControllerTest {
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<KidChallengeListDTO> result = challengeController.getListKidChallenge(mom,
             son.getKid()
-                .getId(), "accept");
+                .getId(), "walking");
         CommonResponse<KidChallengeListDTO> result1 = challengeController.getListKidChallenge(mom,
             son.getKid().getId(), "pending");
 
