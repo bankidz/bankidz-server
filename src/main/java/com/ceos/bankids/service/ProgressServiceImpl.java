@@ -118,8 +118,6 @@ public class ProgressServiceImpl implements ProgressService {
         int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
         int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
         currentWeek = getCurrentWeek(nowCal, createdAtCal, currentWeek);
-        System.out.println("currentWeek = " + currentWeek);
-        System.out.println("createdWeek = " + createdWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
     }
