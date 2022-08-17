@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
@@ -41,11 +42,11 @@ public class UserServiceImpl implements UserService {
         Integer currYear = cal.get(Calendar.YEAR);
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
         if (user.isEmpty()) {
-            throw new BadRequestException("존재하지 않는 유저입니다.");
+            throw new BadRequestException(ErrorCode.USER_NOT_EXISTS.getErrorCode());
         } else if (user.get().getIsFemale() != null) {
-            throw new BadRequestException("이미 유저 타입을 선택한 유저입니다.");
+            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
         } else if (birthYear > currYear || birthYear <= currYear - 100) {
-            throw new BadRequestException("유효하지 않은 생년월일입니다.");
+            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         } else {
             user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());
