@@ -17,6 +17,9 @@ public enum ErrorCode implements EnumMapperType {
     USER_TYPE_NOT_CHOSEN("E400-20004"),
 
     // Family
+    FAMILY_NOT_EXISTS("E403-30001"),
+    KID_FORBIDDEN("E403-30002"),
+
     MOM_ALREADY_EXISTS("E403-30001"),
 
     // Challenge
