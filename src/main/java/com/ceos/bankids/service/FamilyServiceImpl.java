@@ -125,26 +125,26 @@ public class FamilyServiceImpl implements FamilyService {
     public FamilyDTO postNewFamilyUser(User user, String code) {
         Optional<Family> newFamily = fRepo.findByCode(code);
         if (newFamily.isEmpty()) {
-            throw new BadRequestException("참여하려는 가족이 존재하지 않습니다.");
+            throw new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode());
         }
 
         List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
         if (!user.getIsKid()) {
             if (user.getIsFemale() == null) {
-                throw new BadRequestException("유저 타입이 바르게 선택되지 않았습니다.");
+                throw new BadRequestException(ErrorCode.INVALID_USER_TYPE.getErrorCode());
             } else if (user.getIsFemale()) {
                 List<FamilyUser> checkMomList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
                 if (!checkMomList.isEmpty()) {
-                    throw new ForbiddenException("가족에 엄마가 이미 존재합니다.");
+                    throw new ForbiddenException(ErrorCode.MOM_ALREADY_EXISTS.getErrorCode());
                 }
             } else {
                 List<FamilyUser> checkDadList = familyUserList.stream()
                     .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
                     .collect(Collectors.toList());
                 if (!checkDadList.isEmpty()) {
-                    throw new ForbiddenException("가족에 아빠가 이미 존재합니다.");
+                    throw new ForbiddenException(ErrorCode.DAD_ALREADY_EXISTS.getErrorCode());
                 }
             }
         }
@@ -153,7 +153,7 @@ public class FamilyServiceImpl implements FamilyService {
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.get().getCode() == code) {
-                throw new ForbiddenException("이미 해당 가족에 속해 있습니다.");
+                throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_FAMILY.getErrorCode());
             }
             fuRepo.delete(familyUser.get());
         }
