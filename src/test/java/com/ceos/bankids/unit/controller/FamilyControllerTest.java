@@ -2,6 +2,7 @@ package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.FamilyController;
+import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
@@ -103,6 +104,7 @@ public class FamilyControllerTest {
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
         FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<FamilyUser>();
+        familyUserList.add(familyUser1);
         familyUserList.add(familyUser2);
 
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
@@ -124,6 +126,7 @@ public class FamilyControllerTest {
 
         // then
         List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .filter(u -> !u.getId().equals(1L))
             .map(FamilyUserDTO::new).collect(Collectors.toList());
         FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
@@ -583,5 +586,633 @@ public class FamilyControllerTest {
 
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(new ArrayList()), result);
+    }
+
+    @Test
+    @DisplayName("가족 참여 시 기존 가족 있을 때, 삭제 후 새 가족 참여하는지 확인")
+    public void testIfLeaveFamilyAndJoinNewFamilyThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+        User user2 = User.builder()
+            .id(2L)
+            .username("user2")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+
+        Family family1 = Family.builder().id(1L).code("code").build();
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family1).build();
+        FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser2);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family1));
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+        CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
+        String code = result.getData().getCode();
+        family1.setCode(code);
+
+        // then
+        ArgumentCaptor<FamilyUser> fuCaptor = ArgumentCaptor.forClass(FamilyUser.class);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).delete(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+        familyUser1.setFamily(family2);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+
+        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .map(FamilyUserDTO::new).collect(Collectors.toList());
+        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+    }
+
+    @Test
+    @DisplayName("가족 참여 시 기존 가족 없을 때, 새 가족 참여하는지 확인")
+    public void testIfJoinNewFamilyThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+        familyUser1.setFamily(family2);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+        CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
+        String code = result.getData().getCode();
+        family2.setCode(code);
+
+        // then
+        ArgumentCaptor<FamilyUser> fuCaptor = ArgumentCaptor.forClass(FamilyUser.class);
+        familyUser1.setFamily(family2);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+
+        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .map(FamilyUserDTO::new).collect(Collectors.toList());
+        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+    }
+
+    @Test
+    @DisplayName("가족 참여 시 해당 가족 구성원일 때, 에러 처리 하는지 확인")
+    public void testIfUserIsAlreadyInFamilyThenThrowForbiddenException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser1);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(2L)).thenReturn(Optional.ofNullable(family2));
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(ForbiddenException.class, () -> {
+            familyController.postFamilyUser(user1, familyRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("엄마로 가족 참여 시 엄마가 이미 존재할 때, 에러 처리 하는지 확인")
+    public void testIfUserIsMomAndMomAlreadyInFamilyThenThrowForbiddenException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+        User user2 = User.builder()
+            .id(2L)
+            .username("user2")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+        User user3 = User.builder()
+            .id(3L)
+            .username("user3")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+        User user4 = User.builder()
+            .id(4L)
+            .username("user4")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(false)
+            .build();
+        User user5 = User.builder()
+            .id(5L)
+            .username("user5")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family1 = Family.builder().id(1L).code("code").build();
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family1).build();
+        FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family2).build();
+        FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
+        FamilyUser familyUser4 = FamilyUser.builder().user(user4).family(family2).build();
+        FamilyUser familyUser5 = FamilyUser.builder().user(user5).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser2);
+        familyUserList.add(familyUser3);
+        familyUserList.add(familyUser4);
+        familyUserList.add(familyUser5);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family1));
+        Mockito.when(mockFamilyRepository.findById(2L)).thenReturn(Optional.ofNullable(family2));
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(ForbiddenException.class, () -> {
+            familyController.postFamilyUser(user1, familyRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("엄마로 가족 참여 시 엄마 존재하지 않을 때, 결과 반환 하는지 확인")
+    public void testIfUserIsMomAndMomNotInFamilyThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+        User user3 = User.builder()
+            .id(3L)
+            .username("user3")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+        User user4 = User.builder()
+            .id(4L)
+            .username("user4")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(false)
+            .build();
+        User user5 = User.builder()
+            .id(5L)
+            .username("user5")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
+        FamilyUser familyUser4 = FamilyUser.builder().user(user4).family(family2).build();
+        FamilyUser familyUser5 = FamilyUser.builder().user(user5).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser3);
+        familyUserList.add(familyUser4);
+        familyUserList.add(familyUser5);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+        familyUser1.setFamily(family2);
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+        CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
+        String code = result.getData().getCode();
+        family2.setCode(code);
+
+        // then
+        ArgumentCaptor<FamilyUser> fuCaptor = ArgumentCaptor.forClass(FamilyUser.class);
+        familyUser1.setFamily(family2);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+
+        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .map(FamilyUserDTO::new).collect(Collectors.toList());
+        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+    }
+
+    @Test
+    @DisplayName("아빠로 가족 참여 시 아빠가 이미 존재할 때, 에러 처리 하는지 확인")
+    public void testIfUserIsDadAndDadAlreadyInFamilyThenThrowForbiddenException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+        User user2 = User.builder()
+            .id(2L)
+            .username("user2")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+        User user3 = User.builder()
+            .id(3L)
+            .username("user3")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+        User user4 = User.builder()
+            .id(4L)
+            .username("user4")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(false)
+            .build();
+        User user5 = User.builder()
+            .id(5L)
+            .username("user5")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family1 = Family.builder().id(1L).code("code").build();
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family1).build();
+        FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family2).build();
+        FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
+        FamilyUser familyUser4 = FamilyUser.builder().user(user4).family(family2).build();
+        FamilyUser familyUser5 = FamilyUser.builder().user(user5).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser2);
+        familyUserList.add(familyUser3);
+        familyUserList.add(familyUser4);
+        familyUserList.add(familyUser5);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family1));
+        Mockito.when(mockFamilyRepository.findById(2L)).thenReturn(Optional.ofNullable(family2));
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(ForbiddenException.class, () -> {
+            familyController.postFamilyUser(user1, familyRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("아빠로 가족 참여 시 아빠 존재하지 않을 때, 결과 반환 하는지 확인")
+    public void testIfUserIsDadAndDadNotInFamilyThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+        User user3 = User.builder()
+            .id(3L)
+            .username("user3")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+        User user4 = User.builder()
+            .id(4L)
+            .username("user4")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(false)
+            .build();
+        User user5 = User.builder()
+            .id(5L)
+            .username("user5")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
+        FamilyUser familyUser4 = FamilyUser.builder().user(user4).family(family2).build();
+        FamilyUser familyUser5 = FamilyUser.builder().user(user5).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser3);
+        familyUserList.add(familyUser4);
+        familyUserList.add(familyUser5);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+        familyUser1.setFamily(family2);
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+        CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
+        String code = result.getData().getCode();
+        family2.setCode(code);
+
+        // then
+        ArgumentCaptor<FamilyUser> fuCaptor = ArgumentCaptor.forClass(FamilyUser.class);
+        familyUser1.setFamily(family2);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+
+        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .map(FamilyUserDTO::new).collect(Collectors.toList());
+        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+    }
+
+    @Test
+    @DisplayName("가족 참여 시 참여하려는 가족이 없을 때, 에러 처리 하는지 확인")
+    public void testIfFamilyToJoinNotExistThenThrowBadRequestException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(false)
+            .build();
+
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(null));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.postFamilyUser(user1, familyRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("예외) 부모로 가족 참여 시 성별 선택 안되었을 때, 에러 처리 하는지 확인")
+    public void testIfUserIsParentButSexUnknownThenThrowBadRequestException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(null)
+            .build();
+        User user3 = User.builder()
+            .id(3L)
+            .username("user3")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+        User user4 = User.builder()
+            .id(4L)
+            .username("user4")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(false)
+            .build();
+        User user5 = User.builder()
+            .id(5L)
+            .username("user5")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(true)
+            .isFemale(true)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
+        FamilyUser familyUser4 = FamilyUser.builder().user(user4).family(family2).build();
+        FamilyUser familyUser5 = FamilyUser.builder().user(user5).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser3);
+        familyUserList.add(familyUser4);
+        familyUserList.add(familyUser5);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findByCode("test"))
+            .thenReturn(Optional.ofNullable(family2));
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+        familyUser1.setFamily(family2);
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.postFamilyUser(user1, familyRequest);
+        });
     }
 }
