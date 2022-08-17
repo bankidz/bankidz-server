@@ -21,9 +21,4 @@ public enum ChallengeStatus implements EnumMapperType {
     public String getCode() {
         return name();
     }
-
-    @Override
-    public Long getStatus() {
-        return status;
-    }
 }
