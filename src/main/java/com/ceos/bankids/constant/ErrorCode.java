@@ -14,6 +14,7 @@ public enum ErrorCode implements EnumMapperType {
     USER_NOT_EXISTS("E400-20001"),
     USER_ALREADY_HAS_TYPE("E400-20002"),
     INVALID_BIRTHDAY("E400-20003"),
+    USER_TYPE_NOT_CHOSEN("E400-20004"),
 
     // Family
     MOM_ALREADY_EXISTS("E403-30001"),
