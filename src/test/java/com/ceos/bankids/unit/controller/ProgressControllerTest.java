@@ -1,7 +1,7 @@
 package com.ceos.bankids.unit.controller;
 
-import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.controller.ProgressController;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.domain.AbstractTimestamp;

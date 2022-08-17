@@ -1,4 +1,4 @@
-package com.ceos.bankids.Enum;
+package com.ceos.bankids.constant;
 
 public interface EnumMapperType {
 

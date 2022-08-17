@@ -1,6 +1,6 @@
 package com.ceos.bankids.domain;
 
-import com.ceos.bankids.Enum.ChallengeStatus;
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.exception.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
