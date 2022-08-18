@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
@@ -77,15 +78,18 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filter(challengeUser -> challengeUser.getChallenge().getChallengeStatus()
                 == walking).count();
         if (count >= 5) {
-            throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
+            throw new ForbiddenException(ErrorCode.CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
         }
         Boolean isMom = challengeRequest.getIsMom();
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException("가족이 없는 유저는 돈길을 생성 할 수 없습니다."));
+            .orElseThrow(() -> new ForbiddenException(
+                ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         User contractUser = familyUserRepository.findByFamily(familyUser.getFamily())
             .stream()
             .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
-            .orElseThrow(() -> new BadRequestException("해당 부모가 없습니다.")).getUser();
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CONSTRUCT_USER.getErrorCode()))
+            .getUser();
 
         String category = challengeRequest.getChallengeCategory();
         String name = challengeRequest.getItemName();
@@ -93,10 +97,10 @@ public class ChallengeServiceImpl implements ChallengeService {
         TargetItem targetItem = targetItemRepository.findByName(name);
 
         if (targetItem == null) {
-            throw new BadRequestException("목표 아이템 입력이 잘 못 되었습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_CATEGORY.getErrorCode());
         }
         if (challengeCategory == null) {
-            throw new BadRequestException("카테고리 입력이 잘 못 되었습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_ITEM.getErrorCode());
         }
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
@@ -139,7 +143,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             Challenge deleteChallenge = deleteChallengeUser.getChallenge();
             Kid kid = deleteChallengeUser.getUser().getKid();
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
-                throw new ForbiddenException("권한이 없습니다.");
+                throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
             } else if (deleteChallenge.getChallengeStatus()
                 == failed) {        // Todo: 부모 측 컬럼 조건 확실히 한 다음 추가
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
@@ -172,7 +176,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else if (deleteChallenge.getChallengeStatus() == walking && !kid.getDeleteChallenge()
                 .equals(null)) {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
-                System.out.println("deleteChallengeTimestamp = " + deleteChallengeTimestamp);
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
                 int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
@@ -183,11 +186,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                 int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
                     : currentWeek;
                 if (diffYears == 0 && l + 2 >= c) {
-                    throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                    throw new ForbiddenException(ErrorCode.NOT_TWO_WEEKS_YET.getErrorCode());
                 } else if (diffYears > 0) {
                     int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
                     if (l + 2 >= newC) {
-                        throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                        throw new ForbiddenException(ErrorCode.NOT_TWO_WEEKS_YET.getErrorCode());
                     }
                 }
                 long datetime = System.currentTimeMillis();
@@ -205,7 +208,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
             return new ChallengeDTO(deleteChallenge, null, null);
         } else {
-            throw new BadRequestException("챌린지가 없습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode());
         }
     }
 
@@ -216,7 +219,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         userRoleValidation(user, true);
         if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
-            throw new BadRequestException("status 값을 확인해주세요");
+            throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
         }
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
@@ -304,12 +307,12 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         Family family = familyUser.getFamily();
         User kid = familyUserRepository.findByFamily(family).stream()
             .filter(f -> f.getUser().getIsKid() && Objects.equals(
                 f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
         List<ChallengeDTO> challengeDTOList = readChallenge(kid, status);
         if (Objects.equals(status, "pending")) {
             List<ChallengeDTO> resultList = challengeDTOList.stream()
@@ -329,7 +332,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         sundayValidation();
         userRoleValidation(user, false);
         ChallengeUser findChallengeUser = challengeUserRepository.findByChallengeId(challengeId)
-            .orElseThrow(() -> new BadRequestException("존재하지 않는 돈길입니다."));
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
         User cUser = findChallengeUser.getUser();
         Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(cUser.getId());
         Optional<FamilyUser> familyUser1 = familyUserRepository.findByUserId(user.getId());
@@ -339,14 +343,14 @@ public class ChallengeServiceImpl implements ChallengeService {
             familyUser1.ifPresent(f1 -> {
                 if (f.getFamily() != f1.getFamily()
                     || !Objects.equals(user.getId(), challenge.getContractUser().getId())) {
-                    throw new ForbiddenException("권한이 없습니다.");
+                    throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
                 }
             });
         });
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
         if (challenge.getChallengeStatus() != pending) {
-            throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
+            throw new BadRequestException(ErrorCode.ALREADY_APPROVED_CHALLENGE.getErrorCode());
         }
         if (kidChallengeRequest.getAccept()) {
             long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
@@ -354,7 +358,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                     challengeUser -> challengeUser.getChallenge().getChallengeStatus() == walking)
                 .count();
             if (count >= 5) {
-                throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
+                throw new ForbiddenException(
+                    ErrorCode.KID_CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
             }
             Kid kid = cUser.getKid();
             challenge.setChallengeStatus(walking);
@@ -424,13 +429,13 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new BadRequestException("유저의 가족이 없습니다."));
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         Family family = familyUser.getFamily();
         User kid = familyUserRepository.findByFamily(family).stream()
             .map(FamilyUser::getUser)
             .filter(fUser -> fUser.getIsKid() && Objects.equals(fUser.getKid().getId(), kidId))
             .findFirst()
-            .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
 
         WeekDTO weekDTO = readWeekInfo(kid);
 
@@ -439,7 +444,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     private void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
-            throw new ForbiddenException("접근 불가능한 API 입니다.");
+            throw new ForbiddenException(ErrorCode.USER_ROLE_ERROR.getErrorCode());
         }
     }
 
@@ -451,7 +456,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
         if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
-            throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
+            throw new ForbiddenException(ErrorCode.SUNDAY_ERROR.getErrorCode());
         }
     }
 
@@ -462,7 +467,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         int dayOfWeek = nowCal.get(Calendar.DAY_OF_WEEK);
         Progress progress1 = progressList.stream().findFirst()
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.TIMELOGIC_ERROR.getErrorCode()));
         Timestamp createdAt1 = progress1.getCreatedAt();
         Calendar createdAtCal = Calendar.getInstance();
         createdAtCal.setTime(createdAt1);

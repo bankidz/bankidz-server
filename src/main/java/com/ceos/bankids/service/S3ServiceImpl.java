@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.PreSignedDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -37,9 +38,9 @@ public class S3ServiceImpl implements S3Service {
             uri = this.amazonS3Client.generatePresignedUrl(bucket, fileName,
                 Date.from(expiredDate.toInstant()), HttpMethod.PUT).toURI();
         } catch (URISyntaxException e) {
-            throw new BadRequestException("URI 생성 중 오류 발생");
+            throw new BadRequestException(ErrorCode.PRESIGNEDURI_ERROR.getErrorCode());
         } catch (NullPointerException e) {
-            throw new BadRequestException("널포인트에러");
+            throw new BadRequestException(ErrorCode.PRESIGNEDURI_NPE.getErrorCode());
         }
         String preSignedUrl = uri.toString();
         return new PreSignedDTO(preSignedUrl, fileName);
