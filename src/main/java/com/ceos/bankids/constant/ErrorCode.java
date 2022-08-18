@@ -47,6 +47,7 @@ public enum ErrorCode implements EnumMapperType {
     NOT_WALKING_CHALLENGE("E400-50001"),
     NOT_EXIST_PROGRESS("E400-50002"),
     ALREADY_WALK_PROGRESS("E400-50003");
+
     // S3
 
     private final String errorCode;

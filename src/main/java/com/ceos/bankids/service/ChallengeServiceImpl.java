@@ -219,7 +219,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         userRoleValidation(user, true);
         if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
-            throw new BadRequestException("status 값을 확인해주세요");
+            throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
         }
         List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
             user.getId());
