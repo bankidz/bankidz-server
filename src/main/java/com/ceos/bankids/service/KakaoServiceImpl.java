@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
@@ -43,7 +44,7 @@ public class KakaoServiceImpl implements KakaoService {
             return kakaoTokenDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BadRequestException("잘못된 요청입니다.");
+            throw new BadRequestException(ErrorCode.KAKAO_BAD_REQUEST.getErrorCode());
         }
     }
 
@@ -59,7 +60,7 @@ public class KakaoServiceImpl implements KakaoService {
             return kakaoUserDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BadRequestException("잘못된 요청입니다.");
+            throw new BadRequestException(ErrorCode.KAKAO_BAD_REQUEST.getErrorCode());
         }
     }
 

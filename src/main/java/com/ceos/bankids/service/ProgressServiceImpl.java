@@ -1,6 +1,6 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.Enum.ChallengeStatus;
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
