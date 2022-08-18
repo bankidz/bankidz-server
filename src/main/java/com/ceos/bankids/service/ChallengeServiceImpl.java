@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
@@ -77,15 +78,18 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filter(challengeUser -> challengeUser.getChallenge().getChallengeStatus()
                 == walking).count();
         if (count >= 5) {
-            throw new ForbiddenException("돈길 생성 개수 제한에 도달했습니다.");
+            throw new ForbiddenException(ErrorCode.CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
         }
         Boolean isMom = challengeRequest.getIsMom();
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException("가족이 없는 유저는 돈길을 생성 할 수 없습니다."));
+            .orElseThrow(() -> new ForbiddenException(
+                ErrorCode.NOT_EXIST_FAMILY_TO_MAKE_CHALLENGE.getErrorCode()));
         User contractUser = familyUserRepository.findByFamily(familyUser.getFamily())
             .stream()
             .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
-            .orElseThrow(() -> new BadRequestException("해당 부모가 없습니다.")).getUser();
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CONSTRUCT_USER.getErrorCode()))
+            .getUser();
 
         String category = challengeRequest.getChallengeCategory();
         String name = challengeRequest.getItemName();
@@ -93,10 +97,10 @@ public class ChallengeServiceImpl implements ChallengeService {
         TargetItem targetItem = targetItemRepository.findByName(name);
 
         if (targetItem == null) {
-            throw new BadRequestException("목표 아이템 입력이 잘 못 되었습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_CATEGORY.getErrorCode());
         }
         if (challengeCategory == null) {
-            throw new BadRequestException("카테고리 입력이 잘 못 되었습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_ITEM.getErrorCode());
         }
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
