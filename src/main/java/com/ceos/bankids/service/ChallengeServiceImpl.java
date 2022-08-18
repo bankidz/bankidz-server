@@ -83,7 +83,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         Boolean isMom = challengeRequest.getIsMom();
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
             .orElseThrow(() -> new ForbiddenException(
-                ErrorCode.NOT_EXIST_FAMILY_TO_MAKE_CHALLENGE.getErrorCode()));
+                ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         User contractUser = familyUserRepository.findByFamily(familyUser.getFamily())
             .stream()
             .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
@@ -332,7 +332,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         sundayValidation();
         userRoleValidation(user, false);
         ChallengeUser findChallengeUser = challengeUserRepository.findByChallengeId(challengeId)
-            .orElseThrow(() -> new BadRequestException("존재하지 않는 돈길입니다."));
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
         User cUser = findChallengeUser.getUser();
         Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(cUser.getId());
         Optional<FamilyUser> familyUser1 = familyUserRepository.findByUserId(user.getId());
@@ -342,14 +343,14 @@ public class ChallengeServiceImpl implements ChallengeService {
             familyUser1.ifPresent(f1 -> {
                 if (f.getFamily() != f1.getFamily()
                     || !Objects.equals(user.getId(), challenge.getContractUser().getId())) {
-                    throw new ForbiddenException("권한이 없습니다.");
+                    throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
                 }
             });
         });
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
         if (challenge.getChallengeStatus() != pending) {
-            throw new BadRequestException("이미 승인 혹은 거절된 돈길입니다.");
+            throw new BadRequestException(ErrorCode.ALREADY_APPROVED_CHALLENGE.getErrorCode());
         }
         if (kidChallengeRequest.getAccept()) {
             long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
@@ -357,7 +358,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                     challengeUser -> challengeUser.getChallenge().getChallengeStatus() == walking)
                 .count();
             if (count >= 5) {
-                throw new ForbiddenException("자녀가 돈길 생성 개수 제한에 도달했습니다.");
+                throw new ForbiddenException(
+                    ErrorCode.KID_CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
             }
             Kid kid = cUser.getKid();
             challenge.setChallengeStatus(walking);
@@ -427,13 +429,13 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new BadRequestException("유저의 가족이 없습니다."));
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         Family family = familyUser.getFamily();
         User kid = familyUserRepository.findByFamily(family).stream()
             .map(FamilyUser::getUser)
             .filter(fUser -> fUser.getIsKid() && Objects.equals(fUser.getKid().getId(), kidId))
             .findFirst()
-            .orElseThrow(() -> new BadRequestException("해당 자식이 존재하지 않습니다."));
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
 
         WeekDTO weekDTO = readWeekInfo(kid);
 
