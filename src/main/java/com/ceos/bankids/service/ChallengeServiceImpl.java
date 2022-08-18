@@ -444,7 +444,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     private void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
-            throw new ForbiddenException("접근 불가능한 API 입니다.");
+            throw new ForbiddenException(ErrorCode.USER_ROLE_ERROR.getErrorCode());
         }
     }
 
