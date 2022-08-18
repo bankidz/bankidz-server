@@ -28,8 +28,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     private final FamilyRepository fRepo;
     private final FamilyUserRepository fuRepo;
-
-
+    
     @Override
     @Transactional
     public FamilyDTO postNewFamily(User user) {
