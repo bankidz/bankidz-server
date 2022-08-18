@@ -143,7 +143,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             Challenge deleteChallenge = deleteChallengeUser.getChallenge();
             Kid kid = deleteChallengeUser.getUser().getKid();
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
-                throw new ForbiddenException("권한이 없습니다.");
+                throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
             } else if (deleteChallenge.getChallengeStatus()
                 == failed) {        // Todo: 부모 측 컬럼 조건 확실히 한 다음 추가
                 kid.setTotalChallenge(kid.getTotalChallenge() - 1);
@@ -176,7 +176,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else if (deleteChallenge.getChallengeStatus() == walking && !kid.getDeleteChallenge()
                 .equals(null)) {
                 Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
-                System.out.println("deleteChallengeTimestamp = " + deleteChallengeTimestamp);
                 Calendar deleteCal = Calendar.getInstance();
                 deleteCal.setTime(deleteChallengeTimestamp);
                 int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
@@ -187,11 +186,11 @@ public class ChallengeServiceImpl implements ChallengeService {
                 int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
                     : currentWeek;
                 if (diffYears == 0 && l + 2 >= c) {
-                    throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                    throw new ForbiddenException(ErrorCode.NOT_TWO_WEEKS_YET.getErrorCode());
                 } else if (diffYears > 0) {
                     int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
                     if (l + 2 >= newC) {
-                        throw new ForbiddenException("돈길은 2주에 한번씩 삭제할 수 있습니다.");
+                        throw new ForbiddenException(ErrorCode.NOT_TWO_WEEKS_YET.getErrorCode());
                     }
                 }
                 long datetime = System.currentTimeMillis();
@@ -209,7 +208,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
             return new ChallengeDTO(deleteChallenge, null, null);
         } else {
-            throw new BadRequestException("챌린지가 없습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode());
         }
     }
 
