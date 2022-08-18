@@ -307,12 +307,12 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         Family family = familyUser.getFamily();
         User kid = familyUserRepository.findByFamily(family).stream()
             .filter(f -> f.getUser().getIsKid() && Objects.equals(
                 f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
         List<ChallengeDTO> challengeDTOList = readChallenge(kid, status);
         if (Objects.equals(status, "pending")) {
             List<ChallengeDTO> resultList = challengeDTOList.stream()
@@ -456,7 +456,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
         if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
-            throw new ForbiddenException("일요일에는 접근 불가능한 API 입니다.");
+            throw new ForbiddenException(ErrorCode.SUNDAY_ERROR.getErrorCode());
         }
     }
 
@@ -467,7 +467,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         int dayOfWeek = nowCal.get(Calendar.DAY_OF_WEEK);
         Progress progress1 = progressList.stream().findFirst()
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.TIMELOGIC_ERROR.getErrorCode()));
         Timestamp createdAt1 = progress1.getCreatedAt();
         Calendar createdAtCal = Calendar.getInstance();
         createdAtCal.setTime(createdAt1);
