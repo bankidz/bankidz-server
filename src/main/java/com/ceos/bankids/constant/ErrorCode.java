@@ -48,6 +48,9 @@ public enum ErrorCode implements EnumMapperType {
     NOT_EXIST_PROGRESS("E400-50002"),
     ALREADY_WALK_PROGRESS("E400-50003"),
 
+    // Notification
+    NOTIFICATION_MESSAGE_ERROR("E500-70001"),
+
     // S3
     PRESIGNEDURI_ERROR("E400-60001"),
     PRESIGNEDURI_NPE("E400-60002");

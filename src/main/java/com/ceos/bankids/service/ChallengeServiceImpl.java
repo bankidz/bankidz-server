@@ -22,6 +22,7 @@ import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
+import com.ceos.bankids.exception.InternalServerException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
@@ -31,6 +32,7 @@ import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -66,6 +68,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final CommentRepository commentRepository;
     private final KidRepository kidRepository;
     private final ParentRepository parentRepository;
+    private final NotificationService notificationService;
 
     // 돈길 생성 API
     @Transactional
@@ -389,6 +392,15 @@ public class ChallengeServiceImpl implements ChallengeService {
             commentRepository.save(newComment);
             challengeRepository.save(challenge);
             progressDTOList = null;
+        }
+        try {
+            String notificationBody = challenge.getChallengeStatus() == walking ? "제안된 돈길이 수락되었어요!"
+                : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
+            notificationService.makeChallengeStatusMessage(user.getRefreshToken(), "제안된 돈길 보기",
+                notificationBody,
+                "");
+        } catch (JsonProcessingException e) {
+            throw new InternalServerException(ErrorCode.NOTIFICATION_MESSAGE_ERROR.getErrorCode());
         }
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
