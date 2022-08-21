@@ -17,7 +17,6 @@ import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
-import com.ceos.bankids.dto.FcmMessageDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
@@ -33,14 +32,11 @@ import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -396,17 +392,17 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-        String notificationBody = challenge.getChallengeStatus() == walking ? "제안된 돈길이 수락되었어요!"
-            : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
-        Notification notification = new Notification("돈길 상태가 변경되었어요!", notificationBody);
-        HashMap<String, String> dataMap = new HashMap<>();
-        dataMap.put("challenge", challengeId.toString());
-        dataMap.put("challengeStatus", challenge.getChallengeStatus().toString());
-        Message message = Message.builder().setNotification(notification).setToken("token")
-            .putAllData(dataMap).build();
-        FcmMessageDTO fcmMessageDTO = new FcmMessageDTO(false, message, challengeId,
-            user.getId());
-        notificationController.notification(fcmMessageDTO, user);
+//        String notificationBody = challenge.getChallengeStatus() == walking ? "제안된 돈길이 수락되었어요!"
+////            : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
+////        Notification notification = new Notification("돈길 상태가 변경되었어요!", notificationBody);
+////        HashMap<String, String> dataMap = new HashMap<>();
+////        dataMap.put("challenge", challengeId.toString());
+////        dataMap.put("challengeStatus", challenge.getChallengeStatus().toString());
+////        Message message = Message.builder().setNotification(notification).setToken("token")
+////            .putAllData(dataMap).build();
+////        FcmMessageDTO fcmMessageDTO = new FcmMessageDTO(false, message, challengeId,
+////            user.getId());
+        notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 

@@ -1,7 +1,7 @@
 package com.ceos.bankids.controller;
 
+import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.FcmMessageDTO;
 import com.ceos.bankids.service.NotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class NotificationController {
 
     @ApiOperation(value = "돈길 상태 변경 알림")
     @GetMapping(produces = "application/json; charset=utf-8")
-    public String notification(FcmMessageDTO fcmMessageDTO, User authUser) {
-        notificationService.makeChallengeStatusMessage(fcmMessageDTO, authUser);
+    public String notification(Challenge challenge, User authUser) {
+        notificationService.makeChallengeStatusMessage(challenge, authUser);
         return "NOTIFICATION SUCCESS";
     }
 }
