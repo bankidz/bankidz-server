@@ -50,6 +50,7 @@ public enum ErrorCode implements EnumMapperType {
 
     // Notification
     NOTIFICATION_MESSAGE_ERROR("E500-70001"),
+    NOTIFICATION_SERVICE_ERROR("E500-70002"),
 
     // S3
     PRESIGNEDURI_ERROR("E400-60001"),
