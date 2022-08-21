@@ -18,6 +18,8 @@ public class FcmMessageDTO {
 
     private boolean validate_only;
     private Message message;
+    private Long challengeId;
+    private Long userId;
 
 //    @Builder
 //    @AllArgsConstructor

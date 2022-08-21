@@ -40,6 +40,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -398,9 +399,14 @@ public class ChallengeServiceImpl implements ChallengeService {
         String notificationBody = challenge.getChallengeStatus() == walking ? "제안된 돈길이 수락되었어요!"
             : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
         Notification notification = new Notification("돈길 상태가 변경되었어요!", notificationBody);
-        Message message = Message.builder().setNotification(notification).setToken("token").build();
-        FcmMessageDTO fcmMessageDTO = new FcmMessageDTO(false, message);
-        notificationController.notification(fcmMessageDTO);
+        HashMap<String, String> dataMap = new HashMap<>();
+        dataMap.put("challenge", challengeId.toString());
+        dataMap.put("challengeStatus", challenge.getChallengeStatus().toString());
+        Message message = Message.builder().setNotification(notification).setToken("token")
+            .putAllData(dataMap).build();
+        FcmMessageDTO fcmMessageDTO = new FcmMessageDTO(false, message, challengeId,
+            user.getId());
+        notificationController.notification(fcmMessageDTO, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 

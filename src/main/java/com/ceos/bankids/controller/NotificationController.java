@@ -1,10 +1,8 @@
 package com.ceos.bankids.controller;
 
-import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FcmMessageDTO;
-import com.ceos.bankids.exception.InternalServerException;
 import com.ceos.bankids.service.NotificationServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +20,8 @@ public class NotificationController {
 
     @ApiOperation(value = "돈길 상태 변경 알림")
     @GetMapping(produces = "application/json; charset=utf-8")
-    public String notification(FcmMessageDTO fcmMessageDTO) {
-        try {
-            return notificationService.makeChallengeStatusMessage(fcmMessageDTO);
-        } catch (JsonProcessingException e) {
-            throw new InternalServerException(ErrorCode.NOTIFICATION_MESSAGE_ERROR.getErrorCode());
-        }
+    public String notification(FcmMessageDTO fcmMessageDTO, User authUser) {
+        notificationService.makeChallengeStatusMessage(fcmMessageDTO, authUser);
+        return "NOTIFICATION SUCCESS";
     }
 }

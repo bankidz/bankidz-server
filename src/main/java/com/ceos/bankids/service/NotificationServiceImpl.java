@@ -1,9 +1,13 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.domain.ChallengeNotification;
+import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FcmMessageDTO;
 import com.ceos.bankids.exception.InternalServerException;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ceos.bankids.repository.ChallengeNotificationRepository;
+import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -25,6 +29,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
+    private final ChallengeNotificationRepository challengeNotificationRepository;
+    private final ChallengeUserRepository challengeUserRepository;
     private final ObjectMapper objectMapper;
     @Value("${fcm.key.path}")
     private String FCM_PRIVATE_KEY_PATH;
@@ -49,13 +55,8 @@ public class NotificationServiceImpl implements NotificationService {
     // firebase 서버에 전달할 메시지 생성
     @Async
     @Override
-    public String makeChallengeStatusMessage(FcmMessageDTO fcmMessageDTO)
-        throws JsonProcessingException {
-
-//        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(new FileInputStream(FCM_PRIVATE_KEY_PATH)).createScoped()
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("content-type", MediaType.APPLICATION_JSON_VALUE);
-//        headers.add("Authorization", "Bearer " + googleCredential.getAccessToken());
+    public void makeChallengeStatusMessage(FcmMessageDTO fcmMessageDTO,
+        User user) {
 
         try {
             FirebaseMessaging.getInstance().send(fcmMessageDTO.getMessage());
@@ -63,9 +64,12 @@ public class NotificationServiceImpl implements NotificationService {
             log.error("service err={}", e);
             throw new InternalServerException(ErrorCode.NOTIFICATION_SERVICE_ERROR.getErrorCode());
         }
-
-        log.info("push message={}", objectMapper.writeValueAsString(fcmMessageDTO));
-        return objectMapper.writeValueAsString(fcmMessageDTO);
+        ChallengeUser challengeUser = challengeUserRepository.findByChallengeId(
+            fcmMessageDTO.getChallengeId()).orElseThrow(
+            () -> new InternalServerException(ErrorCode.NOTIFICATION_MESSAGE_ERROR.getErrorCode()));
+        ChallengeNotification challengeNotification = ChallengeNotification.builder()
+            .message(fcmMessageDTO.getMessage().toString()).challengeUser(challengeUser).build();
+        challengeNotificationRepository.save(challengeNotification);
+        log.info("push message={}", fcmMessageDTO.getMessage().toString());
     }
-
 }
