@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
@@ -66,6 +67,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final CommentRepository commentRepository;
     private final KidRepository kidRepository;
     private final ParentRepository parentRepository;
+    private final NotificationController notificationController;
 
     // 돈길 생성 API
     @Transactional
@@ -390,6 +392,17 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
+//        String notificationBody = challenge.getChallengeStatus() == walking ? "제안된 돈길이 수락되었어요!"
+////            : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
+////        Notification notification = new Notification("돈길 상태가 변경되었어요!", notificationBody);
+////        HashMap<String, String> dataMap = new HashMap<>();
+////        dataMap.put("challenge", challengeId.toString());
+////        dataMap.put("challengeStatus", challenge.getChallengeStatus().toString());
+////        Message message = Message.builder().setNotification(notification).setToken("token")
+////            .putAllData(dataMap).build();
+////        FcmMessageDTO fcmMessageDTO = new FcmMessageDTO(false, message, challengeId,
+////            user.getId());
+        notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
