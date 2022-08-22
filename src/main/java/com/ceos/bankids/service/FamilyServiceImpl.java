@@ -28,7 +28,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     private final FamilyRepository fRepo;
     private final FamilyUserRepository fuRepo;
-    
+
     @Override
     @Transactional
     public FamilyDTO postNewFamily(User user) {
@@ -152,7 +152,7 @@ public class FamilyServiceImpl implements FamilyService {
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.get().getCode() == code) {
-                throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_FAMILY.getErrorCode());
+                throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_THIS_FAMILY.getErrorCode());
             }
             fuRepo.delete(familyUser.get());
         }
@@ -165,6 +165,30 @@ public class FamilyServiceImpl implements FamilyService {
 
         List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily.get(), user);
         FamilyDTO familyDTO = new FamilyDTO(newFamily.get(), familyUserDTOList);
+
+        return familyDTO;
+    }
+
+    @Override
+    @Transactional
+    public FamilyDTO deleteFamilyUser(User user, String code) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isEmpty()) {
+            throw new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode());
+        }
+
+        Family family = familyUser.get().getFamily();
+        if (!code.equals(family.getCode())) {
+            throw new BadRequestException(ErrorCode.USER_NOT_IN_THIS_FAMILY.getErrorCode());
+        }
+        fuRepo.delete(familyUser.get());
+
+        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family, user);
+        FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+
+        if (familyUserDTOList.size() == 0) {
+            fRepo.delete(family);
+        }
 
         return familyDTO;
     }
