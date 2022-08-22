@@ -186,6 +186,10 @@ public class FamilyServiceImpl implements FamilyService {
         List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family, user);
         FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
 
+        if (familyUserDTOList.size() == 0) {
+            fRepo.delete(family);
+        }
+
         return familyDTO;
     }
 
