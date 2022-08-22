@@ -77,7 +77,7 @@ public class FamilyController {
     @ApiOperation(value = "가족 나가기")
     @DeleteMapping(value = "/user", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<Object> deleteFamilyUser(@AuthenticationPrincipal User authUser,
+    public CommonResponse<FamilyDTO> deleteFamilyUser(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 나가기, user = {}", authUser.getUsername());

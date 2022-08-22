@@ -1215,4 +1215,193 @@ public class FamilyControllerTest {
             familyController.postFamilyUser(user1, familyRequest);
         });
     }
+
+    @Test
+    @DisplayName("유저 가족 나가기 성공 시, 결과 반환 하는지 확인")
+    public void testIfFamilyUserDeleteSucceedThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(null)
+            .build();
+        User user3 = User.builder()
+            .id(3L)
+            .username("user3")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(true)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser3);
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+        CommonResponse<FamilyDTO> result = familyController.deleteFamilyUser(user1, familyRequest);
+
+        // then
+        ArgumentCaptor<FamilyUser> fuCaptor = ArgumentCaptor.forClass(FamilyUser.class);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).delete(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+
+        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .map(FamilyUserDTO::new).collect(Collectors.toList());
+        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+    }
+
+    @Test
+    @DisplayName("유저 가족 나가기 성공 후 가족 없어 삭제 성공 시, 결과 반환 하는지 확인")
+    public void testIfFamilyUserDeleteSucceedAndFamilyDeleteSucceedThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(null)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+        CommonResponse<FamilyDTO> result = familyController.deleteFamilyUser(user1, familyRequest);
+
+        // then
+        ArgumentCaptor<FamilyUser> fuCaptor = ArgumentCaptor.forClass(FamilyUser.class);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).delete(fuCaptor.capture());
+        Assertions.assertEquals(familyUser1, fuCaptor.getValue());
+
+        ArgumentCaptor<Family> fCaptor = ArgumentCaptor.forClass(Family.class);
+        Mockito.verify(mockFamilyRepository, Mockito.times(1)).delete(fCaptor.capture());
+        Assertions.assertEquals(family2, fCaptor.getValue());
+
+        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .map(FamilyUserDTO::new).collect(Collectors.toList());
+        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+
+        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+    }
+
+    @Test
+    @DisplayName("유저가 가입된 가족이 없는 경우, 에러 처리 하는지 확인")
+    public void testIfFamilyUserDeleteFailBecauseFamilyUserNotExistThenThrowBadRequestException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(null)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        FamilyRequest familyRequest = new FamilyRequest("test");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(null));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.deleteFamilyUser(user1, familyRequest);
+        });
+    }
+
+    @Test
+    @DisplayName("유저가 가입 된 가족과 다른 가족을 탈퇴하고자 할 때, 에러 처리 하는지 확인")
+    public void testIfFamilyUserDeleteFailDueToDifferentRequestCodeThenThrowBadRequestException() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .isKid(false)
+            .isFemale(null)
+            .build();
+
+        Family family2 = Family.builder().id(2L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        FamilyRequest familyRequest = new FamilyRequest("code");
+
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+
+        // when
+        FamilyServiceImpl familyService = new FamilyServiceImpl(
+            mockFamilyRepository,
+            mockFamilyUserRepository
+        );
+        FamilyController familyController = new FamilyController(
+            familyService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.deleteFamilyUser(user1, familyRequest);
+        });
+    }
 }
