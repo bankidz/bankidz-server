@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,6 +70,18 @@ public class FamilyController {
 
         log.info("api = 가족 참여하기, user = {}", authUser.getUsername());
         FamilyDTO familyDTO = familyService.postNewFamilyUser(authUser, familyRequest.getCode());
+
+        return CommonResponse.onSuccess(familyDTO);
+    }
+
+    @ApiOperation(value = "가족 나가기")
+    @DeleteMapping(value = "/user", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<Object> deleteFamilyUser(@AuthenticationPrincipal User authUser,
+        @Valid @RequestBody FamilyRequest familyRequest) {
+
+        log.info("api = 가족 나가기, user = {}", authUser.getUsername());
+        FamilyDTO familyDTO = familyService.deleteFamilyUser(authUser, familyRequest.getCode());
 
         return CommonResponse.onSuccess(familyDTO);
     }
