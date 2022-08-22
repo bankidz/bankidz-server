@@ -2,6 +2,7 @@ package com.ceos.bankids.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.net.URL;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,12 +16,12 @@ import lombok.ToString;
 public class PreSignedDTO {
 
     @ApiModelProperty(value = "url")
-    private String preSignedUrl;
+    private URL preSignedUrl;
 
     @ApiModelProperty(value = "url")
     private String imageName;
 
-    public PreSignedDTO(String preSignedUrl, String imageName) {
+    public PreSignedDTO(URL preSignedUrl, String imageName) {
         this.preSignedUrl = preSignedUrl;
         this.imageName = imageName;
     }
