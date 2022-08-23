@@ -11,4 +11,5 @@ public interface ProgressRepository extends JpaRepository<Progress, Long> {
 
     public Optional<Progress> findByChallengeIdAndWeeks(Long challengeId, Long weeks);
 
+    public Progress deleteAllByChallengeId(Long challengeId);
 }

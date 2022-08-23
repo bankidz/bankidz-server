@@ -392,17 +392,8 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-//        String notificationBody = challenge.getChallengeStatus() == walking ? "제안된 돈길이 수락되었어요!"
-////            : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
-////        Notification notification = new Notification("돈길 상태가 변경되었어요!", notificationBody);
-////        HashMap<String, String> dataMap = new HashMap<>();
-////        dataMap.put("challenge", challengeId.toString());
-////        dataMap.put("challengeStatus", challenge.getChallengeStatus().toString());
-////        Message message = Message.builder().setNotification(notification).setToken("token")
-////            .putAllData(dataMap).build();
-////        FcmMessageDTO fcmMessageDTO = new FcmMessageDTO(false, message, challengeId,
-////            user.getId());
-        notificationController.notification(challenge, user);
+        // Todo: 알림
+//        notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
@@ -505,6 +496,37 @@ public class ChallengeServiceImpl implements ChallengeService {
             return 5L;
         }
         throw new IllegalArgumentException();
+    }
+
+    public void challengeCompleteDelete(User user) {
+        List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(user.getId());
+        List<Challenge> challengeList = challengeUserList.stream().map(ChallengeUser::getChallenge)
+            .collect(
+                Collectors.toList());
+        //challenge / progress / comment 한번에 삭제
+        challengeList.forEach(challenge -> {
+            Parent parent = parentRepository.findByUserId(
+                    challenge.getContractUser().getId())
+                .orElseThrow(() -> new BadRequestException(
+                    ErrorCode.NOT_EXIST_CONSTRUCT_USER.getErrorCode()));
+            parent.setTotalRequest(parent.getTotalRequest() - 1);
+            if (challenge.getChallengeStatus() == rejected) {
+                commentRepository.deleteAllByChallengeId(challenge.getId());
+            } else if (challenge.getChallengeStatus() != pending) {
+                parent.setAcceptedRequest(parent.getAcceptedRequest() - 1);
+                progressRepository.deleteAllByChallengeId(challenge.getId());
+            }
+            parentRepository.save(parent);
+            challengeRepository.delete(challenge);
+        });
+        Kid kid = user.getKid();
+        kid.setSavings(0L);
+        kid.setTotalChallenge(0L);
+        kid.setAchievedChallenge(0L);
+        kid.setLevel(0L);
+        kidRepository.save(kid);
+        challengeUserRepository.deleteAll(challengeUserList);
+
     }
 }
 
