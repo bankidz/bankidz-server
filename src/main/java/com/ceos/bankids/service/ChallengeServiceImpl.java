@@ -192,8 +192,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                 long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
-                kid.setSavings(kid.getSavings()
-                    - deleteChallenge.getSuccessWeeks() * deleteChallenge.getWeekPrice());
+//                kid.setSavings(kid.getSavings()
+//                    - deleteChallenge.getSuccessWeeks() * deleteChallenge.getWeekPrice());
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
