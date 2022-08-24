@@ -1,5 +1,6 @@
 package com.ceos.bankids.repository;
 
+import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Progress;
 import java.util.List;
 import java.util.Optional;
@@ -11,5 +12,7 @@ public interface ProgressRepository extends JpaRepository<Progress, Long> {
 
     public Optional<Progress> findByChallengeIdAndWeeks(Long challengeId, Long weeks);
 
-    public Progress deleteAllByChallengeId(Long challengeId);
+    public void deleteAllByChallengeId(Long challengeId);
+
+    public void deleteAllByChallenge(Challenge challenge);
 }
