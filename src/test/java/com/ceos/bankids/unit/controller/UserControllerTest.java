@@ -673,4 +673,45 @@ public class UserControllerTest {
             userController.getUserInfo(user);
         });
     }
+
+    @Test
+    @DisplayName("유저 로그아웃 성공 시, null 반환하는지 확인")
+    public void testIfUserLogoutSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .build();
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        UserController userController = new UserController(
+            userService
+        );
+
+        CommonResponse result = userController.patchUserLogout(user);
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
+        user.setRefreshToken("");
+        Assertions.assertEquals(user.getRefreshToken(), uCaptor.getValue().getRefreshToken());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(null), result);
+    }
 }
