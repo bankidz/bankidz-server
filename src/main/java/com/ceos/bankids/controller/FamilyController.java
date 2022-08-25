@@ -5,6 +5,7 @@ import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.KidListDTO;
+import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class FamilyController {
 
     private final FamilyServiceImpl familyService;
+    private final ChallengeServiceImpl challengeService;
 
     @ApiOperation(value = "가족 생성하기")
     @PostMapping(value = "", produces = "application/json; charset=utf-8")
@@ -81,6 +83,7 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 나가기, user = {}", authUser.getUsername());
+        challengeService.challengeCompleteDelete(authUser, familyRequest);
         FamilyDTO familyDTO = familyService.deleteFamilyUser(authUser, familyRequest.getCode());
 
         return CommonResponse.onSuccess(familyDTO);
