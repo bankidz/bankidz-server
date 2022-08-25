@@ -492,7 +492,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Transactional
-    public void challengeCompleteDelete(User user, FamilyRequest familyRequest) {
+    public void challengeCompleteDeleteByKid(User user, FamilyRequest familyRequest) {
         //ToDo: 부모는 가족나가면 어케되냐?
         userRoleValidation(user, true);
         List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(user.getId());
@@ -548,6 +548,44 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
             parentRepository.save(parent);
         });
+    }
+
+    @Transactional
+    public void challengeCompleteDeleteByParent(User user, FamilyRequest familyRequest) {
+        //ToDo: 부모는 가족나가면 어케되냐?
+        userRoleValidation(user, false);
+        List<Challenge> challengeList = challengeRepository.findByContractUserId(user.getId());
+        challengeList.forEach(challenge -> {
+            long kidSavings = 0L;
+            long kidAchievedChallenge = 0L;
+            long kidTotalChallenge = 0L;
+            if (challenge.getChallengeStatus() != pending
+                && challenge.getChallengeStatus() != rejected) {
+                kidTotalChallenge = kidTotalChallenge + 1L;
+                kidSavings =
+                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
+                progressRepository.deleteAll(challenge.getProgressList());
+            }
+            if (challenge.getChallengeStatus() == achieved) {
+                kidAchievedChallenge = kidAchievedChallenge + 1L;
+            } else if (challenge.getChallengeStatus() == rejected) {
+                commentRepository.delete(challenge.getComment());
+            }
+            ChallengeUser challengeUser = challengeUserRepository.findByChallengeId(
+                challenge.getId()).orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
+            Kid kid = challengeUser.getUser().getKid();
+            kid.setTotalChallenge(kid.getTotalChallenge() - kidTotalChallenge);
+            kid.setSavings(kid.getSavings() - kidSavings);
+            kid.setAchievedChallenge(kid.getAchievedChallenge() - kidAchievedChallenge);
+            kidRepository.save(kid);
+            challengeUserRepository.delete(challengeUser);
+            challengeRepository.delete(challenge);
+        });
+        Parent parent = user.getParent();
+        parent.setTotalRequest(0L);
+        parent.setAcceptedRequest(0L);
+        parentRepository.save(parent);
     }
 }
 
