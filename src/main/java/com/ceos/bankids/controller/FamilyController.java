@@ -83,7 +83,11 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 나가기, user = {}", authUser.getUsername());
-        challengeService.challengeCompleteDelete(authUser, familyRequest);
+        if (authUser.getIsKid()) {
+            challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
+        } else {
+            challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
+        }
         FamilyDTO familyDTO = familyService.deleteFamilyUser(authUser, familyRequest.getCode());
 
         return CommonResponse.onSuccess(familyDTO);
