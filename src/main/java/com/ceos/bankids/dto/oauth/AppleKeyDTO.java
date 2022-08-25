@@ -2,7 +2,7 @@ package com.ceos.bankids.dto.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +16,12 @@ import lombok.ToString;
 @AllArgsConstructor
 public class AppleKeyDTO {
 
-    @NotNull(message = "keys may not be null")
     @JsonProperty("keys")
     List<ApplePublicKeyDTO> keys;
+
+    public Optional<ApplePublicKeyDTO> getMatchedKeyBy(String kid, String alg) {
+        return this.keys.stream()
+            .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
+            .findFirst();
+    }
 }

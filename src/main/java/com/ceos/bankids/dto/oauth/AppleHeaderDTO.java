@@ -12,24 +12,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplePublicKeyDTO {
-
-    @JsonProperty("kty")
-    private String kty;
+public class AppleHeaderDTO {
 
     @JsonProperty("kid")
     private String kid;
 
-    @JsonProperty("use")
-    private String use;
-
     @JsonProperty("alg")
     private String alg;
-
-    @JsonProperty("n")
-    private String n;
-
-    @JsonProperty("e")
-    private String e;
-
 }

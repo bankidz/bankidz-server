@@ -56,6 +56,8 @@ public enum ErrorCode implements EnumMapperType {
 
     // Apple
     APPLE_BAD_REQUEST("E400-80001"),
+    APPLE_KEY_UNAVAILABLE("E400-80002"),
+    APPLE_TOKEN_EXPIRED("E400-80003"),
 
     // S3
     PRESIGNEDURI_ERROR("E400-60001"),
