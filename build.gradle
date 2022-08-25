@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.nimbusds:nimbus-jose-jwt:9.24.2'
     implementation 'org.bouncycastle:bcprov-jdk16:1.45'
     implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
