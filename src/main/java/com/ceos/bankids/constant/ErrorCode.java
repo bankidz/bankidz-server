@@ -44,6 +44,7 @@ public enum ErrorCode implements EnumMapperType {
     SUNDAY_ERROR("E403-40014"),
     TIMELOGIC_ERROR("E403-40015"),
     USER_ROLE_ERROR("E403-40016"),
+    NOT_EXIST_CHALLENGE_USER("E400-40017"),
 
     // Progress
     NOT_WALKING_CHALLENGE("E400-50001"),
