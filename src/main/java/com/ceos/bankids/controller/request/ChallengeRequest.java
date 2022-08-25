@@ -29,7 +29,7 @@ public class ChallengeRequest {
 
     @ApiModelProperty(example = "이자율 받기")
     @NotBlank(message = "돈길의 카테고리를 입력해주세요")
-    private String category;
+    private String challengeCategory;
 
     @ApiModelProperty(example = "전자제품")
     @NotBlank(message = "돈길의 목표 아이템을 입력해주세요")

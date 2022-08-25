@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface FamilyService {
 
-
     public FamilyDTO postNewFamily(User user);
 
     public List<FamilyUserDTO> getFamilyUserList(Family family, User user);
@@ -20,4 +19,7 @@ public interface FamilyService {
 
     public List<KidListDTO> getKidListFromFamily(User user);
 
+    public FamilyDTO postNewFamilyUser(User user, String code);
+
+    public FamilyDTO deleteFamilyUser(User user, String code);
 }

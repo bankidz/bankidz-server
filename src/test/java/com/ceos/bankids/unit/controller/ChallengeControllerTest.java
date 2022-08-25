@@ -1,8 +1,9 @@
 package com.ceos.bankids.unit.controller;
 
-import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.controller.ChallengeController;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.AbstractTimestamp;
@@ -95,6 +96,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
         //given
 
         sonKid.setDeleteChallenge(null);
@@ -142,7 +145,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<ChallengeDTO> result = challengeController.postChallenge(son,
             challengeRequest);
@@ -172,6 +175,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
         //given
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
@@ -214,7 +219,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -327,6 +332,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
         //given
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
@@ -445,7 +452,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -469,6 +476,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         mom.setParent(momParent);
 
@@ -514,7 +523,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<ChallengeDTO> result = challengeController.postChallenge(son,
             challengeRequest);
@@ -548,6 +557,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         TargetItem notExistItem = TargetItem.builder().id(2L).name("없는 아이템").build();
 
@@ -582,7 +593,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -606,6 +617,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         ChallengeCategory notExistCategory = ChallengeCategory.builder().id(2L)
             .category("형제와 경쟁 하기").build();
@@ -642,7 +655,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -667,6 +680,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -686,7 +701,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -711,6 +726,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -741,7 +758,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -766,6 +783,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         sonKid.setDeleteChallenge(null);
@@ -813,7 +832,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse<ChallengeDTO> result = challengeController.deleteChallenge(son, challengeId);
@@ -850,6 +869,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -872,7 +893,7 @@ public class ChallengeControllerTest {
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(walking)
-            .interestRate(challengeRequest.getInterestRate())
+            .interestRate(challengeRequest.getInterestRate()).successWeeks(0L)
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem)
             .filename(challengeRequest.getFileName()).build();
 
@@ -906,7 +927,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse<ChallengeDTO> result = challengeController.deleteChallenge(son, challengeId);
@@ -941,6 +962,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -963,7 +986,7 @@ public class ChallengeControllerTest {
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(walking)
-            .interestRate(challengeRequest.getInterestRate())
+            .interestRate(challengeRequest.getInterestRate()).successWeeks(0L)
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem)
             .filename(challengeRequest.getFileName()).build();
 
@@ -997,7 +1020,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse<ChallengeDTO> result = challengeController.deleteChallenge(son, challengeId);
@@ -1032,6 +1055,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -1094,7 +1119,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse<ChallengeDTO> result = challengeController.deleteChallenge(son, challengeId);
@@ -1129,6 +1154,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -1191,7 +1218,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse<ChallengeDTO> result = challengeController.deleteChallenge(son, challengeId);
@@ -1226,6 +1253,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -1283,7 +1312,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
         CommonResponse<ChallengeDTO> result = challengeController.deleteChallenge(son, challengeId);
@@ -1318,6 +1347,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -1351,7 +1382,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -1376,6 +1407,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -1420,7 +1453,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         Long challengeId = newChallenge.getId();
 
@@ -1445,6 +1478,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -1465,7 +1500,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -1489,6 +1524,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -1550,12 +1587,12 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
             "pending");
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -1592,6 +1629,10 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
+
+        son.setKid(sonKid);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -1658,18 +1699,18 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
             "pending");
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         List<ChallengeDTO> challengeDTOList1 = new ArrayList<>();
         for (ChallengeUser r : challengeUserList) {
-            if (r.getChallenge().getChallengeStatus() != walking) {
+            if (r.getChallenge().getChallengeStatus() == pending) {
                 challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null, null));
 
             } else {
@@ -1700,6 +1741,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -1861,10 +1904,10 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -1902,6 +1945,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -1991,10 +2036,10 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result1 = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -2029,6 +2074,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -2077,10 +2124,10 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
-            "accept");
+            "walking");
 
         //then
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -2107,6 +2154,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         List<ChallengeUser> challengeUserList = new ArrayList<>();
 
@@ -2117,7 +2166,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<List<ChallengeDTO>> result = challengeController.getListChallenge(son,
             "pending");
@@ -2149,6 +2198,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -2311,11 +2362,11 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<KidChallengeListDTO> result = challengeController.getListKidChallenge(mom,
             son.getKid()
-                .getId(), "accept");
+                .getId(), "walking");
         CommonResponse<KidChallengeListDTO> result1 = challengeController.getListKidChallenge(mom,
             son.getKid().getId(), "pending");
 
@@ -2347,6 +2398,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -2428,7 +2481,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<ChallengeDTO> successResult = challengeController.patchChallengeStatus(mom,
             newChallenge.getId(), successKidChallengeRequest);
@@ -2461,6 +2514,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -2530,7 +2585,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         //then
 
@@ -2555,6 +2610,8 @@ public class ChallengeControllerTest {
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
         //given
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
@@ -2668,7 +2725,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -2693,6 +2750,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
 
@@ -2765,7 +2824,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         //then
 
@@ -2790,6 +2849,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         KidChallengeRequest kidChallengeRequest = new KidChallengeRequest(true, null);
 
@@ -2856,7 +2917,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then
@@ -2881,6 +2942,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -2952,7 +3015,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<WeekDTO> result = challengeController.getWeekInfo(son);
 
@@ -2979,6 +3042,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
             .contractUser(challengeRequest.getIsMom() ? mom : father)
@@ -3042,7 +3107,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
         CommonResponse<KidWeekDTO> result = challengeController.getKidWeekInfo(mom,
             son.getKid().getId());
@@ -3070,6 +3135,8 @@ public class ChallengeControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
 
@@ -3128,7 +3195,7 @@ public class ChallengeControllerTest {
         ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
             mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
             mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-            mockKidRepository, mockParentRepository);
+            mockKidRepository, mockParentRepository, mockNotificationController);
         ChallengeController challengeController = new ChallengeController(challengeService);
 
         //then

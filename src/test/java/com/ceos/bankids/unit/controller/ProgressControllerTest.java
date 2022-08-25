@@ -1,7 +1,7 @@
 package com.ceos.bankids.unit.controller;
 
-import com.ceos.bankids.Enum.ChallengeStatus;
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.controller.ProgressController;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.domain.AbstractTimestamp;
@@ -151,6 +151,7 @@ public class ProgressControllerTest {
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
 
+        sonKid.setSavings(20000L);
         son.setKid(sonKid);
         mom.setParent(momParent);
 
@@ -228,7 +229,7 @@ public class ProgressControllerTest {
         Assertions.assertEquals(newProgress.getChallenge().getId(), pCaptor.getValue());
         Assertions.assertEquals(newProgress2.getWeeks(), wCaptor.getValue());
         Assertions.assertEquals(achieved, newChallenge.getChallengeStatus());
-        Assertions.assertEquals(39000L, sonKid.getSavings());
+        Assertions.assertEquals(30000L, sonKid.getSavings());
         Assertions.assertEquals(3L, newChallenge.getSuccessWeeks());
         Assertions.assertEquals(true, newProgress2.getIsAchieved());
 

@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
@@ -28,7 +29,6 @@ public class FamilyServiceImpl implements FamilyService {
     private final FamilyRepository fRepo;
     private final FamilyUserRepository fuRepo;
 
-
     @Override
     @Transactional
     public FamilyDTO postNewFamily(User user) {
@@ -37,7 +37,7 @@ public class FamilyServiceImpl implements FamilyService {
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.isEmpty()) {
-                throw new BadRequestException("삭제된 가족입니다.");
+                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
             }
             List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(
                 familyUser.get().getFamily(), user);
@@ -84,7 +84,7 @@ public class FamilyServiceImpl implements FamilyService {
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.isEmpty()) {
-                throw new BadRequestException("삭제된 가족입니다.");
+                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
             }
             List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get(), user);
             FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
@@ -99,13 +99,13 @@ public class FamilyServiceImpl implements FamilyService {
     @Transactional
     public List<KidListDTO> getKidListFromFamily(User user) {
         if (user.getIsKid()) {
-            throw new ForbiddenException("부모만 자녀 정보를 조회할 수 있습니다.");
+            throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
         }
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
         if (familyUser.isPresent()) {
             Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
             if (family.isEmpty()) {
-                throw new BadRequestException("삭제된 가족입니다.");
+                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
             }
             List<FamilyUser> familyUserList = fuRepo.findByFamily(family.get());
             List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
@@ -118,6 +118,81 @@ public class FamilyServiceImpl implements FamilyService {
             return kidListDTOList;
         }
     }
+
+    @Override
+    @Transactional
+    public FamilyDTO postNewFamilyUser(User user, String code) {
+        Optional<Family> newFamily = fRepo.findByCode(code);
+        if (newFamily.isEmpty()) {
+            throw new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode());
+        }
+
+        List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
+        if (!user.getIsKid()) {
+            if (user.getIsFemale() == null) {
+                throw new BadRequestException(ErrorCode.INVALID_USER_TYPE.getErrorCode());
+            } else if (user.getIsFemale()) {
+                List<FamilyUser> checkMomList = familyUserList.stream()
+                    .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
+                    .collect(Collectors.toList());
+                if (!checkMomList.isEmpty()) {
+                    throw new ForbiddenException(ErrorCode.MOM_ALREADY_EXISTS.getErrorCode());
+                }
+            } else {
+                List<FamilyUser> checkDadList = familyUserList.stream()
+                    .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
+                    .collect(Collectors.toList());
+                if (!checkDadList.isEmpty()) {
+                    throw new ForbiddenException(ErrorCode.DAD_ALREADY_EXISTS.getErrorCode());
+                }
+            }
+        }
+
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isPresent()) {
+            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            if (family.get().getCode() == code) {
+                throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_THIS_FAMILY.getErrorCode());
+            }
+            fuRepo.delete(familyUser.get());
+        }
+
+        FamilyUser newFamilyUser = FamilyUser.builder()
+            .user(user)
+            .family(newFamily.get())
+            .build();
+        fuRepo.save(newFamilyUser);
+
+        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily.get(), user);
+        FamilyDTO familyDTO = new FamilyDTO(newFamily.get(), familyUserDTOList);
+
+        return familyDTO;
+    }
+
+    @Override
+    @Transactional
+    public FamilyDTO deleteFamilyUser(User user, String code) {
+        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        if (familyUser.isEmpty()) {
+            throw new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode());
+        }
+
+        Family family = familyUser.get().getFamily();
+        if (!code.equals(family.getCode())) {
+            throw new BadRequestException(ErrorCode.USER_NOT_IN_THIS_FAMILY.getErrorCode());
+        }
+        fuRepo.delete(familyUser.get());
+
+        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family, user);
+        FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+
+        if (familyUserDTOList.size() == 0) {
+            fRepo.delete(family);
+        }
+        
+        return familyDTO;
+    }
+
 
     class KidListDTOComparator implements Comparator<KidListDTO> {
 

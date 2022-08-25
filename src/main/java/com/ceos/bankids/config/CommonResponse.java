@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CommonResponse<T> {
 
-    String message;
+    String error;
     T data;
 
 
@@ -19,7 +19,7 @@ public class CommonResponse<T> {
         return new CommonResponse<>(null, data);
     }
 
-    public static CommonResponse onFailure(String responseMessage) {
-        return new CommonResponse<>(responseMessage, null);
+    public static CommonResponse onFailure(String errorCode) {
+        return new CommonResponse<>(errorCode, null);
     }
 }

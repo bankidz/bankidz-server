@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
@@ -18,12 +19,9 @@ import java.util.Calendar;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUserType(@AuthenticationPrincipal User authUser,
-        @Valid @RequestBody UserTypeRequest userTypeRequest) {
+    public UserDTO updateUserType(User authUser, UserTypeRequest userTypeRequest) {
         Long userId = authUser.getId();
         Optional<User> user = uRepo.findById(userId);
 
@@ -45,11 +42,11 @@ public class UserServiceImpl implements UserService {
         Integer currYear = cal.get(Calendar.YEAR);
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
         if (user.isEmpty()) {
-            throw new BadRequestException("존재하지 않는 유저입니다.");
+            throw new BadRequestException(ErrorCode.USER_NOT_EXISTS.getErrorCode());
         } else if (user.get().getIsFemale() != null) {
-            throw new BadRequestException("이미 유저 타입을 선택한 유저입니다.");
+            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
         } else if (birthYear > currYear || birthYear <= currYear - 100) {
-            throw new BadRequestException("유효하지 않은 생년월일입니다.");
+            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         } else {
             user.get().setBirthday(userTypeRequest.getBirthday());
             user.get().setIsFemale(userTypeRequest.getIsFemale());
@@ -121,7 +118,7 @@ public class UserServiceImpl implements UserService {
         MyPageDTO myPageDTO;
         UserDTO userDTO = new UserDTO(user);
         if (user.getIsKid() == null) {
-            throw new BadRequestException("유저 타입이 선택되지 않은 유저입니다.");
+            throw new BadRequestException(ErrorCode.USER_TYPE_NOT_CHOSEN.getErrorCode());
         } else if (user.getIsKid() == true) {
             KidDTO kidDTO = new KidDTO(user.getKid());
             myPageDTO = new MyPageDTO(userDTO, kidDTO);

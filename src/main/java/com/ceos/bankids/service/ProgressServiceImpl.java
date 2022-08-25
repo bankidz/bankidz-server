@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.Enum.ChallengeStatus;
+import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
@@ -42,12 +43,9 @@ public class ProgressServiceImpl implements ProgressService {
 
     static int getCurrentWeek(Calendar nowCal, Calendar createdAtCal, int currentWeek) {
         if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
-            System.out.println("통과");
             int diffYears = nowCal.get(Calendar.YEAR) - createdAtCal.get(Calendar.YEAR);
-            System.out.println("diffYears = " + diffYears);
             currentWeek =
                 diffYears * createdAtCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + currentWeek;
-            System.out.println("바뀐 currentWeek = " + currentWeek);
         }
         return currentWeek;
     }
@@ -59,37 +57,40 @@ public class ProgressServiceImpl implements ProgressService {
 
         userRoleValidation(user, true);
         Challenge challenge = challengeRepository.findById(challengeId)
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
         Optional<ChallengeUser> challengeUser = challengeUserRepository.findByChallengeId(
             challengeId);
         challengeUser.ifPresent(c -> {
             if (!Objects.equals(c.getUser().getId(), user.getId())) {
-                throw new ForbiddenException("해당 유저는 해당 돈길에 접근 할 수 없습니다.");
+                throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
             }
         });
         if (challenge.getChallengeStatus() != walking) {
-            throw new BadRequestException("걷고있는 돈길이 아닙니다.");
+            throw new BadRequestException(ErrorCode.NOT_WALKING_CHALLENGE.getErrorCode());
         }
         Kid kid = user.getKid();
         Long diffWeeks = (long) timeLogic(challenge.getProgressList());
         Progress progress = progressRepository.findByChallengeIdAndWeeks(challengeId, diffWeeks)
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_PROGRESS.getErrorCode()));
         if (progress.getIsAchieved()) {
-            throw new BadRequestException("이번주는 이미 저축했습니다.");
+            throw new BadRequestException(ErrorCode.ALREADY_WALK_PROGRESS.getErrorCode());
         }
         if (diffWeeks > challenge.getWeeks()) {
-            throw new BadRequestException("걸을 수 있는 돈길이 없습니다.");
+            throw new BadRequestException(ErrorCode.NOT_EXIST_PROGRESS.getErrorCode());
         } else if (diffWeeks.equals(challenge.getWeeks())) {
-            System.out.println("통과");
+            Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
             challenge.setChallengeStatus(achieved);
-            long interestAmount =
-                (challenge.getTotalPrice() * challenge.getInterestRate() / (100
-                    * challenge.getWeeks()) * (challenge.getSuccessWeeks() + 1));
-            kid.setSavings(kid.getSavings() + challenge.getTotalPrice() + interestAmount);
+            kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
+            if (!Objects.equals(userLevel, kid.getLevel())) {
+                kid.setLevel(userLevel);
+            }
         }
 
         progress.setIsAchieved(true);
         challenge.setSuccessWeeks(challenge.getSuccessWeeks() + 1);
+        kid.setSavings(kid.getSavings() + challenge.getWeekPrice());
         challengeRepository.save(challenge);
         kidRepository.save(kid);
         progressRepository.save(progress);
@@ -99,7 +100,7 @@ public class ProgressServiceImpl implements ProgressService {
 
     public void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
-            throw new ForbiddenException("접근 불가능한 API 입니다.");
+            throw new ForbiddenException(ErrorCode.USER_ROLE_ERROR.getErrorCode());
         }
     }
 
@@ -110,16 +111,30 @@ public class ProgressServiceImpl implements ProgressService {
         nowCal.setTime(nowTimestamp);
         int dayOfWeek = nowCal.get(Calendar.DAY_OF_WEEK);
         Progress progress1 = progressList.stream().findFirst()
-            .orElseThrow(BadRequestException::new);
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.TIMELOGIC_ERROR.getErrorCode()));
         Timestamp createdAt1 = progress1.getCreatedAt();
         Calendar createdAtCal = Calendar.getInstance();
         createdAtCal.setTime(createdAt1);
         int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
         int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
         currentWeek = getCurrentWeek(nowCal, createdAtCal, currentWeek);
-        System.out.println("currentWeek = " + currentWeek);
-        System.out.println("createdWeek = " + createdWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
+    }
+
+    private Long userLevelUp(Long kidAchievedChallenge) {
+
+        if (1 <= kidAchievedChallenge && kidAchievedChallenge < 5) {
+            return 2L;
+        } else if (5 <= kidAchievedChallenge && kidAchievedChallenge < 10) {
+            return 3L;
+        } else if (10 <= kidAchievedChallenge && kidAchievedChallenge < 15) {
+            return 4L;
+        } else if (15 <= kidAchievedChallenge && kidAchievedChallenge < 20) {
+            return -4L;
+        } else if (20 <= kidAchievedChallenge) {
+            return 5L;
+        }
+        throw new IllegalArgumentException();
     }
 }

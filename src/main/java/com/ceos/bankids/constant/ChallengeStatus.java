@@ -1,4 +1,4 @@
-package com.ceos.bankids.Enum;
+package com.ceos.bankids.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +20,5 @@ public enum ChallengeStatus implements EnumMapperType {
     @Override
     public String getCode() {
         return name();
-    }
-
-    @Override
-    public Long getStatus() {
-        return status;
     }
 }

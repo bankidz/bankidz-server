@@ -54,6 +54,13 @@ jobs:
         env:
           LOGGINGBACK: ${{ secrets.LOGGINGBACK }}
 
+      - name: Make firebase-key.json
+        run: |
+          touch ./src/main/resources/bankidz-firebase.json
+          echo "$FIREBASEKEY" > ./src/main/resources/bankidz-firebase.json
+        env:
+          FIREBASEKEY: ${{ secrets.FIREBASE_KEY }}
+
       - name: Build with Gradle
         run: ./gradlew build -x test
 

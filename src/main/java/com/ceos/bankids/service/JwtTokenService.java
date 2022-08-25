@@ -16,7 +16,7 @@ public interface JwtTokenService {
 
     public Authentication getAuthentication(String token);
 
-    public boolean validateToken(String token);
+    public Boolean validateToken(String token);
 
     public String getToken(HttpServletRequest request);
 }
