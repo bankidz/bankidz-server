@@ -7,6 +7,7 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public interface ChallengeService {
     public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
 
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
-        KidChallengeRequest kidChallengeRequest);
+        KidChallengeRequest kidChallengeRequest) throws IOException;
 
     public WeekDTO readWeekInfo(User user);
 
