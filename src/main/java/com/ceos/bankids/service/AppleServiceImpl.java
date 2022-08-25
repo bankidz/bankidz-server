@@ -4,7 +4,7 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.dto.oauth.AppleHeaderDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyDTO;
-import com.ceos.bankids.dto.oauth.ApplePublicKeyDTO;
+import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -37,14 +37,15 @@ public class AppleServiceImpl implements AppleService {
     private final WebClient webClient;
 
     @Override
-    public AppleKeyDTO getAppleIdentityToken() {
+    public AppleKeyListDTO getAppleIdentityToken() {
         String getKeyURL = "https://appleid.apple.com/auth/keys";
 
         WebClient.ResponseSpec responseSpec = webClient.get().uri(getKeyURL).retrieve();
 
         try {
-            AppleKeyDTO appleKeyDTO = responseSpec.bodyToMono(AppleKeyDTO.class).block();
-            return appleKeyDTO;
+            AppleKeyListDTO appleKeyListDTO = responseSpec.bodyToMono(AppleKeyListDTO.class)
+                .block();
+            return appleKeyListDTO;
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestException(ErrorCode.APPLE_BAD_REQUEST.getErrorCode());
@@ -52,7 +53,7 @@ public class AppleServiceImpl implements AppleService {
     }
 
     @Override
-    public Claims verifyIdentityToken(AppleRequest appleRequest, AppleKeyDTO appleKeyDTO) {
+    public Claims verifyIdentityToken(AppleRequest appleRequest, AppleKeyListDTO appleKeyListDTO) {
         SignedJWT signedJWT = null;
         JWTClaimsSet payload = null;
         PublicKey publicKey = null;
@@ -71,21 +72,21 @@ public class AppleServiceImpl implements AppleService {
             AppleHeaderDTO appleHeaderDTO = new ObjectMapper().readValue(
                 new String(Base64.getDecoder().decode(headerOfIdentityToken), "UTF-8"),
                 AppleHeaderDTO.class);
-            ApplePublicKeyDTO applePublicKeyDTO = appleKeyDTO.getMatchedKeyBy(
+            AppleKeyDTO appleKeyDTO = appleKeyListDTO.getMatchedKeyBy(
                     appleHeaderDTO.getKid(),
                     appleHeaderDTO.getAlg())
                 .orElseThrow(
                     () -> new BadRequestException(ErrorCode.APPLE_KEY_UNAVAILABLE.getErrorCode()));
 
-            byte[] nBytes = Base64.getUrlDecoder().decode(applePublicKeyDTO.getN());
-            byte[] eBytes = Base64.getUrlDecoder().decode(applePublicKeyDTO.getE());
+            byte[] nBytes = Base64.getUrlDecoder().decode(appleKeyDTO.getN());
+            byte[] eBytes = Base64.getUrlDecoder().decode(appleKeyDTO.getE());
 
             BigInteger n = new BigInteger(1, nBytes);
             BigInteger e = new BigInteger(1, eBytes);
 
             RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
             KeyFactory keyFactory = null;
-            keyFactory = KeyFactory.getInstance(applePublicKeyDTO.getKty());
+            keyFactory = KeyFactory.getInstance(appleKeyDTO.getKty());
             publicKey = keyFactory.generatePublic(publicKeySpec);
 
         } catch (ParseException e) {
