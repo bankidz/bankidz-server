@@ -493,6 +493,8 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Transactional
     public void challengeCompleteDelete(User user, FamilyRequest familyRequest) {
+        //ToDo: 부모는 가족나가면 어케되냐?
+        userRoleValidation(user, true);
         List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(user.getId());
         List<Challenge> challengeList = challengeUserList.stream().map(ChallengeUser::getChallenge)
             .collect(
