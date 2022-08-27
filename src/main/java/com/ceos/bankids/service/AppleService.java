@@ -15,4 +15,6 @@ public interface AppleService {
         AppleKeyListDTO appleKeyListDTO);
 
     public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest);
+
+    public Object revokeAppleAccount(AppleTokenDTO appleTokenDTO);
 }

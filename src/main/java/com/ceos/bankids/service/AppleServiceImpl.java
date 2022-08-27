@@ -38,6 +38,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
@@ -189,4 +192,30 @@ public class AppleServiceImpl implements AppleService {
 
         return null;
     }
+
+    @Override
+    public Object revokeAppleAccount(AppleTokenDTO appleTokenDTO) {
+        APPLE_SECRET = makeClientSecret();
+
+        String revokeURL = "https://appleid.apple.com/auth/revoke";
+
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("client_id", APPLE_CLIENT_ID);
+        formData.add("client_secret", APPLE_SECRET);
+        formData.add("token", appleTokenDTO.getRefreshToken());
+
+        WebClient.ResponseSpec responseSpec = webClient.post().uri(revokeURL)
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(BodyInserters.fromFormData(formData))
+            .retrieve();
+
+        try {
+            Object appleResponse = responseSpec.bodyToMono(Object.class).block();
+            return appleResponse;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BadRequestException(ErrorCode.APPLE_BAD_REQUEST.getErrorCode());
+        }
+    }
+
 }
