@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
     implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+    implementation 'io.github.jav:expo-server-sdk:1.1.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
