@@ -387,6 +387,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
         // Todo: 알림
 //        notificationController.notification(challenge, user);
+        notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
