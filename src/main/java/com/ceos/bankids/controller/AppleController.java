@@ -3,6 +3,7 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
+import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.service.AppleServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
@@ -32,8 +33,9 @@ public class AppleController {
 
         log.info("api = 애플 로그인");
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
-        Claims result = appleService.verifyIdentityToken(appleRequest, appleKeyListDTO);
+        Claims claims = appleService.verifyIdentityToken(appleRequest, appleKeyListDTO);
+        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
 
-        return CommonResponse.onSuccess(result);
+        return CommonResponse.onSuccess(appleTokenDTO);
     }
 }

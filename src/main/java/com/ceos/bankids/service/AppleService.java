@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
+import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,5 @@ public interface AppleService {
     public Claims verifyIdentityToken(AppleRequest appleRequest,
         AppleKeyListDTO appleKeyListDTO);
 
-//    public JSONObject decodeIdToken(AppleRequest appleRequest);
-//
-//    public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest);
-//
-
+    public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest);
 }
