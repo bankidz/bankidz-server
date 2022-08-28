@@ -26,4 +26,8 @@ public class AppleRequest {
     @ApiModelProperty(example = "BANKIDZ12345")
     @NotNull(message = "nonce may not be null")
     private String nonce;
+
+    @ApiModelProperty(example = "user json")
+    private AppleUserRequest user;
+
 }
