@@ -3,9 +3,9 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
-import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.service.AppleServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
@@ -32,18 +32,20 @@ public class AppleController {
     @ApiOperation(value = "애플 로그인")
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<Object> postAppleLogin(@Valid @RequestBody AppleRequest appleRequest,
+    public CommonResponse<LoginDTO> postAppleLogin(@Valid @RequestBody AppleRequest appleRequest,
         HttpServletResponse response) {
 
         log.info("api = 애플 로그인");
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
+
         Claims claims = appleService.verifyIdentityToken(appleRequest, appleKeyListDTO);
-        if (!claims.get("nonce").equals(appleRequest.getNonce())) {
-            throw new BadRequestException("NONCE");
-        }
+
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
 
-        return CommonResponse.onSuccess(appleTokenDTO);
+        LoginDTO loginDTO = appleService.loginWithAuthenticationCode(claims, appleRequest,
+            response);
+
+        return CommonResponse.onSuccess(loginDTO);
     }
 
     @ApiOperation(value = "애플 연동해제")
@@ -54,12 +56,14 @@ public class AppleController {
 
         log.info("api = 애플 연동해제");
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
+
         Claims claims = appleService.verifyIdentityToken(appleRequest, appleKeyListDTO);
-        if (!claims.get("nonce").equals(appleRequest.getNonce())) {
-            throw new BadRequestException("NONCE");
-        }
+
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
+
         Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
+
         return CommonResponse.onSuccess(appleResponse);
     }
+
 }

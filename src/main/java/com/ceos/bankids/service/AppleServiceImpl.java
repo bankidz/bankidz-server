@@ -2,11 +2,14 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AppleRequest;
+import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.oauth.AppleHeaderDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +34,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -49,7 +54,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 public class AppleServiceImpl implements AppleService {
 
+    private final UserRepository uRepo;
     private final WebClient webClient;
+    private final UserServiceImpl userService;
 
     @Value("${apple.team.id}")
     private String APPLE_TEAM_ID;
@@ -126,8 +133,13 @@ public class AppleServiceImpl implements AppleService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return Jwts.parser().setSigningKey(publicKey).parseClaimsJws(appleRequest.getIdToken())
+        Claims claims = Jwts.parser().setSigningKey(publicKey)
+            .parseClaimsJws(appleRequest.getIdToken())
             .getBody();
+        if (!claims.get("nonce").equals(appleRequest.getNonce())) {
+            throw new BadRequestException(ErrorCode.APPLE_NONCE_INCORRECT.getErrorCode());
+        }
+        return claims;
     }
 
     @Override
@@ -215,6 +227,30 @@ public class AppleServiceImpl implements AppleService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadRequestException(ErrorCode.APPLE_BAD_REQUEST.getErrorCode());
+        }
+    }
+
+    @Override
+    @Transactional
+    public LoginDTO loginWithAuthenticationCode(Claims claims, AppleRequest appleRequest,
+        HttpServletResponse response) {
+        Optional<User> user = uRepo.findByAuthenticationCode(claims.getSubject());
+        if (user.isPresent()) {
+            LoginDTO loginDTO = userService.issueNewTokens(user.get(), response);
+
+            return loginDTO;
+        } else {
+            User newUser = User.builder()
+                .username(appleRequest.getUser().getName().getLastName() + appleRequest.getUser()
+                    .getName().getFirstName())
+                .authenticationCode(claims.getSubject())
+                .provider("apple").refreshToken("")
+                .build();
+            uRepo.save(newUser);
+
+            LoginDTO loginDTO = userService.issueNewTokens(newUser, response);
+
+            return loginDTO;
         }
     }
 
