@@ -35,6 +35,21 @@ public class NotificationController {
         newMap.put("challengeId", challenge.getId());
         newMap.put("userId", authUser.getId());
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
+            challenge.getChallengeStatus());
+        return "NOTIFICATION SUCCESS";
+    }
+
+    @ApiOperation(value = "유저 레벨업 직전 알림")
+    public String userLevelUpMinusOne(User authUser) {
+
+        String title = "나의 레벨 보기";
+        String notificationBody = "레벨업까지 단 한 개만 완주하면 돼요";
+        String token = "ExponentPushToken[EQBviQMfJm_1riRkM0KdjP]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("userId", authUser.getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("유저 {}의 레벨업 직전 알림", authUser.getId());
         return "NOTIFICATION SUCCESS";
     }
 }
