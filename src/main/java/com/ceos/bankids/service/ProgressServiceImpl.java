@@ -86,6 +86,8 @@ public class ProgressServiceImpl implements ProgressService {
             challenge.setChallengeStatus(achieved);
             kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
             if (!Objects.equals(userLevel, kid.getLevel())) {
+                notificationController.kidLevelUpNotification(challenge.getContractUser(), user,
+                    kid.getLevel(), userLevel);
                 kid.setLevel(userLevel);
             }
             userLevelNotification(user, kid.getAchievedChallenge());

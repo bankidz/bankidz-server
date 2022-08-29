@@ -102,7 +102,7 @@ public class NotificationController {
 
         String title = "자녀의 돈길 완주";
         String notificationBody =
-            "자녀가 드디어 돈길을 완주했어요 \n 그동안 고생한 " + challengeUser.getUser().getUsername()
+            "자녀가 드디어 돈길을 완주했어요 \n그동안 고생한 " + challengeUser.getUser().getUsername()
                 + "님에게 이자로 보상해주세요!";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
@@ -111,5 +111,19 @@ public class NotificationController {
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
+    }
+
+    @Async
+    @ApiOperation(value = "자녀 레벨업 시 부모 알림")
+    public void kidLevelUpNotification(User contractUser, User user, Long level, Long afterLevel) {
+
+        String title = "자녀의 레벨업!";
+        String notificationBody =
+            user.getUsername() + "님이 레벨" + level + "에서 " + afterLevel + "로 올랐어요! \n확인하고 응원하러가기";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", user.getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("부모 유저 id = {}에게 유저 id = {}의 레벨업 알림 전송", contractUser.getId(), user.getId());
     }
 }
