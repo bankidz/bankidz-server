@@ -22,16 +22,22 @@ public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
 
+    레벨업까지 딱 한개만!
+    레벨업하기까지 🔸1 개🔸의 돈길만 완주하면 돼요
+
     @Async
     @ApiOperation(value = "돈길 상태 변경 알림")
     @GetMapping(produces = "application/json; charset=utf-8")
     public void notification(Challenge challenge, User authUser) {
-//        notificationService.makeChallengeStatusMessage(challenge, authUser);
-        String title = "돈길 상태가 변경되었어요!";
+
+        String title = challenge.getChallengeStatus() == ChallengeStatus.WALKING ?
+            challenge.getContractUser().getUsername() + "님이 제안한 돈길을 수락했어요\uD83D\uDE46\u200D"
+            : challenge.getContractUser().getUsername() + "00님이 제안한 돈길을 거절했어요\uD83D\uDE45\u200D";
         String notificationBody =
-            challenge.getChallengeStatus() == ChallengeStatus.WALKING ? "제안된 돈길이 수락되었어요!"
-                : "제안된 돈길이 거절당했어요. 이유를 알아봐요.";
-        String token = "ExponentPushToken[EQBviQMfJm_1riRkM0KdjP]";
+            challenge.getChallengeStatus() == ChallengeStatus.WALKING
+                ? "수락한 돈길 빨리 걸으러 가요\uD83E\uDD38"
+                : "그 이유가 무엇인지 알아보러 가요\uD83D\uDE25";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("challengeId", challenge.getId());
         newMap.put("userId", authUser.getId());
