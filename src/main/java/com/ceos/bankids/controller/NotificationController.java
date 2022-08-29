@@ -22,8 +22,8 @@ public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
 
-    레벨업까지 딱 한개만!
-    레벨업하기까지 🔸1 개🔸의 돈길만 완주하면 돼요
+    벌써 절반이나 왔네요💯
+    레벨업까지 절반 남았어요.힘내세요💗
 
     @Async
     @ApiOperation(value = "돈길 상태 변경 알림")
@@ -50,8 +50,8 @@ public class NotificationController {
     @ApiOperation(value = "유저 레벨업 직전 알림")
     public void userLevelUpMinusOne(User authUser) {
 
-        String title = "나의 레벨 보기";
-        String notificationBody = "레벨업까지 단 한 개만 완주하면 돼요";
+        String title = "레벨업까지 딱 한개만!";
+        String notificationBody = "레벨업하기까지 \uD83D\uDD381 개\uD83D\uDD38의 돈길만 완주하면 돼요";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("userId", authUser.getId());
@@ -63,8 +63,8 @@ public class NotificationController {
     @ApiOperation(value = "유저 레벨업 절반 달성 알림")
     public void userLevelUpHalf(User authUser) {
 
-        String title = "나의 레벨 보기";
-        String notificationBody = "레벨업까지 절반이나 왔어요.. 힘내세요!";
+        String title = "벌써 절반이나 왔네요\uD83D\uDCAF";
+        String notificationBody = "레벨업까지 절반 남았어요.힘내세요\uD83D\uDC97";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("userId", authUser.getId());
