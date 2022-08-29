@@ -147,6 +147,9 @@ public class ProgressServiceImpl implements ProgressService {
         if (kidAchievedChallenge == 4 || kidAchievedChallenge == 9 || kidAchievedChallenge == 14
             || kidAchievedChallenge == 19) {
             notificationController.userLevelUpMinusOne(authUser);
+        } else if (kidAchievedChallenge == 3 || kidAchievedChallenge == 8
+            || kidAchievedChallenge == 13 || kidAchievedChallenge == 15) {
+            notificationController.userLevelUpHalf(authUser);
         }
     }
 }
