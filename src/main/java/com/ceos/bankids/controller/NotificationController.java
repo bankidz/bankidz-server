@@ -65,16 +65,30 @@ public class NotificationController {
     }
 
     @ApiOperation(value = "자녀가 돈길 제안했을 때 부모 알림")
-    public void createPendingChallengeNotification(User authUser, ChallengeUser challengeUser) {
+    public void createPendingChallengeNotification(User contractUser, ChallengeUser challengeUser) {
 
         String title = "제안된 돈길 보기";
         String notificationBody = challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요! 확인하러가기";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
-        newMap.put("user", authUser.getId());
+        newMap.put("user", challengeUser.getUser().getId());
         newMap.put("challenge", challengeUser.getChallenge().getId());
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
-        log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", authUser.getId(),
+        log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", contractUser.getId(),
+            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
+    }
+
+    @ApiOperation(value = "자녀가 돈길을 걸었을 때 부모 알림")
+    public void runProgressNotification(User contractUser, ChallengeUser challengeUser) {
+
+        String title = "자녀의 돈길 걷기 확인";
+        String notificationBody = challengeUser.getUser().getUsername() + "님이 지금 돈길을 걸었어요! 확인하러가기";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", challengeUser.getUser().getId());
+        newMap.put("challenge", challengeUser.getChallenge().getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 }

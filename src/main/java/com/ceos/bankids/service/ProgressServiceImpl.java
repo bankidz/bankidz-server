@@ -88,6 +88,7 @@ public class ProgressServiceImpl implements ProgressService {
             if (!Objects.equals(userLevel, kid.getLevel())) {
                 kid.setLevel(userLevel);
             }
+            userLevelNotification(user, kid.getAchievedChallenge());
         }
 
         progress.setIsAchieved(true);
@@ -97,7 +98,8 @@ public class ProgressServiceImpl implements ProgressService {
         kidRepository.save(kid);
         progressRepository.save(progress);
 
-        userLevelNotification(user, kid.getAchievedChallenge());
+        notificationController.runProgressNotification(challenge.getContractUser(),
+            challengeUser.get());
 
         return new ProgressDTO(progress);
     }
