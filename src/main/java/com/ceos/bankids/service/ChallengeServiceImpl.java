@@ -127,6 +127,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
         parentRepository.save(parent);
 
+        notificationController.createPendingChallengeNotification(contractUser, newChallengeUser);
+
         return new ChallengeDTO(newChallenge, null, null);
     }
 
@@ -255,10 +257,14 @@ public class ChallengeServiceImpl implements ChallengeService {
                         Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
                         kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
                         if (!Objects.equals(userLevel, kid.getLevel())) {
+                            notificationController.kidLevelUpNotification(
+                                challenge.getContractUser(), user, kid.getLevel(), userLevel);
                             kid.setLevel(userLevel);
                         }
                         challengeRepository.save(challenge);
                         kidRepository.save(kid);
+                        notificationController.achieveChallengeNotification(
+                            challenge.getContractUser(), r);
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
@@ -587,6 +593,17 @@ public class ChallengeServiceImpl implements ChallengeService {
         parent.setTotalRequest(0L);
         parent.setAcceptedRequest(0L);
         parentRepository.save(parent);
+    }
+
+    private void userLevelNotification(User authUser, Long kidAchievedChallenge) {
+
+        if (kidAchievedChallenge == 4 || kidAchievedChallenge == 9 || kidAchievedChallenge == 14
+            || kidAchievedChallenge == 19) {
+            notificationController.userLevelUpMinusOne(authUser);
+        } else if (kidAchievedChallenge == 3 || kidAchievedChallenge == 8
+            || kidAchievedChallenge == 13 || kidAchievedChallenge == 15) {
+            notificationController.userLevelUpHalf(authUser);
+        }
     }
 }
 

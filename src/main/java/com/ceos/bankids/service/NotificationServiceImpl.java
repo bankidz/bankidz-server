@@ -9,8 +9,6 @@ import com.ceos.bankids.repository.ChallengeNotificationRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -48,18 +45,18 @@ public class NotificationServiceImpl implements NotificationService {
     private FirebaseMessaging firebaseMessagingInstance;
 
     // DI 할 때, 생성자 돌려서 초기화
-    @PostConstruct
-    private void fireBaseInit() throws IOException {
-        FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(
-                    new ClassPathResource(FCM_PRIVATE_KEY_PATH).getInputStream())
-                .createScoped(List.of(fireBaseScope))).build();
-
-        if (FirebaseApp.getApps().isEmpty()) {
-            FirebaseApp.initializeApp(firebaseOptions);
-            log.info("Firebase successfully run");
-        }
-    }
+//    @PostConstruct
+//    private void fireBaseInit() throws IOException {
+//        FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
+//            .setCredentials(GoogleCredentials.fromStream(
+//                    new ClassPathResource(FCM_PRIVATE_KEY_PATH).getInputStream())
+//                .createScoped(List.of(fireBaseScope))).build();
+//
+//        if (FirebaseApp.getApps().isEmpty()) {
+//            FirebaseApp.initializeApp(firebaseOptions);
+//            log.info("Firebase successfully run");
+//        }
+//    }
 
     // firebase 서버에 전달할 메시지 생성
 //    @Async
