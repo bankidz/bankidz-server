@@ -2,6 +2,7 @@ package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.ProgressController;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.domain.AbstractTimestamp;
@@ -75,6 +76,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -119,7 +122,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
         ProgressDTO progressDTO = new ProgressDTO(newProgress);
         CommonResponse<ProgressDTO> result = progressController.patchProgress(son,
@@ -150,6 +153,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         sonKid.setSavings(20000L);
         son.setKid(sonKid);
@@ -213,7 +218,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
         ProgressDTO progressDTO = new ProgressDTO(newProgress2);
         CommonResponse<ProgressDTO> result = progressController.patchProgress(son,
@@ -246,6 +251,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -290,7 +297,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -308,6 +315,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -352,7 +361,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -370,6 +379,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -432,7 +443,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -451,6 +462,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -513,7 +526,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -532,6 +545,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -594,7 +609,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
 
         //then
@@ -613,6 +628,8 @@ public class ProgressControllerTest {
             ChallengeUserRepository.class);
         ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         son.setKid(sonKid);
         mom.setParent(momParent);
@@ -675,7 +692,7 @@ public class ProgressControllerTest {
         //when
         ProgressServiceImpl progressService = new ProgressServiceImpl(mockProgressRepository,
             mockChallengeUserRepository, mockChallengeRepository,
-            mockKidRepository);
+            mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
 
         //then

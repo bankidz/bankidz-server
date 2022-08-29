@@ -24,7 +24,7 @@ public class NotificationController {
 
     @ApiOperation(value = "돈길 상태 변경 알림")
     @GetMapping(produces = "application/json; charset=utf-8")
-    public String notification(Challenge challenge, User authUser) {
+    public void notification(Challenge challenge, User authUser) {
 //        notificationService.makeChallengeStatusMessage(challenge, authUser);
         String title = "돈길 상태가 변경되었어요!";
         String notificationBody =
@@ -35,6 +35,31 @@ public class NotificationController {
         newMap.put("challengeId", challenge.getId());
         newMap.put("userId", authUser.getId());
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
-        return "NOTIFICATION SUCCESS";
+        log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
+            challenge.getChallengeStatus());
+    }
+
+    @ApiOperation(value = "유저 레벨업 직전 알림")
+    public void userLevelUpMinusOne(User authUser) {
+
+        String title = "나의 레벨 보기";
+        String notificationBody = "레벨업까지 단 한 개만 완주하면 돼요";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("userId", authUser.getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("유저 id = {}의 레벨업 직전 알림", authUser.getId());
+    }
+
+    @ApiOperation(value = "유저 레벨업 절반 달성 알림")
+    public void userLevelUpHalf(User authUser) {
+
+        String title = "나의 레벨 보기";
+        String notificationBody = "레벨업까지 절반이나 왔어요.. 힘내세요!";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("userId", authUser.getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
     }
 }

@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
@@ -40,6 +41,7 @@ public class ProgressServiceImpl implements ProgressService {
     private final ChallengeUserRepository challengeUserRepository;
     private final ChallengeRepository challengeRepository;
     private final KidRepository kidRepository;
+    private final NotificationController notificationController;
 
     static int getCurrentWeek(Calendar nowCal, Calendar createdAtCal, int currentWeek) {
         if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
@@ -95,6 +97,8 @@ public class ProgressServiceImpl implements ProgressService {
         kidRepository.save(kid);
         progressRepository.save(progress);
 
+        userLevelNotification(user, kid.getAchievedChallenge());
+
         return new ProgressDTO(progress);
     }
 
@@ -136,5 +140,16 @@ public class ProgressServiceImpl implements ProgressService {
             return 5L;
         }
         throw new IllegalArgumentException();
+    }
+
+    private void userLevelNotification(User authUser, Long kidAchievedChallenge) {
+
+        if (kidAchievedChallenge == 4 || kidAchievedChallenge == 9 || kidAchievedChallenge == 14
+            || kidAchievedChallenge == 19) {
+            notificationController.userLevelUpMinusOne(authUser);
+        } else if (kidAchievedChallenge == 3 || kidAchievedChallenge == 8
+            || kidAchievedChallenge == 13 || kidAchievedChallenge == 15) {
+            notificationController.userLevelUpHalf(authUser);
+        }
     }
 }
