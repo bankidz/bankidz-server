@@ -151,8 +151,7 @@ public class AppleServiceImpl implements AppleService {
         String getTokenURL =
             "https://appleid.apple.com/auth/token?client_id=" + APPLE_CLIENT_ID + "&client_secret="
                 + APPLE_SECRET + "&grant_type=authorization_code&code=" + appleRequest.getCode()
-                + "&redirect_uri=" + "https://b555-222-112-145-120.ngrok.io/apple/login";
-        //APPLE_URI;
+                + "&redirect_uri=" + APPLE_URI;
 
         WebClient.ResponseSpec responseSpec = webClient.post().uri(getTokenURL).retrieve();
 
@@ -237,8 +236,7 @@ public class AppleServiceImpl implements AppleService {
     @Transactional
     public LoginDTO loginWithAuthenticationCode(Claims claims, AppleRequest appleRequest,
         HttpServletResponse response) {
-        Optional<User> user = uRepo.findByAuthenticationCode(
-            "001362.14f3b897d6614ef2886bd39422da9df4.0935");
+        Optional<User> user = uRepo.findByAuthenticationCode(claims.getSubject());
         if (user.isPresent()) {
             LoginDTO loginDTO = userService.issueNewTokens(user.get(), response);
 
