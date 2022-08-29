@@ -22,9 +22,6 @@ public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
 
-    자녀가 레벨업을 했어요💯
-        000님이 레벨1에서 2로 올랐어요! 확인해볼까요?
-
     @Async
     @ApiOperation(value = "돈길 상태 변경 알림")
     @GetMapping(produces = "application/json; charset=utf-8")
@@ -32,7 +29,7 @@ public class NotificationController {
 
         String title = challenge.getChallengeStatus() == ChallengeStatus.WALKING ?
             challenge.getContractUser().getUsername() + "님이 제안한 돈길을 수락했어요\uD83D\uDE46\u200D"
-            : challenge.getContractUser().getUsername() + "00님이 제안한 돈길을 거절했어요\uD83D\uDE45\u200D";
+            : challenge.getContractUser().getUsername() + "님이 제안한 돈길을 거절했어요\uD83D\uDE45\u200D";
         String notificationBody =
             challenge.getChallengeStatus() == ChallengeStatus.WALKING
                 ? "수락한 돈길 빨리 걸으러 가요\uD83E\uDD38"
@@ -76,8 +73,9 @@ public class NotificationController {
     @ApiOperation(value = "자녀가 돈길 제안했을 때 부모 알림")
     public void createPendingChallengeNotification(User contractUser, ChallengeUser challengeUser) {
 
-        String title = "\uD83D\uDD14 " + challengeUser.getUser().getUsername() +  "님이 돈길을 제안했어요";
-        String notificationBody = challengeUser.getUser().getUsername()+ "님이 돈길을 제안했어요! 수락하러 가볼까요?";
+        String title = "\uD83D\uDD14 " + challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요";
+        String notificationBody =
+            challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요! 수락하러 가볼까요?";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
@@ -92,7 +90,8 @@ public class NotificationController {
     public void runProgressNotification(User contractUser, ChallengeUser challengeUser) {
 
         String title = challengeUser.getUser().getUsername() + "님이 돈길을 걸었어요! \uD83C\uDFC3\u200D";
-        String notificationBody = challengeUser.getUser().getUsername() + "님이 어떤 돈길을 걸었을까요?\n확인하러가요❤️\u200D";
+        String notificationBody =
+            challengeUser.getUser().getUsername() + "님이 어떤 돈길을 걸었을까요?\n확인하러가요❤️\u200D";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
@@ -107,7 +106,9 @@ public class NotificationController {
     public void achieveChallengeNotification(User contractUser, ChallengeUser challengeUser) {
 
         String title = "\uD83D\uDEA8자녀가 돈길을 완주했어요";
-        String notificationBody = "실제로 다 모았는지 확인하시고\n그동안 고생한" + challengeUser.getUser().getUsername() + "님에게 이자\uD83D\uDCB0로 보상해주세요!";
+        String notificationBody =
+            "실제로 다 모았는지 확인하시고\n그동안 고생한" + challengeUser.getUser().getUsername()
+                + "님에게 이자\uD83D\uDCB0로 보상해주세요!";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
@@ -123,11 +124,26 @@ public class NotificationController {
 
         String title = "자녀가 레벨업을 했어요💯";
         String notificationBody =
-            user.getUsername() + "님이 레벨" + level + "에서 레벨" +  afterLevel + "로 올랐어요! 확인해볼까요?";
+            user.getUsername() + "님이 레벨" + level + "에서 레벨" + afterLevel + "로 올랐어요! 확인해볼까요?";
         String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", user.getId());
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
         log.info("부모 유저 id = {}에게 유저 id = {}의 레벨업 알림 전송", contractUser.getId(), user.getId());
+    }
+
+    @Async
+    @ApiOperation(value = "돈길 실패 시 부모 알림")
+    public void challengeFailedNotification(User contractUser, ChallengeUser challengeUser) {
+
+        String title = "\uD83D\uDEA8자녀가 돈길을 실패했어요";
+        String notificationBody = "실패한 돈길을 확인한 후, 자녀에게 격려해주세요\uD83C\uDD98\u2028 \n실패한 돈길들은 마이페이지 - 돈길 기록에서 확인가능해요";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", challengeUser.getUser().getId());
+        newMap.put("challenge", challengeUser.getChallenge().getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 실패 알림 전송", contractUser.getId(),
+            challengeUser.getChallenge().getId(), challengeUser.getChallenge().getId());
     }
 }

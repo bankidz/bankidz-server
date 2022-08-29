@@ -152,7 +152,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
             } else if (deleteChallenge.getChallengeStatus()
-                == failed) {        // Todo: 부모 측 컬럼 조건 확실히 한 다음 추가
+                == failed) {
                 List<Progress> failureProgressList = deleteChallenge.getProgressList();
                 progressRepository.deleteAll(failureProgressList);
                 challengeUserRepository.delete(deleteChallengeUser);
@@ -194,8 +194,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
-//                kid.setSavings(kid.getSavings()
-//                    - deleteChallenge.getSuccessWeeks() * deleteChallenge.getWeekPrice());
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
@@ -252,6 +250,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (falseCnt >= risk) {
                         challenge.setChallengeStatus(failed);
                         challengeRepository.save(challenge);
+                        notificationController.challengeFailedNotification(
+                            challenge.getContractUser(), r);
                     } else if (diffWeeks > challenge.getWeeks()) {
                         challenge.setChallengeStatus(achieved);
                         Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
