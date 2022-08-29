@@ -127,6 +127,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
         parentRepository.save(parent);
 
+        notificationController.createPendingChallengeNotification(contractUser, newChallengeUser);
+
         return new ChallengeDTO(newChallenge, null, null);
     }
 

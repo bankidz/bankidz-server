@@ -2,6 +2,7 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NotificationServiceImpl;
@@ -61,5 +62,19 @@ public class NotificationController {
         newMap.put("userId", authUser.getId());
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
         log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
+    }
+
+    @ApiOperation(value = "자녀가 돈길 제안했을 때 부모 알림")
+    public void createPendingChallengeNotification(User authUser, ChallengeUser challengeUser) {
+
+        String title = "제안된 돈길 보기";
+        String notificationBody = challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요! 확인하러가기";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", authUser.getId());
+        newMap.put("challenge", challengeUser.getChallenge().getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", authUser.getId(),
+            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 }

@@ -8,6 +8,7 @@ import io.github.jav.exposerversdk.ExpoPushMessageTicketPair;
 import io.github.jav.exposerversdk.ExpoPushTicket;
 import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
+import io.github.jav.exposerversdk.PushNotificationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,10 +76,10 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             String errorTicketMessagesString = errorTicketMessages.stream().map(
                 p -> "Title: " + p.message.getTitle() + ", Error: " + p.ticket.getDetails()
                     .getError()).collect(Collectors.joining(","));
-            log.error("Recieved ERROR ticket for " + errorTicketMessages.size() + " messages: "
+            log.info("Recieved ERROR ticket for " + errorTicketMessages.size() + " messages: "
                 + errorTicketMessagesString);
-        } catch (PushClientException e) {
-            log.error("error message = {}", e.getMessage());
+        } catch (PushClientException | PushNotificationException e) {
+            log.info("error message = {}", e.getMessage());
             throw new InternalServerException(ErrorCode.NOTIFICATION_SERVICE_ERROR.getErrorCode());
         }
     }
