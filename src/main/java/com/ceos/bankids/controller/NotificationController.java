@@ -5,11 +5,11 @@ import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
-import com.ceos.bankids.service.NotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationServiceImpl notificationService;
     private final ExpoNotificationServiceImpl expoNotificationService;
 
+    @Async
     @ApiOperation(value = "돈길 상태 변경 알림")
     @GetMapping(produces = "application/json; charset=utf-8")
     public void notification(Challenge challenge, User authUser) {
@@ -40,6 +40,7 @@ public class NotificationController {
             challenge.getChallengeStatus());
     }
 
+    @Async
     @ApiOperation(value = "유저 레벨업 직전 알림")
     public void userLevelUpMinusOne(User authUser) {
 
@@ -52,6 +53,7 @@ public class NotificationController {
         log.info("유저 id = {}의 레벨업 직전 알림", authUser.getId());
     }
 
+    @Async
     @ApiOperation(value = "유저 레벨업 절반 달성 알림")
     public void userLevelUpHalf(User authUser) {
 
@@ -64,6 +66,7 @@ public class NotificationController {
         log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
     }
 
+    @Async
     @ApiOperation(value = "자녀가 돈길 제안했을 때 부모 알림")
     public void createPendingChallengeNotification(User contractUser, ChallengeUser challengeUser) {
 
@@ -78,6 +81,7 @@ public class NotificationController {
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 
+    @Async
     @ApiOperation(value = "자녀가 돈길을 걸었을 때 부모 알림")
     public void runProgressNotification(User contractUser, ChallengeUser challengeUser) {
 
@@ -89,6 +93,23 @@ public class NotificationController {
         newMap.put("challenge", challengeUser.getChallenge().getId());
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
+            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
+    }
+
+    @Async
+    @ApiOperation(value = "돈길을 완주했을 때 부모 알림")
+    public void achieveChallengeNotification(User contractUser, ChallengeUser challengeUser) {
+
+        String title = "자녀의 돈길 완주";
+        String notificationBody =
+            "자녀가 드디어 돈길을 완주했어요 \n 그동안 고생한 " + challengeUser.getUser().getUsername()
+                + "님에게 이자로 보상해주세요!";
+        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", challengeUser.getUser().getId());
+        newMap.put("challenge", challengeUser.getChallenge().getId());
+        expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 }

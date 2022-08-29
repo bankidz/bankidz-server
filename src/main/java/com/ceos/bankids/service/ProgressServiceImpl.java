@@ -100,6 +100,10 @@ public class ProgressServiceImpl implements ProgressService {
 
         notificationController.runProgressNotification(challenge.getContractUser(),
             challengeUser.get());
+        if (challenge.getChallengeStatus() == achieved) {
+            notificationController.achieveChallengeNotification(challenge.getContractUser(),
+                challengeUser.get());
+        }
 
         return new ProgressDTO(progress);
     }

@@ -261,6 +261,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                         }
                         challengeRepository.save(challenge);
                         kidRepository.save(kid);
+                        notificationController.achieveChallengeNotification(
+                            challenge.getContractUser(), r);
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
