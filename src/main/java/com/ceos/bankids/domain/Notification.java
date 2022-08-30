@@ -1,6 +1,5 @@
 package com.ceos.bankids.domain;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,38 +14,45 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "NotificationToken")
+@Table(name = "Notification")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@DynamicInsert
-@DynamicUpdate
-public class NotificationToken extends AbstractTimestamp {
+public class Notification extends AbstractTimestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String token;
+    @Column
+    private String title;
+
+    @Column
+    private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "challengeId", nullable = false)
+    private Challenge challenge;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Builder
-    public NotificationToken(
+    public Notification(
         Long id,
-        String token,
+        String title,
+        String message,
+        Challenge challenge,
         User user
     ) {
         this.id = id;
-        this.token = token;
+        this.title = title;
+        this.message = message;
+        this.challenge = challenge;
         this.user = user;
     }
 }

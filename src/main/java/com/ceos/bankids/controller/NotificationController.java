@@ -5,14 +5,11 @@ import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.controller.request.AllSendNotificationRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
-import com.ceos.bankids.domain.NotificationToken;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.repository.NotificationTokenRepository;
+import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -28,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
-    private final NotificationTokenRepository notificationTokenRepository;
+    private final UserRepository userRepository;
 
     @ApiOperation(value = "모든 유저에게 알림")
     @PostMapping(value = "/all", produces = "application/json; charset=utf-8")
@@ -37,12 +34,7 @@ public class NotificationController {
 
         String title = allSendNotificationRequest.getTitle();
         String body = allSendNotificationRequest.getBody();
-        List<String> tokenList = notificationTokenRepository.findAll().stream()
-            .map(NotificationToken::getToken).collect(
-                Collectors.toList());
-        tokenList.forEach(token -> {
-            expoNotificationService.sendMessage(token, title, body, null);
-        });
+        //todo 유저에서 토큰 리스트 가져오기
         return CommonResponse.onSuccess("NOTIFICATION SUCCESS");
     }
 

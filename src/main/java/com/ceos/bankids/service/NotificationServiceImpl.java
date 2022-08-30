@@ -5,8 +5,8 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.ChallengeNotificationRepository;
 import com.ceos.bankids.repository.ChallengeUserRepository;
+import com.ceos.bankids.repository.NotificationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
-    private final ChallengeNotificationRepository challengeNotificationRepository;
+    private final NotificationRepository notificationRepository;
     private final ChallengeUserRepository challengeUserRepository;
     private final ObjectMapper objectMapper;
     private String API_URL = "https://fcm.googleapis.com/v1/projects/bankidfcm/messages:send";

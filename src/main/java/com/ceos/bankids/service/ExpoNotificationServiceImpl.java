@@ -3,6 +3,7 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.InternalServerException;
+import com.ceos.bankids.repository.NotificationRepository;
 import io.github.jav.exposerversdk.ExpoPushMessage;
 import io.github.jav.exposerversdk.ExpoPushMessageTicketPair;
 import io.github.jav.exposerversdk.ExpoPushTicket;
@@ -23,6 +24,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ExpoNotificationServiceImpl implements ExpoNotificationService {
+
+    private final NotificationRepository notificationRepository;
 
     public void sendMessage(String token, String title, String body, Map<String, Object> data) {
 
@@ -78,6 +81,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                     .getError()).collect(Collectors.joining(","));
             log.info("Recieved ERROR ticket for " + errorTicketMessages.size() + " messages: "
                 + errorTicketMessagesString);
+            //Todo 메서드 인자가 user로 바뀌면 데이터 베이스에 꽂기
         } catch (PushClientException | PushNotificationException e) {
             log.info("error message = {}", e.getMessage());
             throw new InternalServerException(ErrorCode.NOTIFICATION_SERVICE_ERROR.getErrorCode());
