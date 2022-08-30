@@ -127,6 +127,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
         parentRepository.save(parent);
 
+        notificationController.createPendingChallengeNotification(contractUser, newChallengeUser);
+
         return new ChallengeDTO(newChallenge, null, null);
     }
 
@@ -150,7 +152,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
                 throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
             } else if (deleteChallenge.getChallengeStatus()
-                == failed) {        // Todo: 부모 측 컬럼 조건 확실히 한 다음 추가
+                == failed) {
                 List<Progress> failureProgressList = deleteChallenge.getProgressList();
                 progressRepository.deleteAll(failureProgressList);
                 challengeUserRepository.delete(deleteChallengeUser);
@@ -192,8 +194,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                 long datetime = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(datetime);
                 kid.setDeleteChallenge(timestamp);
-//                kid.setSavings(kid.getSavings()
-//                    - deleteChallenge.getSuccessWeeks() * deleteChallenge.getWeekPrice());
                 kidRepository.save(kid);
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
@@ -250,15 +250,21 @@ public class ChallengeServiceImpl implements ChallengeService {
                     if (falseCnt >= risk) {
                         challenge.setChallengeStatus(failed);
                         challengeRepository.save(challenge);
+                        notificationController.challengeFailedNotification(
+                            challenge.getContractUser(), r);
                     } else if (diffWeeks > challenge.getWeeks()) {
                         challenge.setChallengeStatus(achieved);
                         Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
                         kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
                         if (!Objects.equals(userLevel, kid.getLevel())) {
+                            notificationController.kidLevelUpNotification(
+                                challenge.getContractUser(), user, kid.getLevel(), userLevel);
                             kid.setLevel(userLevel);
                         }
                         challengeRepository.save(challenge);
                         kidRepository.save(kid);
+                        notificationController.achieveChallengeNotification(
+                            challenge.getContractUser(), r);
                     }
                     challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
                         r.getChallenge().getComment()));
@@ -387,6 +393,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
         // Todo: 알림
 //        notificationController.notification(challenge, user);
+        notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
@@ -492,7 +499,9 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Transactional
-    public void challengeCompleteDelete(User user, FamilyRequest familyRequest) {
+    public void challengeCompleteDeleteByKid(User user, FamilyRequest familyRequest) {
+        //ToDo: 부모는 가족나가면 어케되냐?
+        userRoleValidation(user, true);
         List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(user.getId());
         List<Challenge> challengeList = challengeUserList.stream().map(ChallengeUser::getChallenge)
             .collect(
@@ -546,6 +555,55 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
             parentRepository.save(parent);
         });
+    }
+
+    @Transactional
+    public void challengeCompleteDeleteByParent(User user, FamilyRequest familyRequest) {
+        //ToDo: 부모는 가족나가면 어케되냐?
+        userRoleValidation(user, false);
+        List<Challenge> challengeList = challengeRepository.findByContractUserId(user.getId());
+        challengeList.forEach(challenge -> {
+            long kidSavings = 0L;
+            long kidAchievedChallenge = 0L;
+            long kidTotalChallenge = 0L;
+            if (challenge.getChallengeStatus() != pending
+                && challenge.getChallengeStatus() != rejected) {
+                kidTotalChallenge = kidTotalChallenge + 1L;
+                kidSavings =
+                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
+                progressRepository.deleteAll(challenge.getProgressList());
+            }
+            if (challenge.getChallengeStatus() == achieved) {
+                kidAchievedChallenge = kidAchievedChallenge + 1L;
+            } else if (challenge.getChallengeStatus() == rejected) {
+                commentRepository.delete(challenge.getComment());
+            }
+            ChallengeUser challengeUser = challengeUserRepository.findByChallengeId(
+                challenge.getId()).orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
+            Kid kid = challengeUser.getUser().getKid();
+            kid.setTotalChallenge(kid.getTotalChallenge() - kidTotalChallenge);
+            kid.setSavings(kid.getSavings() - kidSavings);
+            kid.setAchievedChallenge(kid.getAchievedChallenge() - kidAchievedChallenge);
+            kidRepository.save(kid);
+            challengeUserRepository.delete(challengeUser);
+            challengeRepository.delete(challenge);
+        });
+        Parent parent = user.getParent();
+        parent.setTotalRequest(0L);
+        parent.setAcceptedRequest(0L);
+        parentRepository.save(parent);
+    }
+
+    private void userLevelNotification(User authUser, Long kidAchievedChallenge) {
+
+        if (kidAchievedChallenge == 4 || kidAchievedChallenge == 9 || kidAchievedChallenge == 14
+            || kidAchievedChallenge == 19) {
+            notificationController.userLevelUpMinusOne(authUser);
+        } else if (kidAchievedChallenge == 3 || kidAchievedChallenge == 8
+            || kidAchievedChallenge == 13 || kidAchievedChallenge == 15) {
+            notificationController.userLevelUpHalf(authUser);
+        }
     }
 }
 
