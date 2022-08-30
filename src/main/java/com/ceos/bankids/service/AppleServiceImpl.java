@@ -18,7 +18,6 @@ import com.nimbusds.jwt.SignedJWT;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -183,13 +182,12 @@ public class AppleServiceImpl implements AppleService {
 
     private PrivateKey getPrivateKey() {
 
-        ClassPathResource resource = new ClassPathResource(APPLE_KEY_PATH);
         byte[] content = null;
         KeyFactory factory = null;
         PKCS8EncodedKeySpec priKeySpec = null;
 
         try (InputStreamReader keyReader = new InputStreamReader(
-            new FileInputStream(resource.getFile()));
+            new ClassPathResource(APPLE_KEY_PATH).getInputStream());
             PemReader pemReader = new PemReader(keyReader)) {
             {
                 factory = KeyFactory.getInstance("EC");
