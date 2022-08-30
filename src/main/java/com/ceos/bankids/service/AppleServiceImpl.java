@@ -198,13 +198,14 @@ public class AppleServiceImpl implements AppleService {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            throw new BadRequestException("IOException");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            throw new BadRequestException("NoSuchAlgorithmException");
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
+            throw new BadRequestException("InvalidKeySpecException");
         }
-
-        return null;
     }
 
     @Override
