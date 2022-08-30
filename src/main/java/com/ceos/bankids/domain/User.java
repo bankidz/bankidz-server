@@ -79,9 +79,6 @@ public class User extends AbstractTimestamp implements UserDetails {
     private List<Comment> commentList;
 
     @OneToMany(mappedBy = "user")
-    private List<NotificationToken> notificationTokenList;
-
-    @OneToMany(mappedBy = "user")
     private List<Notification> notificationList;
 
     @Builder
