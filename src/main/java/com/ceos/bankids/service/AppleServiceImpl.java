@@ -18,8 +18,10 @@ import com.nimbusds.jwt.SignedJWT;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -186,7 +188,8 @@ public class AppleServiceImpl implements AppleService {
         KeyFactory factory = null;
         PKCS8EncodedKeySpec priKeySpec = null;
 
-        try (FileReader keyReader = new FileReader(resource.getFile());
+        try (InputStreamReader keyReader = new InputStreamReader(
+            new FileInputStream(resource.getFile()));
             PemReader pemReader = new PemReader(keyReader)) {
             {
                 factory = KeyFactory.getInstance("EC");
@@ -196,15 +199,18 @@ public class AppleServiceImpl implements AppleService {
                 priKeySpec = new PKCS8EncodedKeySpec(content);
                 return factory.generatePrivate(priKeySpec);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new BadRequestException("IOException");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             throw new BadRequestException("NoSuchAlgorithmException");
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
             throw new BadRequestException("InvalidKeySpecException");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new BadRequestException("FileNotFoundException");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BadRequestException("IOException");
         }
     }
 
