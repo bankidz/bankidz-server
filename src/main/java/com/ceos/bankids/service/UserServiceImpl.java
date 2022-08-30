@@ -133,6 +133,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO updateUserLogout(User user) {
         user.setRefreshToken("");
+        user.setExpoToken("");
         uRepo.save(user);
 
         Cookie cookie = new Cookie("refreshToken", null);
