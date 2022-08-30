@@ -12,11 +12,11 @@ import lombok.ToString;
 public class FamilyUserDTO {
 
     @ApiModelProperty(example = "주어랑")
-    String username;
+    private String username;
     @ApiModelProperty(example = "true")
-    Boolean isFemale;
+    private Boolean isFemale;
     @ApiModelProperty(example = "true")
-    Boolean isKid;
+    private Boolean isKid;
 
 
     public FamilyUserDTO(User user) {

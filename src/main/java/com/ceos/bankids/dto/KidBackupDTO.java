@@ -1,7 +1,17 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.KidBackup;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
+@Getter
+@ToString
+@Builder
+@AllArgsConstructor
+@EqualsAndHashCode
 public class KidBackupDTO {
 
     private String birthYear;
