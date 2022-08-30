@@ -35,9 +35,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.json.JSONParser;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -248,8 +250,7 @@ public class AppleServiceImpl implements AppleService {
             return loginDTO;
         } else {
             User newUser = User.builder()
-                .username(appleRequest.getUser().getName().getLastName() + appleRequest.getUser()
-                    .getName().getFirstName())
+                .username(appleRequest.getUsername())
                 .authenticationCode(claims.getSubject())
                 .provider("apple").refreshToken("")
                 .build();
@@ -261,4 +262,23 @@ public class AppleServiceImpl implements AppleService {
         }
     }
 
+    @Override
+    public AppleRequest getAppleRequest(MultiValueMap<String, String> formData) {
+        AppleRequest appleRequest = new AppleRequest(formData.get("code").get(0),
+            formData.get("id_token").get(0), null);
+        if (formData.get("user") != null) {
+            String userString = formData.get("user").get(0);
+            JSONParser userParser = new JSONParser(userString);
+            Object obj = null;
+            try {
+                obj = userParser.parse();
+            } catch (org.apache.tomcat.util.json.ParseException e) {
+                e.printStackTrace();
+            }
+            LinkedHashMap<String, LinkedHashMap<String, String>> userObject = (LinkedHashMap<String, LinkedHashMap<String, String>>) obj;
+            appleRequest.setUsername(userObject.get("name").get("lastName") + userObject.get("name")
+                .get("firstName"));
+        }
+        return appleRequest;
+    }
 }

@@ -8,8 +8,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,10 +28,6 @@ public class AppleRequest {
     private String idToken;
 
     @ApiModelProperty(example = "user json")
-    private AppleUserRequest user;
+    private String username;
 
-    public AppleRequest(String code, String id_token) {
-        this.code = code;
-        this.idToken = id_token;
-    }
 }
