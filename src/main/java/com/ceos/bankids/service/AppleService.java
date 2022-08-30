@@ -7,6 +7,7 @@ import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import io.jsonwebtoken.Claims;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 @Service
 public interface AppleService {
@@ -23,4 +24,5 @@ public interface AppleService {
     public LoginDTO loginWithAuthenticationCode(Claims claims, AppleRequest appleRequest,
         HttpServletResponse response);
 
+    public AppleRequest getAppleRequest(MultiValueMap<String, String> formData);
 }
