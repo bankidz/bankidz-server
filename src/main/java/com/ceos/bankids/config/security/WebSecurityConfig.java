@@ -50,6 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/health").permitAll()
             .antMatchers(SwaggerPatterns).permitAll()
             .antMatchers("/kakao/login").permitAll()
+            .antMatchers("/apple/login").permitAll()
             .antMatchers("/user/refresh").permitAll()
             .anyRequest().authenticated()
             .and()
@@ -70,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
             Arrays.asList("http://localhost:3000", "https://bankids.click", "https://bankidz.com",
-                "https://api.bankidz.com"));
+                "https://api.bankidz.com", "https://appleid.apple.com"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
