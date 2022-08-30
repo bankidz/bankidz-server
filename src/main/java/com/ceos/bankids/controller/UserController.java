@@ -5,11 +5,15 @@ import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
+import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.KidBackupServiceImpl;
+import com.ceos.bankids.service.ParentBackupServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +39,8 @@ public class UserController {
     private final UserServiceImpl userService;
     private final FamilyServiceImpl familyService;
     private final ChallengeServiceImpl challengeService;
+    private final KidBackupServiceImpl kidBackupService;
+    private final ParentBackupServiceImpl parentBackupService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -101,6 +107,12 @@ public class UserController {
 
             FamilyDTO deletedFamilyDTO = familyService.deleteFamilyUser(authUser,
                 familyRequest.getCode());
+        }
+
+        if (authUser.getIsKid()) {
+            KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(authUser);
+        } else {
+            ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(authUser);
         }
 
         UserDTO userDTO = null;
