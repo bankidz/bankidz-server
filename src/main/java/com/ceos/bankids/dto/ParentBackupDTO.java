@@ -14,12 +14,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class ParentBackupDTO {
 
+    private Long id;
     private String birthYear;
     private Boolean isKid;
     private Long acceptedRequest;
     private Long totalRequest;
 
     public ParentBackupDTO(ParentBackup parent) {
+        this.id = parent.getId();
         this.birthYear = parent.getBirthYear();
         this.isKid = parent.getIsKid();
         this.acceptedRequest = parent.getAcceptedRequest();

@@ -14,6 +14,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class KidBackupDTO {
 
+    private Long id;
     private String birthYear;
     private Boolean isKid;
     private Long savings;
@@ -22,6 +23,7 @@ public class KidBackupDTO {
     private Long level;
 
     public KidBackupDTO(KidBackup kid) {
+        this.id = kid.getId();
         this.birthYear = kid.getBirthYear();
         this.isKid = kid.getIsKid();
         this.savings = kid.getSavings();
