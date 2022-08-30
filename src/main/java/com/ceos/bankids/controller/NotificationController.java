@@ -1,16 +1,23 @@
 package com.ceos.bankids.controller;
 
+import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.controller.request.AllSendNotificationRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.NotificationToken;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.repository.NotificationTokenRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,10 +28,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
+    private final NotificationTokenRepository notificationTokenRepository;
+
+    @ApiOperation(value = "모든 유저에게 알림")
+    @PostMapping(value = "/all", produces = "application/json; charset=utf-8")
+    public CommonResponse<String> allSendNotification(
+        @RequestBody AllSendNotificationRequest allSendNotificationRequest, User authUser) {
+
+        String title = allSendNotificationRequest.getTitle();
+        String body = allSendNotificationRequest.getBody();
+        List<String> tokenList = notificationTokenRepository.findAll().stream()
+            .map(NotificationToken::getToken).collect(
+                Collectors.toList());
+        tokenList.forEach(token -> {
+            expoNotificationService.sendMessage(token, title, body, null);
+        });
+        return CommonResponse.onSuccess("NOTIFICATION SUCCESS");
+    }
 
     @Async
     @ApiOperation(value = "돈길 상태 변경 알림")
-    @GetMapping(produces = "application/json; charset=utf-8")
     public void notification(Challenge challenge, User authUser) {
 
         String title = challenge.getChallengeStatus() == ChallengeStatus.WALKING ?
@@ -76,7 +99,7 @@ public class NotificationController {
         String title = "\uD83D\uDD14 " + challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요";
         String notificationBody =
             challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요! 수락하러 가볼까요?";
-        String token = "ExponentPushToken[Gui56sA2O6WAb839ZEH0uI]";
+        String token = "ExponentPushToken[EQBviQMfJm_1riRkM0KdjP]";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
         newMap.put("challenge", challengeUser.getChallenge().getId());
