@@ -64,7 +64,7 @@ public class AppleServiceImpl implements AppleService {
     private String APPLE_CLIENT_ID;
     @Value("${apple.redirect.uri}")
     private String APPLE_URI;
-    @Value("${apple.key}")
+    @Value("${apple.key.id}")
     private String APPLE_KEY;
     @Value("${apple.key.path}")
     private String APPLE_KEY_PATH;
