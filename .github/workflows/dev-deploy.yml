@@ -60,6 +60,13 @@ jobs:
           echo "$FIREBASEKEY" > ./src/main/resources/bankidz-firebase.json
         env:
           FIREBASEKEY: ${{ secrets.FIREBASE_KEY }}
+          
+      - name: Make apple-auth-key.p8
+        run: |
+          touch ./src/main/resources/apple-auth-key.p8
+          echo "$APPLEKEY" > ./src/main/resources/apple-auth-key.p8
+        env:
+          APPLEKEY: ${{ secrets.APPLE_KEY }}
 
       - name: Build with Gradle
         run: ./gradlew build -x test
