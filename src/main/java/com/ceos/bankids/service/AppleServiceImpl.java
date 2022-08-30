@@ -62,7 +62,7 @@ public class AppleServiceImpl implements AppleService {
     private String APPLE_TEAM_ID;
     @Value("${apple.client.id}")
     private String APPLE_CLIENT_ID;
-    @Value("${apple.uri}")
+    @Value("${apple.redirect.uri}")
     private String APPLE_URI;
     @Value("${apple.key}")
     private String APPLE_KEY;
