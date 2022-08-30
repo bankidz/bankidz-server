@@ -18,4 +18,6 @@ public interface UserService {
     public MyPageDTO getUserInformation(User user);
 
     public User getUserByRefreshToken(String refreshToken);
+
+    public UserDTO updateUserLogout(User authUser);
 }

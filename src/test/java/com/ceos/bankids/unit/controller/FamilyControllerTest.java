@@ -7,6 +7,7 @@ import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
+import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
@@ -50,10 +51,11 @@ public class FamilyControllerTest {
     ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
     NotificationController mockNotificationController = Mockito.mock(
         NotificationController.class);
+    FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
     ChallengeServiceImpl challengeService = new ChallengeServiceImpl(mockChallengeRepository,
         mockChallengeCategoryRepository, mockTargetItemRepository, mockChallengeUserRepository,
         mockProgressRepository, mockFamilyUserRepository, mockCommentRepository,
-        mockKidRepository, mockParentRepository, mockNotificationController);
+        mockKidRepository, mockParentRepository, mockNotificationController, mockFamilyRepository);
 
     @Test
     @DisplayName("생성 시 기존 가족 있으나, 삭제되었을 때 에러 처리 하는지 확인")
@@ -1268,6 +1270,11 @@ public class FamilyControllerTest {
             .isFemale(true)
             .build();
 
+        Parent parent = Parent.builder().id(1L).acceptedRequest(0L).totalRequest(0L).user(user1)
+            .build();
+
+        user1.setParent(parent);
+
         Family family2 = Family.builder().id(2L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
         FamilyUser familyUser3 = FamilyUser.builder().user(user3).family(family2).build();
@@ -1316,6 +1323,11 @@ public class FamilyControllerTest {
             .isKid(false)
             .isFemale(null)
             .build();
+
+        Parent parent = Parent.builder().id(1L).acceptedRequest(0L).totalRequest(0L).user(user1)
+            .build();
+
+        user1.setParent(parent);
 
         Family family2 = Family.builder().id(2L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
@@ -1368,6 +1380,11 @@ public class FamilyControllerTest {
             .isFemale(null)
             .build();
 
+        Parent parent = Parent.builder().id(1L).acceptedRequest(0L).totalRequest(0L).user(user1)
+            .build();
+
+        user1.setParent(parent);
+
         Family family2 = Family.builder().id(2L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
         List<FamilyUser> familyUserList = new ArrayList<>();
@@ -1407,6 +1424,11 @@ public class FamilyControllerTest {
             .isKid(false)
             .isFemale(null)
             .build();
+
+        Parent parent = Parent.builder().id(1L).acceptedRequest(0L).totalRequest(0L).user(user1)
+            .build();
+
+        user1.setParent(parent);
 
         Family family2 = Family.builder().id(2L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();

@@ -36,7 +36,7 @@ public class User extends AbstractTimestamp implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 10)
+    @Column(nullable = false, length = 10)
     private String username;
 
     @Column(nullable = true)
@@ -60,6 +60,9 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String refreshToken;
 
+    @Column(columnDefinition = "TEXT")
+    private String expoToken;
+
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Kid kid;
 
@@ -75,6 +78,9 @@ public class User extends AbstractTimestamp implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Comment> commentList;
 
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notificationList;
+
     @Builder
     public User(
         Long id,
@@ -86,6 +92,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         String provider,
         Boolean isKid,
         String refreshToken,
+        String expoToken,
         Parent parent,
         Kid kid
     ) {
@@ -111,6 +118,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.provider = provider;
         this.isKid = isKid;
         this.refreshToken = refreshToken;
+        this.expoToken = expoToken;
     }
 
     @Override

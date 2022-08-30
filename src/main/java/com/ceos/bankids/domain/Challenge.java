@@ -84,6 +84,9 @@ public class Challenge extends AbstractTimestamp {
     @OneToMany(mappedBy = "challenge")
     private List<Progress> progressList;
 
+    @OneToMany(mappedBy = "challenge")
+    private List<Notification> notificationList;
+
     @JsonIgnore
     @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
     private ChallengeUser challengeUser;

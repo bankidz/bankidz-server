@@ -18,30 +18,41 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "ChallengeNotification")
+@Table(name = "Notification")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class ChallengeNotification extends AbstractTimestamp {
+public class Notification extends AbstractTimestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
+    private String title;
+
+    @Column
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challengeUserId", nullable = false)
-    private ChallengeUser challengeUser;
+    @JoinColumn(name = "challengeId", nullable = false)
+    private Challenge challenge;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
     @Builder
-    public ChallengeNotification(
+    public Notification(
         Long id,
+        String title,
         String message,
-        ChallengeUser challengeUser
+        Challenge challenge,
+        User user
     ) {
         this.id = id;
+        this.title = title;
         this.message = message;
-        this.challengeUser = challengeUser;
+        this.challenge = challenge;
+        this.user = user;
     }
 }
