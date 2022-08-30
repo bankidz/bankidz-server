@@ -709,7 +709,9 @@ public class UserControllerTest {
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
         user.setRefreshToken("");
+        user.setExpoToken("");
         Assertions.assertEquals(user.getRefreshToken(), uCaptor.getValue().getRefreshToken());
+        Assertions.assertEquals(user.getExpoToken(), uCaptor.getValue().getExpoToken());
 
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(null), result);
