@@ -65,4 +65,14 @@ public class UserController {
         return CommonResponse.onSuccess(myPageDTO);
     }
 
+    @ApiOperation(value = "유저 로그아웃")
+    @PatchMapping(value = "/logout", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<UserDTO> patchUserLogout(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 유저 로그아웃, user = {}", authUser.getUsername());
+        UserDTO userDTO = userService.updateUserLogout(authUser);
+
+        return CommonResponse.onSuccess(userDTO);
+    }
 }

@@ -128,4 +128,20 @@ public class UserServiceImpl implements UserService {
         }
         return myPageDTO;
     }
+
+    @Override
+    @Transactional
+    public UserDTO updateUserLogout(User user) {
+        user.setRefreshToken("");
+        user.setExpoToken("");
+        uRepo.save(user);
+
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(14 * 24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        return null;
+    }
 }
