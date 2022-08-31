@@ -17,6 +17,7 @@ import com.ceos.bankids.service.KidBackupServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentBackupServiceImpl;
 import com.ceos.bankids.service.ParentServiceImpl;
+import com.ceos.bankids.service.SlackServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +47,7 @@ public class UserController {
     private final ParentBackupServiceImpl parentBackupService;
     private final KidServiceImpl kidService;
     private final ParentServiceImpl parentService;
+    private final SlackServiceImpl slackService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -117,12 +119,12 @@ public class UserController {
 
         if (authUser.getIsKid()) {
             KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(authUser);
-            userService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
+            slackService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
                 withdrawalRequest.getMessage());
             kidService.deleteKid(authUser);
         } else {
             ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(authUser);
-            userService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
+            slackService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
                 withdrawalRequest.getMessage());
             parentService.deleteParent(authUser);
         }

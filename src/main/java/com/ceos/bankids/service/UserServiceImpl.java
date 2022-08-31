@@ -16,17 +16,12 @@ import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +31,6 @@ public class UserServiceImpl implements UserService {
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
     private final JwtTokenServiceImpl jwtTokenServiceImpl;
-
-    @Value("${withdrawal.slack.webhook-uri}")
-    private String SLACK_WITHDRAWAL_URI;
-
 
     @Override
     @Transactional
@@ -152,19 +143,6 @@ public class UserServiceImpl implements UserService {
         cookie.setPath("/");
 
         return null;
-    }
-
-    @Override
-    public void sendWithdrawalMessage(String user, Long id, String message) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        Map<String, Object> request = new HashMap<>();
-        request.put("username", user + id);
-        request.put("text", message);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request);
-
-//        restTemplate.exchange(SLACK_WITHDRAWAL_URI, HttpMethod.POST, entity, String.class);
     }
 
     @Override

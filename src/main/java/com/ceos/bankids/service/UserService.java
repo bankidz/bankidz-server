@@ -20,8 +20,6 @@ public interface UserService {
     public User getUserByRefreshToken(String refreshToken);
 
     public UserDTO updateUserLogout(User authUser);
-
-    public void sendWithdrawalMessage(String user, Long id, String message);
-
+    
     public UserDTO deleteUser(User user);
 }
