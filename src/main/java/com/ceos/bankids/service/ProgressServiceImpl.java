@@ -107,7 +107,7 @@ public class ProgressServiceImpl implements ProgressService {
                 challengeUser.get());
         }
 
-        return new ProgressDTO(progress);
+        return new ProgressDTO(progress, challenge);
     }
 
     public void userRoleValidation(User user, Boolean approveRole) {
