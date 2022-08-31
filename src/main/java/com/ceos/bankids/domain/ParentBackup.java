@@ -8,17 +8,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "ParentBackup")
 @NoArgsConstructor
-@DynamicUpdate
+@EqualsAndHashCode(of = "id")
 public class ParentBackup extends AbstractTimestamp {
 
     // 공통
