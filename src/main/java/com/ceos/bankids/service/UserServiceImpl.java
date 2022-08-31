@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
@@ -84,14 +85,6 @@ public class UserServiceImpl implements UserService {
 
         TokenDTO tokenDTO = new TokenDTO(user);
 
-        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
-        cookie.setMaxAge(14 * 24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
-
         LoginDTO loginDTO;
         if (user.getIsKid() == null || user.getIsKid() == false) {
             loginDTO = new LoginDTO(user.getIsKid(),
@@ -102,6 +95,18 @@ public class UserServiceImpl implements UserService {
                 user.getKid().getLevel());
         }
         return loginDTO;
+    }
+
+    @Override
+    @Transactional
+    public void setNewCookie(User user, HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
+        cookie.setMaxAge(14 * 24 * 60 * 60);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
     }
 
     @Override
@@ -143,5 +148,14 @@ public class UserServiceImpl implements UserService {
         cookie.setPath("/");
 
         return null;
+    }
+
+    @Override
+    @Transactional
+    public User updateUserExpoToken(User user, ExpoRequest expoRequest) {
+        user.setExpoToken(expoRequest.getExpoToken());
+        uRepo.save(user);
+
+        return user;
     }
 }

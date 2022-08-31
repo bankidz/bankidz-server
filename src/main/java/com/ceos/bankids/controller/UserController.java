@@ -1,6 +1,7 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
@@ -74,5 +75,17 @@ public class UserController {
         UserDTO userDTO = userService.updateUserLogout(authUser);
 
         return CommonResponse.onSuccess(userDTO);
+    }
+
+    @ApiOperation(value = "유저 엑스포 토큰 등록")
+    @PatchMapping(value = "/expo", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public void patchExpoToken(@AuthenticationPrincipal User authUser,
+        @Valid @RequestBody ExpoRequest expoRequest, HttpServletResponse response) {
+
+        log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
+        User user = userService.updateUserExpoToken(authUser, expoRequest);
+
+        userService.setNewCookie(user, response);
     }
 }
