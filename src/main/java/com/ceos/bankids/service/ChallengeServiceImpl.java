@@ -445,6 +445,24 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new KidWeekDTO(kid.getKid(), weekDTO);
     }
 
+    // 완주한 돈길만 가져오기 API
+    @Transactional
+    @Override
+    public List<ChallengeDTO> readAchievedChallenge(User user, String status) {
+
+        List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
+            .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
+                challenge.getChallengeStatus().getStatusName(), status))
+            .collect(
+                Collectors.toList());
+        return challengeList.stream().map(challenge -> {
+            List<ProgressDTO> progressDTOList = challenge.getProgressList().stream()
+                .map(progress -> new ProgressDTO(progress, challenge)).collect(
+                    Collectors.toList());
+            return new ChallengeDTO(challenge, progressDTOList, null);
+        }).collect(Collectors.toList());
+    }
+
     private void userRoleValidation(User user, Boolean approveRole) {
         if (user.getIsKid() != approveRole) {
             throw new ForbiddenException(ErrorCode.USER_ROLE_ERROR.getErrorCode());
