@@ -48,7 +48,9 @@ public class AppleController {
         LoginDTO loginDTO = appleService.loginWithAuthenticationCode(claims, appleRequest,
             response);
 
-        response.sendRedirect("https://bankidz.com/auth/apple/callback");
+        response.sendRedirect(
+            "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
+                + loginDTO.getLevel() + "&accessToken=" + loginDTO.getAccessToken());
     }
 
     @ApiOperation(value = "애플 연동해제")
