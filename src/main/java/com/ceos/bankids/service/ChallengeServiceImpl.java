@@ -391,7 +391,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-        // Todo: 알림
         notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
@@ -445,14 +444,15 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new KidWeekDTO(kid.getKid(), weekDTO);
     }
 
+    // Todo: 후에 돈길 히스토리 추가되면 쿼리파라미터로 넘기기만 하면 작동되게 해놓
     // 완주한 돈길만 가져오기 API
     @Transactional
     @Override
-    public List<ChallengeDTO> readAchievedChallenge(User user, String status) {
+    public List<ChallengeDTO> readAchievedChallenge(User user) {
 
         List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
-                challenge.getChallengeStatus().getStatusName(), status))
+                challenge.getChallengeStatus(), achieved))
             .collect(
                 Collectors.toList());
         return challengeList.stream().map(challenge -> {

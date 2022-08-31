@@ -119,11 +119,10 @@ public class ChallengeController {
     @ApiOperation(value = "완주한 돈길 리스트 가져오기")
     @GetMapping(value = "/achieved", produces = "application/json; charset=utf-8")
     public CommonResponse<List<ChallengeDTO>> getAchievedListChallenge(
-        @AuthenticationPrincipal User authUser, @RequestParam String status) {
+        @AuthenticationPrincipal User authUser) {
 
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
-        List<ChallengeDTO> challengeDTOList = challengeService.readAchievedChallenge(authUser,
-            status);
+        List<ChallengeDTO> challengeDTOList = challengeService.readAchievedChallenge(authUser);
 
         return CommonResponse.onSuccess(challengeDTOList);
     }
