@@ -12,7 +12,9 @@ import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
+import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentBackupServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +42,8 @@ public class UserController {
     private final ChallengeServiceImpl challengeService;
     private final KidBackupServiceImpl kidBackupService;
     private final ParentBackupServiceImpl parentBackupService;
+    private final KidServiceImpl kidService;
+    private final ParentServiceImpl parentService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -113,13 +117,15 @@ public class UserController {
             KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(authUser);
             userService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
                 withdrawalRequest.getMessage());
+            kidService.deleteKid(authUser);
         } else {
             ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(authUser);
             userService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
                 withdrawalRequest.getMessage());
+            parentService.deleteParent(authUser);
         }
 
-        UserDTO userDTO = null;
+        UserDTO userDTO = userService.deleteUser(authUser);
 
         return CommonResponse.onSuccess(userDTO);
     }

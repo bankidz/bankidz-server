@@ -22,4 +22,6 @@ public interface UserService {
     public UserDTO updateUserLogout(User authUser);
 
     public void sendWithdrawalMessage(String user, Long id, String message);
+
+    public UserDTO deleteUser(User user);
 }

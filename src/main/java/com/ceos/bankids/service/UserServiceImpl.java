@@ -167,4 +167,11 @@ public class UserServiceImpl implements UserService {
 
         restTemplate.exchange(SLACK_WITHDRAWAL_URI, HttpMethod.POST, entity, String.class);
     }
+
+    @Override
+    public UserDTO deleteUser(User user) {
+        UserDTO userDTO = new UserDTO(user);
+        uRepo.delete(user);
+        return userDTO;
+    }
 }
