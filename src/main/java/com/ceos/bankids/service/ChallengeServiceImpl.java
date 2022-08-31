@@ -244,7 +244,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                             if (!progress.getIsAchieved() && progress.getWeeks() < diffWeeks) {
                                 falseCnt += 1;
                             }
-                            progressDTOList.add(new ProgressDTO(progress));
+                            progressDTOList.add(new ProgressDTO(progress, challenge));
                         }
                     }
                     if (falseCnt >= risk) {
@@ -276,7 +276,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                             .getWeeks() : (long) timeLogic(progressList);
                     for (Progress progress : progressList) {
                         if (progress.getWeeks() <= diffWeeks) {
-                            progressDTOList.add(new ProgressDTO(progress));
+                            progressDTOList.add(new ProgressDTO(progress, r.getChallenge()));
                         }
                     }
                     challengeDTOList.add(
@@ -285,7 +285,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 } else if (r.getChallenge().getChallengeStatus() == achieved) {
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     List<ProgressDTO> progressDTOList = progressList.stream()
-                        .map(ProgressDTO::new).collect(
+                        .map(p -> new ProgressDTO(p, r.getChallenge())).collect(
                             Collectors.toList());
                     challengeDTOList.add(
                         new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
@@ -379,7 +379,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Progress newProgress = Progress.builder().weeks((long) i)
                     .challenge(challenge)
                     .isAchieved(false).build();
-                progressDTOList.add(new ProgressDTO(newProgress));
+                progressDTOList.add(new ProgressDTO(newProgress, challenge));
                 progressRepository.save(newProgress);
             }
         } else {
@@ -392,7 +392,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             progressDTOList = null;
         }
         // Todo: 알림
-//        notificationController.notification(challenge, user);
         notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }

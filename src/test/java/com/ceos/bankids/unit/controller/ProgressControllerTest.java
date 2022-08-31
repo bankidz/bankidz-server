@@ -124,7 +124,7 @@ public class ProgressControllerTest {
             mockChallengeUserRepository, mockChallengeRepository,
             mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
-        ProgressDTO progressDTO = new ProgressDTO(newProgress);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress, newChallenge);
         CommonResponse<ProgressDTO> result = progressController.patchProgress(son,
             newChallenge.getId());
 
@@ -220,7 +220,7 @@ public class ProgressControllerTest {
             mockChallengeUserRepository, mockChallengeRepository,
             mockKidRepository, mockNotificationController);
         ProgressController progressController = new ProgressController(progressService);
-        ProgressDTO progressDTO = new ProgressDTO(newProgress2);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress2, newChallenge);
         CommonResponse<ProgressDTO> result = progressController.patchProgress(son,
             newChallenge.getId());
 

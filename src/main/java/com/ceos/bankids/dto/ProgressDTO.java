@@ -1,5 +1,7 @@
 package com.ceos.bankids.dto;
 
+import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Progress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -24,14 +26,19 @@ public class ProgressDTO {
     @ApiModelProperty(example = "true")
     private Boolean isAchieved;
 
+    @ApiModelProperty(example = "ACHIEVED")
+    private ChallengeStatus challengeStatus;
+
     @ApiModelProperty(example = "2022/05/05 06:33:13")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
     private Timestamp approvedAt;
 
-    public ProgressDTO(Progress progress) {
+
+    public ProgressDTO(Progress progress, Challenge challenge) {
         this.challengeId = progress.getChallenge().getId();
         this.weeks = progress.getWeeks();
         this.isAchieved = progress.getIsAchieved();
+        this.challengeStatus = challenge.getChallengeStatus();
         this.approvedAt = progress.getCreatedAt();
     }
 }
