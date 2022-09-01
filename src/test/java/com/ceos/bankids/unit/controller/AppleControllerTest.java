@@ -58,7 +58,7 @@ public class AppleControllerTest {
             .user(user)
             .build();
         user.setKid(kid);
-        LoginDTO login = new LoginDTO(true, "aT", 1L);
+        LoginDTO login = new LoginDTO(true, "aT", 1L, "apple");
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -121,7 +121,7 @@ public class AppleControllerTest {
             .isKid(null)
             .refreshToken("rT")
             .build();
-        LoginDTO login = new LoginDTO(null, "aT");
+        LoginDTO login = new LoginDTO(null, "aT", "apple");
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -189,7 +189,7 @@ public class AppleControllerTest {
             .isKid(null)
             .refreshToken("rT")
             .build();
-        LoginDTO login = new LoginDTO(null, "aT");
+        LoginDTO login = new LoginDTO(null, "aT", "apple");
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);

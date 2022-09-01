@@ -38,9 +38,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
+        String provider = "kakao";
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get());
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
 
             return loginDTO;
         } else {
@@ -51,11 +52,11 @@ public class UserServiceImpl implements UserService {
             User newUser = User.builder()
                 .username(username)
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-                .provider("kakao").refreshToken("")
+                .provider(provider).refreshToken("")
                 .build();
             uRepo.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser);
+            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
 
             return loginDTO;
         }
@@ -66,9 +67,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
         AppleRequest appleRequest) {
+        String provider = "apple";
         Optional<User> user = uRepo.findByAuthenticationCode(authenticationCode);
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get());
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
 
             return loginDTO;
         } else {
@@ -83,7 +85,7 @@ public class UserServiceImpl implements UserService {
                 .build();
             uRepo.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser);
+            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
 
             return loginDTO;
         }
@@ -134,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user) {
+    public LoginDTO issueNewTokens(User user, String provider) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
         uRepo.save(user);
@@ -144,11 +146,11 @@ public class UserServiceImpl implements UserService {
         LoginDTO loginDTO;
         if (user.getIsKid() == null || user.getIsKid() == false) {
             loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO), provider);
         } else {
             loginDTO = new LoginDTO(user.getIsKid(),
                 jwtTokenServiceImpl.encodeJwtToken(tokenDTO),
-                user.getKid().getLevel());
+                user.getKid().getLevel(), provider);
         }
         return loginDTO;
     }

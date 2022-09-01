@@ -51,7 +51,8 @@ public class AppleController {
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
-                + loginDTO.getLevel() + "&accessToken=" + loginDTO.getAccessToken());
+                + loginDTO.getLevel() + "&accessToken=" + loginDTO.getAccessToken() + "&provider="
+                + loginDTO.getProvider());
     }
 
     @ApiOperation(value = "애플 연동해제")

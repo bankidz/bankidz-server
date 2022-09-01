@@ -21,7 +21,7 @@ public interface UserService {
 
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest);
 
-    public LoginDTO issueNewTokens(User user);
+    public LoginDTO issueNewTokens(User user, String provider);
 
     public void setNewCookie(User user, HttpServletResponse response);
 

@@ -604,7 +604,7 @@ public class UserControllerTest {
         CommonResponse result = userController.refreshUserToken("rT", response);
 
         // then
-        LoginDTO loginDTO = new LoginDTO(false, "aT");
+        LoginDTO loginDTO = new LoginDTO(false, "aT", user.getProvider());
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
     }
 
@@ -669,7 +669,7 @@ public class UserControllerTest {
         CommonResponse result = userController.refreshUserToken("rT", response);
 
         // then
-        LoginDTO loginDTO = new LoginDTO(true, "aT", 1L);
+        LoginDTO loginDTO = new LoginDTO(true, "aT", 1L, user.getProvider());
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
     }
 
@@ -730,7 +730,7 @@ public class UserControllerTest {
         CommonResponse result = userController.refreshUserToken("rT", response);
 
         // then
-        LoginDTO loginDTO = new LoginDTO(null, "aT");
+        LoginDTO loginDTO = new LoginDTO(null, "aT", user.getProvider());
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
     }
 

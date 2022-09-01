@@ -70,7 +70,7 @@ public class UserController {
 
         log.info("api = 토큰 리프레시");
         User user = userService.getUserByRefreshToken(refreshToken);
-        LoginDTO loginDTO = userService.issueNewTokens(user);
+        LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
 
         userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(loginDTO);
