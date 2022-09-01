@@ -24,5 +24,7 @@ public interface UserService {
 
     public UserDTO updateUserLogout(User user);
 
+    public UserDTO deleteUser(User user);
+
     public User updateUserExpoToken(User user, ExpoRequest expoRequest);
 }

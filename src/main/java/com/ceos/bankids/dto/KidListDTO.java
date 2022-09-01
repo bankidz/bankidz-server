@@ -12,19 +12,19 @@ import lombok.ToString;
 public class KidListDTO {
 
     @ApiModelProperty(example = "1")
-    Long kidId;
+    private Long kidId;
     @ApiModelProperty(example = "주어랑")
-    String username;
+    private String username;
     @ApiModelProperty(example = "true")
-    Boolean isFemale;
+    private Boolean isFemale;
     @ApiModelProperty(example = "1")
-    Long level;
+    private Long level;
     @ApiModelProperty(example = "200000")
-    Long savings;
+    private Long savings;
     @ApiModelProperty(example = "8")
-    Long achievedChallenge;
+    private Long achievedChallenge;
     @ApiModelProperty(example = "10")
-    Long totalChallenge;
+    private Long totalChallenge;
 
     public KidListDTO(User user) {
         this.kidId = user.getKid().getId();

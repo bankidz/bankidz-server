@@ -11,11 +11,11 @@ import lombok.ToString;
 public class MyPageDTO {
 
     @ApiModelProperty(example = "UserDTO")
-    UserDTO user;
+    private UserDTO user;
     @ApiModelProperty(example = "KidDTO")
-    KidDTO kid;
+    private KidDTO kid;
     @ApiModelProperty(example = "ParentDTO")
-    ParentDTO parent;
+    private ParentDTO parent;
 
     public MyPageDTO(UserDTO userDTO, KidDTO kidDTO) {
         this.user = userDTO;

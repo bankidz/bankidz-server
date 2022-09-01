@@ -152,6 +152,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public UserDTO deleteUser(User user) {
+        UserDTO userDTO = new UserDTO(user);
+        uRepo.delete(user);
+        return userDTO;
+    }
+
+    @Override
+    @Transactional
     public User updateUserExpoToken(User user, ExpoRequest expoRequest) {
         user.setExpoToken(expoRequest.getExpoToken());
         uRepo.save(user);

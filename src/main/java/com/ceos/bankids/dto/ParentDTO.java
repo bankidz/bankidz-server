@@ -12,9 +12,9 @@ import lombok.ToString;
 public class ParentDTO {
 
     @ApiModelProperty(example = "8")
-    Long acceptedRequest;
+    private Long acceptedRequest;
     @ApiModelProperty(example = "10")
-    Long totalRequest;
+    private Long totalRequest;
 
     public ParentDTO(Parent parent) {
         this.acceptedRequest = parent.getAcceptedRequest();
