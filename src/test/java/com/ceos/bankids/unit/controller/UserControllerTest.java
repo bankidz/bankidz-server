@@ -2,6 +2,7 @@ package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.UserController;
+import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
@@ -1407,5 +1408,64 @@ public class UserControllerTest {
 
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(new UserDTO(user1)), result);
+    }
+
+    @Test
+    @DisplayName("유저 엑스포 토큰 패치 성공 시, null 반환하는지 확인")
+    public void testIfUserExpoTokenPatchSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .expoToken("ExponentPushToken[dd]")
+            .build();
+        ExpoRequest expoRequest = new ExpoRequest("ExponentPushToken[dd]");
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService
+        );
+
+        CommonResponse result = userController.patchExpoToken(user, expoRequest, response);
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
+        Assertions.assertEquals(user.getExpoToken(), uCaptor.getValue().getExpoToken());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(null), result);
     }
 }
