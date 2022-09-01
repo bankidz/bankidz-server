@@ -4,9 +4,10 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
+import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.service.AppleServiceImpl;
-import io.jsonwebtoken.Claims;
+import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class AppleController {
 
     private final AppleServiceImpl appleService;
+    private final UserServiceImpl userService;
 
     @ApiOperation(value = "애플 로그인")
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -41,12 +43,13 @@ public class AppleController {
 
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
 
-        Claims claims = appleService.verifyIdentityToken(appleRequest, appleKeyListDTO);
+        AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
+            appleKeyListDTO);
 
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
 
-        LoginDTO loginDTO = appleService.loginWithAuthenticationCode(claims, appleRequest,
-            response);
+        LoginDTO loginDTO = userService.loginWithAppleAuthenticationCode(
+            appleSubjectDTO.getAuthenticationCode(), appleRequest, response);
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
@@ -62,7 +65,8 @@ public class AppleController {
         log.info("api = 애플 연동해제");
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
 
-        Claims claims = appleService.verifyIdentityToken(appleRequest, appleKeyListDTO);
+        AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
+            appleKeyListDTO);
 
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
 

@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
@@ -12,6 +13,7 @@ import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
@@ -32,6 +34,53 @@ public class UserServiceImpl implements UserService {
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
     private final JwtTokenServiceImpl jwtTokenServiceImpl;
+
+    @Override
+    @Transactional
+    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO,
+        HttpServletResponse response) {
+        Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
+        if (user.isPresent()) {
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), response);
+
+            return loginDTO;
+        } else {
+            User newUser = User.builder()
+                .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
+                .authenticationCode(kakaoUserDTO.getAuthenticationCode())
+                .provider("kakao").refreshToken("")
+                .build();
+            uRepo.save(newUser);
+
+            LoginDTO loginDTO = this.issueNewTokens(newUser, response);
+
+            return loginDTO;
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
+        AppleRequest appleRequest, HttpServletResponse response) {
+        Optional<User> user = uRepo.findByAuthenticationCode(authenticationCode);
+        if (user.isPresent()) {
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), response);
+
+            return loginDTO;
+        } else {
+            User newUser = User.builder()
+                .username(appleRequest.getUsername())
+                .authenticationCode(authenticationCode)
+                .provider("apple").refreshToken("")
+                .build();
+            uRepo.save(newUser);
+
+            LoginDTO loginDTO = this.issueNewTokens(newUser, response);
+
+            return loginDTO;
+        }
+    }
 
     @Override
     @Transactional
