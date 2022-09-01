@@ -53,8 +53,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = false)
-
 public class AppleServiceImpl implements AppleService {
 
     private final UserRepository uRepo;

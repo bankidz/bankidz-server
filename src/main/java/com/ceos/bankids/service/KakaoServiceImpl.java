@@ -18,7 +18,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = false)
 public class KakaoServiceImpl implements KakaoService {
 
     private final UserRepository uRepo;

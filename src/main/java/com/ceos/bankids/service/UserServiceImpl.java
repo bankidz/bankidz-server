@@ -144,4 +144,11 @@ public class UserServiceImpl implements UserService {
 
         return null;
     }
+
+    @Override
+    public UserDTO deleteUser(User user) {
+        UserDTO userDTO = new UserDTO(user);
+        uRepo.delete(user);
+        return userDTO;
+    }
 }

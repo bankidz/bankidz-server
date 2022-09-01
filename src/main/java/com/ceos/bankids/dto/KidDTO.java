@@ -12,11 +12,11 @@ import lombok.ToString;
 public class KidDTO {
 
     @ApiModelProperty(example = "8")
-    Long achievedChallenge;
+    private Long achievedChallenge;
     @ApiModelProperty(example = "10")
-    Long totalChallenge;
+    private Long totalChallenge;
     @ApiModelProperty(example = "1")
-    Long level;
+    private Long level;
 
     public KidDTO(Kid kid) {
         this.achievedChallenge = kid.getAchievedChallenge();

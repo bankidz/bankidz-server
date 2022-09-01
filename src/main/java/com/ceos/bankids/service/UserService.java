@@ -20,4 +20,6 @@ public interface UserService {
     public User getUserByRefreshToken(String refreshToken);
 
     public UserDTO updateUserLogout(User authUser);
+    
+    public UserDTO deleteUser(User user);
 }
