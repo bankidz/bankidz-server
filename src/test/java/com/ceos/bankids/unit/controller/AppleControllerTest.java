@@ -114,7 +114,7 @@ public class AppleControllerTest {
     public void testIfNewUserAppleLoginSucceedReturnResult() {
         // given
         User user = User.builder()
-            .username("ozzing")
+            .username("홍길동")
             .isFemale(null)
             .authenticationCode("1234")
             .provider("kakao")
@@ -136,7 +136,7 @@ public class AppleControllerTest {
 
         AppleRequest appleRequest = new AppleRequest("code",
             "eyJraWQiOiJmaDZCczhDIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmJhbmtpZHouYmFua2lkei13ZWIiLCJleHAiOjE2NjE5MzUyNDEsImlhdCI6MTY2MTg0ODg0MSwic3ViIjoiMDAxMzYyLjE0ZjNiODk3ZDY2MTRlZjI4ODZiZDM5NDIyZGE5ZGY0LjA5MzUiLCJub25jZSI6ImhpIiwiY19oYXNoIjoiWnplMVpsOGhXLUFwdDRHbHpBUk9ZUSIsImF1dGhfdGltZSI6MTY2MTg0ODg0MSwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.lwp2PLBkaGm08riMEMWrzZREXfbMMQvxnYppUENgeWCOq76BdrTdLHpEMnYNiTzGSEXgXtFw8TQZIPY4uPJfEmHZ0lxoiHaReloaGHISZBt50wC2eEYI3-0CPM5sB-GMa8rExYxfq8FL6BbRf5g9jIDhdOfJa4X9xqtJFgfbGf8NMTHnVV8YvjmNkWpFotVcjHHUkkjqo_8u8YA-DFDQr46hDvDzIL2Oq2q10EhD9Z3BubfJQV5QgIfot1BMOMmAvyXANzAN1YEJUhkDNlbaY3fiBtyCYWRzbNi8cX5jW69lkIT4Isxxw5Tj3GvlQRjkC_OA3TuzO8jq87bjQjTPcw",
-            "ozzing");
+            user.getUsername());
         List<AppleKeyDTO> appleKeyDTOList = new ArrayList<>();
         appleKeyDTOList.add(appleKeyDTO1);
         appleKeyDTOList.add(appleKeyDTO2);
@@ -174,5 +174,75 @@ public class AppleControllerTest {
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(mockUserRepository, Mockito.times(2)).save(uCaptor.capture());
         Assertions.assertEquals(user, uCaptor.getValue());
+        Assertions.assertEquals(user.getUsername(), uCaptor.getValue().getUsername());
+    }
+
+    @Test
+    @DisplayName("이름이 긴 새로운 유저가 애플 로그인 성공 시, 결과 반환하는지 확인")
+    public void testIfNewUserWithLongNameAppleLoginSucceedReturnResult() {
+        // given
+        User user = User.builder()
+            .username("홍길동그라미")
+            .isFemale(null)
+            .authenticationCode("1234")
+            .provider("kakao")
+            .isKid(null)
+            .refreshToken("rT")
+            .build();
+        LoginDTO login = new LoginDTO(null, "aT");
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
+            Optional.ofNullable(null));
+        KidRepository kidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
+        MultiValueMap<String, String> formData = null;
+
+        AppleRequest appleRequest = new AppleRequest("code",
+            "eyJraWQiOiJmaDZCczhDIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmJhbmtpZHouYmFua2lkei13ZWIiLCJleHAiOjE2NjE5MzUyNDEsImlhdCI6MTY2MTg0ODg0MSwic3ViIjoiMDAxMzYyLjE0ZjNiODk3ZDY2MTRlZjI4ODZiZDM5NDIyZGE5ZGY0LjA5MzUiLCJub25jZSI6ImhpIiwiY19oYXNoIjoiWnplMVpsOGhXLUFwdDRHbHpBUk9ZUSIsImF1dGhfdGltZSI6MTY2MTg0ODg0MSwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.lwp2PLBkaGm08riMEMWrzZREXfbMMQvxnYppUENgeWCOq76BdrTdLHpEMnYNiTzGSEXgXtFw8TQZIPY4uPJfEmHZ0lxoiHaReloaGHISZBt50wC2eEYI3-0CPM5sB-GMa8rExYxfq8FL6BbRf5g9jIDhdOfJa4X9xqtJFgfbGf8NMTHnVV8YvjmNkWpFotVcjHHUkkjqo_8u8YA-DFDQr46hDvDzIL2Oq2q10EhD9Z3BubfJQV5QgIfot1BMOMmAvyXANzAN1YEJUhkDNlbaY3fiBtyCYWRzbNi8cX5jW69lkIT4Isxxw5Tj3GvlQRjkC_OA3TuzO8jq87bjQjTPcw",
+            user.getUsername());
+        List<AppleKeyDTO> appleKeyDTOList = new ArrayList<>();
+        appleKeyDTOList.add(appleKeyDTO1);
+        appleKeyDTOList.add(appleKeyDTO2);
+        appleKeyDTOList.add(appleKeyDTO3);
+        AppleKeyListDTO appleKeyListDTO = new AppleKeyListDTO(appleKeyDTOList);
+        AppleSubjectDTO appleSubjectDTO = new AppleSubjectDTO("1234");
+        AppleTokenDTO appleTokenDTO = null;
+
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        user.setUsername(user.getUsername().substring(0, 3));
+        Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+        AppleServiceImpl appleService = Mockito.mock(AppleServiceImpl.class);
+        Mockito.doReturn(appleRequest).when(appleService).getAppleRequest(formData);
+        Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
+        Mockito.doReturn(appleSubjectDTO).when(appleService)
+            .verifyIdentityToken(appleRequest, appleKeyListDTO);
+        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            kidRepository,
+            parentRepository,
+            jwtTokenServiceImpl
+        );
+        AppleController appleController = new AppleController(
+            appleService,
+            userService
+        );
+
+        // then
+        try {
+            appleController.postAppleLogin(formData, response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(2)).save(uCaptor.capture());
+        Assertions.assertEquals(user, uCaptor.getValue());
+        Assertions.assertEquals(user.getUsername(), uCaptor.getValue().getUsername());
     }
 }

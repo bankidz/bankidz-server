@@ -37,22 +37,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO,
-        HttpServletResponse response) {
+    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
         Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), response);
+            LoginDTO loginDTO = this.issueNewTokens(user.get());
 
             return loginDTO;
         } else {
+            String username = kakaoUserDTO.getKakaoAccount().getProfile().getNickname();
+            if (username.getBytes().length > 6) {
+                username = username.substring(0, 3);
+            }
             User newUser = User.builder()
-                .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
+                .username(username)
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
                 .provider("kakao").refreshToken("")
                 .build();
             uRepo.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, response);
+            LoginDTO loginDTO = this.issueNewTokens(newUser);
 
             return loginDTO;
         }
@@ -62,21 +65,25 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
-        AppleRequest appleRequest, HttpServletResponse response) {
+        AppleRequest appleRequest) {
         Optional<User> user = uRepo.findByAuthenticationCode(authenticationCode);
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), response);
+            LoginDTO loginDTO = this.issueNewTokens(user.get());
 
             return loginDTO;
         } else {
+            String username = appleRequest.getUsername();
+            if (username.getBytes().length > 6) {
+                username = username.substring(0, 3);
+            }
             User newUser = User.builder()
-                .username(appleRequest.getUsername())
+                .username(username)
                 .authenticationCode(authenticationCode)
                 .provider("apple").refreshToken("")
                 .build();
             uRepo.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, response);
+            LoginDTO loginDTO = this.issueNewTokens(newUser);
 
             return loginDTO;
         }
@@ -127,7 +134,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, HttpServletResponse response) {
+    public LoginDTO issueNewTokens(User user) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
         uRepo.save(user);

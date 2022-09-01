@@ -14,15 +14,14 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
 
-    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO,
-        HttpServletResponse response);
+    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO);
 
     public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
-        AppleRequest appleRequest, HttpServletResponse response);
+        AppleRequest appleRequest);
 
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest);
 
-    public LoginDTO issueNewTokens(User user, HttpServletResponse response);
+    public LoginDTO issueNewTokens(User user);
 
     public void setNewCookie(User user, HttpServletResponse response);
 

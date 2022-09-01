@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodyUriSpec;
@@ -204,7 +205,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, response)).thenReturn(login);
+        Mockito.when(mockUserService.issueNewTokens(user)).thenReturn(login);
         KidRepository kidRepository = Mockito.mock(KidRepository.class);
         ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
@@ -263,34 +264,36 @@ public class KakaoControllerTest {
     public void testIfNewUserKakaoLoginSucceedReturnResult() {
         // given
         User user = User.builder()
-            .username("ozzing")
+            .username("홍길동")
             .isFemale(null)
             .authenticationCode("1234")
             .provider("kakao")
             .isKid(null)
             .refreshToken("rT")
             .build();
-        LoginDTO login = new LoginDTO(null, "aT");
+        LoginDTO login = new LoginDTO(null, "aT", null);
 
         HttpServletResponse response = null;
+
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
         WebClient mockWebClient = Mockito.mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
-        UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, response)).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
-        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
-        Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+
+        JwtTokenServiceImpl mockJwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(mockJwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        Mockito.doReturn("aT").when(mockJwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
         KakaoTokenDTO kakaoTokenDTO = new KakaoTokenDTO("aT", "rT");
-        KakaoAccountDTO kakaoAccountDTO = new KakaoAccountDTO(new KakaoProfileDTO("ozzing"));
+        KakaoAccountDTO kakaoAccountDTO = new KakaoAccountDTO(
+            new KakaoProfileDTO(user.getUsername()));
         Timestamp timeStamp = Timestamp.valueOf(LocalDateTime.now());
         KakaoUserDTO kakaoUserDTO = new KakaoUserDTO("1234", timeStamp, kakaoAccountDTO);
 
@@ -320,15 +323,105 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
+            mockKidRepository,
+            mockParentRepository,
+            mockJwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
         );
+
         CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(2)).save(uCaptor.capture());
+        Assertions.assertEquals(user, uCaptor.getValue());
+        Assertions.assertEquals(user.getUsername(), uCaptor.getValue().getUsername());
+
+        // then
+        LoginDTO loginDTO = new LoginDTO(null, "aT");
+        Assertions.assertEquals(loginDTO, result.getData());
+    }
+
+    @Test
+    @DisplayName("이름이 긴 새로운 유저가 카카오 로그인 성공 시, 결과 반환하는지 확인")
+    public void testIfNewUserWithLongNameKakaoLoginSucceedReturnResult() {
+        // given
+        User user = User.builder()
+            .username("홍길동그라미")
+            .isFemale(null)
+            .authenticationCode("1234")
+            .provider("kakao")
+            .isKid(null)
+            .refreshToken("rT")
+            .build();
+        LoginDTO login = new LoginDTO(null, "aT", null);
+
+        HttpServletResponse response = null;
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
+            Optional.ofNullable(null));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+
+        WebClient mockWebClient = Mockito.mock(WebClient.class);
+        WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
+            RequestBodyUriSpec.class);
+        WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
+
+        KakaoRequest kakaoRequest = new KakaoRequest("aT");
+        KakaoTokenDTO kakaoTokenDTO = new KakaoTokenDTO("aT", "rT");
+        KakaoAccountDTO kakaoAccountDTO = new KakaoAccountDTO(
+            new KakaoProfileDTO(user.getUsername()));
+        Timestamp timeStamp = Timestamp.valueOf(LocalDateTime.now());
+        KakaoUserDTO kakaoUserDTO = new KakaoUserDTO("1234", timeStamp, kakaoAccountDTO);
+
+        JwtTokenServiceImpl mockJwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(mockJwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        user.setUsername(user.getUsername().substring(0, 3));
+        Mockito.doReturn("aT").when(mockJwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+        
+        String getTokenURL =
+            "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="
+                + "null" + "&redirect_uri=" + "null" + "&code="
+                + kakaoRequest.getCode();
+        String getUserURL = "https://kapi.kakao.com/v2/user/me";
+
+        Mockito.when(mockWebClient.post()).thenReturn(requestBodyUriSpec);
+        Mockito.when(requestBodyUriSpec.uri(getTokenURL)).thenReturn(requestBodyUriSpec);
+        Mockito.when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        Mockito.when(responseSpec.bodyToMono(KakaoTokenDTO.class))
+            .thenReturn(Mono.just(kakaoTokenDTO));
+
+        Mockito.when(mockWebClient.post()).thenReturn(requestBodyUriSpec);
+        Mockito.when(requestBodyUriSpec.uri(getUserURL)).thenReturn(requestBodyUriSpec);
+        Mockito.when(requestBodyUriSpec.header("Authorization", "Bearer " + "aT"))
+            .thenReturn(requestBodyUriSpec);
+        Mockito.when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        Mockito.when(responseSpec.bodyToMono(KakaoUserDTO.class))
+            .thenReturn(Mono.just(kakaoUserDTO));
+
+        // when
+        KakaoServiceImpl kakaoService = new KakaoServiceImpl(
+            mockWebClient
+        );
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            mockJwtTokenServiceImpl
+        );
+        KakaoController kakaoController = new KakaoController(
+            kakaoService,
+            userService
+        );
+
+        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(2)).save(uCaptor.capture());
+        Assertions.assertEquals(user, uCaptor.getValue());
+        Assertions.assertEquals(user.getUsername(), uCaptor.getValue().getUsername());
 
         // then
         LoginDTO loginDTO = new LoginDTO(null, "aT");
@@ -358,7 +451,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, response)).thenReturn(login);
+        Mockito.when(mockUserService.issueNewTokens(user)).thenReturn(login);
         KidRepository kidRepository = Mockito.mock(KidRepository.class);
         ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
@@ -433,7 +526,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, response)).thenReturn(login);
+        Mockito.when(mockUserService.issueNewTokens(user)).thenReturn(login);
         KidRepository kidRepository = Mockito.mock(KidRepository.class);
         ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);

@@ -49,7 +49,7 @@ public class AppleController {
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
 
         LoginDTO loginDTO = userService.loginWithAppleAuthenticationCode(
-            appleSubjectDTO.getAuthenticationCode(), appleRequest, response);
+            appleSubjectDTO.getAuthenticationCode(), appleRequest);
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="

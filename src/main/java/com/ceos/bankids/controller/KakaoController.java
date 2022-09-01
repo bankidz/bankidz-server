@@ -39,7 +39,7 @@ public class KakaoController {
 
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
 
-        LoginDTO loginDTO = userService.loginWithKakaoAuthenticationCode(kakaoUserDTO, response);
+        LoginDTO loginDTO = userService.loginWithKakaoAuthenticationCode(kakaoUserDTO);
 
         return CommonResponse.onSuccess(loginDTO);
     }
