@@ -16,6 +16,8 @@ public class LoginDTO {
     private Long level;
     @ApiModelProperty(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ~~~~")
     private String accessToken;
+    @ApiModelProperty(example = "kakao")
+    private String provider;
 
     public LoginDTO(Boolean isKid, String accessToken) {
         this.isKid = isKid;
