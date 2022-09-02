@@ -233,7 +233,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     Long risk = 0L;
                     Long falseCnt = 0L;
                     if (interestRate == 10L) {
-                        risk = challenge.getWeeks();
+                        risk = 1000L;
                     } else if (interestRate == 20L) {
                         risk = 4L;
                     } else if (interestRate == 30L) {
@@ -266,8 +266,8 @@ public class ChallengeServiceImpl implements ChallengeService {
                         notificationController.achieveChallengeNotification(
                             challenge.getContractUser(), r);
                     }
-                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-                        r.getChallenge().getComment()));
+//                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+//                        r.getChallenge().getComment()));
                 } else if (r.getChallenge().getChallengeStatus() == failed) {
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
@@ -279,14 +279,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                             progressDTOList.add(new ProgressDTO(progress, r.getChallenge()));
                         }
                     }
-                    challengeDTOList.add(
-                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                            .getComment()));
-                } else if (r.getChallenge().getChallengeStatus() == achieved) {
-                    List<Progress> progressList = r.getChallenge().getProgressList();
-                    List<ProgressDTO> progressDTOList = progressList.stream()
-                        .map(p -> new ProgressDTO(p, r.getChallenge())).collect(
-                            Collectors.toList());
                     challengeDTOList.add(
                         new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
                             .getComment()));
