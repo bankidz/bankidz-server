@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
@@ -28,6 +29,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     private final FamilyRepository fRepo;
     private final FamilyUserRepository fuRepo;
+    private final NotificationController notificationController;
 
     @Override
     @Transactional
@@ -163,6 +165,8 @@ public class FamilyServiceImpl implements FamilyService {
             .family(newFamily.get())
             .build();
         fuRepo.save(newFamilyUser);
+
+        notificationController.newFamilyUserNotification(user, familyUserList);
 
         return FamilyDTO.builder()
             .family(newFamily.get())
