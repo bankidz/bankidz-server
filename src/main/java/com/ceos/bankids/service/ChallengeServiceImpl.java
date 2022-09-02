@@ -266,8 +266,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                         notificationController.achieveChallengeNotification(
                             challenge.getContractUser(), r);
                     }
-//                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-//                        r.getChallenge().getComment()));
+                    if (challenge.getChallengeStatus() != achieved) {
+                        challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+                            r.getChallenge().getComment()));
+                    }
                 } else if (r.getChallenge().getChallengeStatus() == failed) {
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
