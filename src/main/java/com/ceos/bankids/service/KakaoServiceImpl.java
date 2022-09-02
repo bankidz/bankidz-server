@@ -2,27 +2,19 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.KakaoRequest;
-import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.UserRepository;
-import java.util.Optional;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
-    private final UserRepository uRepo;
     private final WebClient webClient;
-    private final UserServiceImpl userService;
 
     @Value("${kakao.key}")
     private String KAKAO_KEY;
@@ -63,26 +55,4 @@ public class KakaoServiceImpl implements KakaoService {
         }
     }
 
-    @Override
-    @Transactional
-    public LoginDTO loginWithAuthenticationCode(KakaoUserDTO kakaoUserDTO,
-        HttpServletResponse response) {
-        Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
-        if (user.isPresent()) {
-            LoginDTO loginDTO = userService.issueNewTokens(user.get(), response);
-
-            return loginDTO;
-        } else {
-            User newUser = User.builder()
-                .username(kakaoUserDTO.getKakaoAccount().getProfile().getNickname())
-                .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-                .provider("kakao").refreshToken("")
-                .build();
-            uRepo.save(newUser);
-
-            LoginDTO loginDTO = userService.issueNewTokens(newUser, response);
-
-            return loginDTO;
-        }
-    }
 }

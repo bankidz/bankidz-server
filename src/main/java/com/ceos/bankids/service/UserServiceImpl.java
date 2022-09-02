@@ -1,6 +1,8 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.AppleRequest;
+import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.Parent;
@@ -11,6 +13,7 @@ import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
@@ -31,6 +34,62 @@ public class UserServiceImpl implements UserService {
     private final KidRepository kRepo;
     private final ParentRepository pRepo;
     private final JwtTokenServiceImpl jwtTokenServiceImpl;
+
+    @Override
+    @Transactional
+    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
+        String provider = "kakao";
+        Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
+        if (user.isPresent()) {
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
+
+            return loginDTO;
+        } else {
+            String username = kakaoUserDTO.getKakaoAccount().getProfile().getNickname();
+            if (username.getBytes().length > 6) {
+                username = username.substring(0, 3);
+            }
+            User newUser = User.builder()
+                .username(username)
+                .authenticationCode(kakaoUserDTO.getAuthenticationCode())
+                .provider(provider).refreshToken("")
+                .build();
+            uRepo.save(newUser);
+
+            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
+
+            return loginDTO;
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
+        AppleRequest appleRequest) {
+        String provider = "apple";
+        Optional<User> user = uRepo.findByAuthenticationCode(authenticationCode);
+        if (user.isPresent()) {
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
+
+            return loginDTO;
+        } else {
+            String username = appleRequest.getUsername();
+            if (username.getBytes().length > 6) {
+                username = username.substring(0, 3);
+            }
+            User newUser = User.builder()
+                .username(username)
+                .authenticationCode(authenticationCode)
+                .provider("apple").refreshToken("")
+                .build();
+            uRepo.save(newUser);
+
+            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
+
+            return loginDTO;
+        }
+    }
 
     @Override
     @Transactional
@@ -77,13 +136,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, HttpServletResponse response) {
+    public LoginDTO issueNewTokens(User user, String provider) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
         uRepo.save(user);
 
         TokenDTO tokenDTO = new TokenDTO(user);
 
+        LoginDTO loginDTO;
+        if (user.getIsKid() == null || user.getIsKid() == false) {
+            loginDTO = new LoginDTO(user.getIsKid(),
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO), provider);
+        } else {
+            loginDTO = new LoginDTO(user.getIsKid(),
+                jwtTokenServiceImpl.encodeJwtToken(tokenDTO),
+                user.getKid().getLevel(), provider);
+        }
+        return loginDTO;
+    }
+
+    @Override
+    @Transactional
+    public void setNewCookie(User user, HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
         cookie.setMaxAge(14 * 24 * 60 * 60);
         cookie.setSecure(true);
@@ -91,17 +165,6 @@ public class UserServiceImpl implements UserService {
         cookie.setPath("/");
 
         response.addCookie(cookie);
-
-        LoginDTO loginDTO;
-        if (user.getIsKid() == null || user.getIsKid() == false) {
-            loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO));
-        } else {
-            loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO),
-                user.getKid().getLevel());
-        }
-        return loginDTO;
     }
 
     @Override
@@ -146,9 +209,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO deleteUser(User user) {
         UserDTO userDTO = new UserDTO(user);
         uRepo.delete(user);
         return userDTO;
+    }
+
+    @Override
+    @Transactional
+    public User updateUserExpoToken(User user, ExpoRequest expoRequest) {
+        user.setExpoToken(expoRequest.getExpoToken());
+        uRepo.save(user);
+
+        return user;
     }
 }

@@ -1,6 +1,7 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
@@ -69,8 +70,9 @@ public class UserController {
 
         log.info("api = 토큰 리프레시");
         User user = userService.getUserByRefreshToken(refreshToken);
-        LoginDTO loginDTO = userService.issueNewTokens(user, response);
+        LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
 
+        userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(loginDTO);
     }
 
@@ -132,5 +134,18 @@ public class UserController {
         UserDTO userDTO = userService.deleteUser(authUser);
 
         return CommonResponse.onSuccess(userDTO);
+    }
+
+    @ApiOperation(value = "유저 엑스포 토큰 등록")
+    @PatchMapping(value = "/expo", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<UserDTO> patchExpoToken(@AuthenticationPrincipal User authUser,
+        @Valid @RequestBody ExpoRequest expoRequest, HttpServletResponse response) {
+
+        log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
+        User user = userService.updateUserExpoToken(authUser, expoRequest);
+
+        userService.setNewCookie(user, response);
+        return CommonResponse.onSuccess(null);
     }
 }

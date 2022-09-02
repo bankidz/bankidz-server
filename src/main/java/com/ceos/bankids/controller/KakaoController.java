@@ -6,6 +6,7 @@ import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.service.KakaoServiceImpl;
+import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class KakaoController {
 
     private final KakaoServiceImpl kakaoService;
+    private final UserServiceImpl userService;
 
 
     @ApiOperation(value = "카카오 로그인")
@@ -37,7 +39,7 @@ public class KakaoController {
 
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
 
-        LoginDTO loginDTO = kakaoService.loginWithAuthenticationCode(kakaoUserDTO, response);
+        LoginDTO loginDTO = userService.loginWithKakaoAuthenticationCode(kakaoUserDTO);
 
         return CommonResponse.onSuccess(loginDTO);
     }
