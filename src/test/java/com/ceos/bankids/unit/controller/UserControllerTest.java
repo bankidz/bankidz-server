@@ -1,6 +1,7 @@
 package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.UserController;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
@@ -1014,6 +1015,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -1024,7 +1027,8 @@ public class UserControllerTest {
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1118,6 +1122,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -1128,7 +1134,8 @@ public class UserControllerTest {
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);
@@ -1220,6 +1227,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -1230,7 +1239,8 @@ public class UserControllerTest {
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         KidBackupServiceImpl kidBackupService = null;
@@ -1341,6 +1351,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -1351,7 +1363,8 @@ public class UserControllerTest {
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);
