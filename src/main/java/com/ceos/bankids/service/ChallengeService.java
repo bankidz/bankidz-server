@@ -29,4 +29,6 @@ public interface ChallengeService {
 
     public KidWeekDTO readKidWeekInfo(User user, Long kidId);
 
+    public List<ChallengeDTO> readAchievedChallenge(User user);
+
 }

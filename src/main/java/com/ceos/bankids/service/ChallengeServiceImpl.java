@@ -233,7 +233,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     Long risk = 0L;
                     Long falseCnt = 0L;
                     if (interestRate == 10L) {
-                        risk = challenge.getWeeks();
+                        risk = 1000L;
                     } else if (interestRate == 20L) {
                         risk = 4L;
                     } else if (interestRate == 30L) {
@@ -266,8 +266,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                         notificationController.achieveChallengeNotification(
                             challenge.getContractUser(), r);
                     }
-                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-                        r.getChallenge().getComment()));
+                    if (challenge.getChallengeStatus() != achieved) {
+                        challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+                            r.getChallenge().getComment()));
+                    }
                 } else if (r.getChallenge().getChallengeStatus() == failed) {
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
@@ -279,14 +281,6 @@ public class ChallengeServiceImpl implements ChallengeService {
                             progressDTOList.add(new ProgressDTO(progress, r.getChallenge()));
                         }
                     }
-                    challengeDTOList.add(
-                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                            .getComment()));
-                } else if (r.getChallenge().getChallengeStatus() == achieved) {
-                    List<Progress> progressList = r.getChallenge().getProgressList();
-                    List<ProgressDTO> progressDTOList = progressList.stream()
-                        .map(p -> new ProgressDTO(p, r.getChallenge())).collect(
-                            Collectors.toList());
                     challengeDTOList.add(
                         new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
                             .getComment()));
@@ -391,7 +385,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-        // Todo: 알림
         notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
@@ -443,6 +436,25 @@ public class ChallengeServiceImpl implements ChallengeService {
         WeekDTO weekDTO = readWeekInfo(kid);
 
         return new KidWeekDTO(kid.getKid(), weekDTO);
+    }
+
+    // Todo: 후에 돈길 히스토리 추가되면 쿼리파라미터로 넘기기만 하면 작동되게 해놓
+    // 완주한 돈길만 가져오기 API
+    @Transactional
+    @Override
+    public List<ChallengeDTO> readAchievedChallenge(User user) {
+
+        List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
+            .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
+                challenge.getChallengeStatus(), achieved))
+            .collect(
+                Collectors.toList());
+        return challengeList.stream().map(challenge -> {
+            List<ProgressDTO> progressDTOList = challenge.getProgressList().stream()
+                .map(progress -> new ProgressDTO(progress, challenge)).collect(
+                    Collectors.toList());
+            return new ChallengeDTO(challenge, progressDTOList, null);
+        }).collect(Collectors.toList());
     }
 
     private void userRoleValidation(User user, Boolean approveRole) {
