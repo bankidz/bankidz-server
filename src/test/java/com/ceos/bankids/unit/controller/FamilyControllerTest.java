@@ -2,6 +2,7 @@ package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.FamilyController;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
@@ -65,11 +66,14 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -117,11 +121,16 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -129,10 +138,14 @@ public class FamilyControllerTest {
         CommonResponse<FamilyDTO> result = familyController.postFamily(user1);
 
         // then
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .filter(u -> !u.getId().equals(1L))
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -160,11 +173,16 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(null));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -182,9 +200,14 @@ public class FamilyControllerTest {
         Assertions.assertEquals(family, fCaptor.getValue());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
 
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
@@ -224,11 +247,16 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService,
@@ -237,9 +265,14 @@ public class FamilyControllerTest {
         CommonResponse<FamilyDTO> result = familyController.getFamily(user1);
 
         // then
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -262,11 +295,14 @@ public class FamilyControllerTest {
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService,
@@ -316,11 +352,14 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -368,11 +407,14 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -420,11 +462,14 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -500,11 +545,14 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -554,11 +602,14 @@ public class FamilyControllerTest {
             Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family)).thenReturn(familyUserList);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -588,11 +639,14 @@ public class FamilyControllerTest {
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
         Mockito.when(mockFamilyUserRepository.findByUserId(1L)).thenReturn(
             Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -643,11 +697,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -664,10 +721,17 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
 
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -698,11 +762,16 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(null));
         familyUser1.setFamily(family2);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -717,10 +786,14 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
-
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -753,11 +826,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -843,11 +919,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -920,11 +999,16 @@ public class FamilyControllerTest {
             .thenReturn(Optional.ofNullable(null));
         familyUser1.setFamily(family2);
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -939,10 +1023,14 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
-
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -1020,11 +1108,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1097,11 +1188,16 @@ public class FamilyControllerTest {
             .thenReturn(Optional.ofNullable(null));
         familyUser1.setFamily(family2);
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1116,10 +1212,14 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).save(fuCaptor.capture());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
-
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -1147,11 +1247,14 @@ public class FamilyControllerTest {
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(null));
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1224,11 +1327,14 @@ public class FamilyControllerTest {
             .thenReturn(Optional.ofNullable(null));
         familyUser1.setFamily(family2);
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1281,11 +1387,16 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1297,9 +1408,14 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).delete(fuCaptor.capture());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
 
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
@@ -1351,11 +1467,16 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService,
@@ -1368,9 +1489,14 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1)).delete(fuCaptor.capture());
         Assertions.assertEquals(familyUser1, fuCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
 
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
@@ -1405,11 +1531,16 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family2, user1))
+            .thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1425,10 +1556,14 @@ public class FamilyControllerTest {
         Mockito.verify(mockFamilyRepository, Mockito.times(1)).delete(fCaptor.capture());
         Assertions.assertEquals(family2, fCaptor.getValue());
 
-        List<FamilyUserDTO> familyUserDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .map(FamilyUserDTO::new).collect(Collectors.toList());
-        FamilyDTO familyDTO = new FamilyDTO(family2, familyUserDTOList);
-
+        FamilyDTO familyDTO = FamilyDTO.builder()
+            .family(family2)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
         Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
     }
 
@@ -1462,11 +1597,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(null));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1508,11 +1646,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService
@@ -1554,11 +1695,14 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyUserRepository.findByUserId(1L))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
 
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository
+            mockFamilyUserRepository,
+            mockNotificationController
         );
         FamilyController familyController = new FamilyController(
             familyService, challengeService

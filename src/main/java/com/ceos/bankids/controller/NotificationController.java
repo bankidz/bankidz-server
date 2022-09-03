@@ -5,11 +5,13 @@ import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.controller.request.AllSendNotificationRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -160,5 +162,20 @@ public class NotificationController {
         expoNotificationService.sendMessage(token, title, notificationBody, newMap);
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 실패 알림 전송", contractUser.getId(),
             challengeUser.getChallenge().getId(), challengeUser.getChallenge().getId());
+    }
+
+    @Async
+    public void newFamilyUserNotification(User newFamilyUser, List<FamilyUser> familyUserList) {
+
+        String title = "가족그룹\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66에 새로 참여했어요";
+        String notificationBody = "누가 가족그룹에 참여했는지 확인해요!\uD83D\uDCAB";
+        HashMap<String, Object> newMap = new HashMap<>();
+//        newMap.put("user", newFamilyUser.getId());
+        familyUserList.forEach(familyUser -> {
+            String token = familyUser.getUser().getExpoToken();
+            expoNotificationService.sendMessage(token, title, notificationBody, newMap);
+            log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
+                newFamilyUser.getId());
+        });
     }
 }

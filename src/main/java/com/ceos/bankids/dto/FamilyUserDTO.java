@@ -1,6 +1,6 @@
 package com.ceos.bankids.dto;
 
-import com.ceos.bankids.domain.User;
+import com.ceos.bankids.domain.FamilyUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,9 +19,9 @@ public class FamilyUserDTO {
     private Boolean isKid;
 
 
-    public FamilyUserDTO(User user) {
-        this.username = user.getUsername();
-        this.isFemale = user.getIsFemale();
-        this.isKid = user.getIsKid();
+    public FamilyUserDTO(FamilyUser familyUser) {
+        this.username = familyUser.getUser().getUsername();
+        this.isFemale = familyUser.getUser().getIsFemale();
+        this.isKid = familyUser.getUser().getIsKid();
     }
 }
