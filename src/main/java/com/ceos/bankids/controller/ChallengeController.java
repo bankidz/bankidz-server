@@ -119,11 +119,25 @@ public class ChallengeController {
     @ApiOperation(value = "완주한 돈길 리스트 가져오기")
     @GetMapping(value = "/achieved", produces = "application/json; charset=utf-8")
     public CommonResponse<List<ChallengeDTO>> getAchievedListChallenge(
-        @AuthenticationPrincipal User authUser) {
+        @AuthenticationPrincipal User authUser, @RequestParam String interestPayment) {
 
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
-        List<ChallengeDTO> challengeDTOList = challengeService.readAchievedChallenge(authUser);
+        List<ChallengeDTO> challengeDTOList = challengeService.readAchievedChallenge(authUser,
+            interestPayment);
 
         return CommonResponse.onSuccess(challengeDTOList);
+    }
+
+    @ApiOperation(value = "완주한 돈길에 이자 지급하기")
+    @PatchMapping(value = "/interestPayment/{challengeId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<ChallengeDTO> patchInterestPayment(@AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        log.info("api = 완주한 돈길에 이자 지급, user = {}, challengeId = {}", authUser.getUsername(),
+            challengeId);
+        ChallengeDTO challengeDTO = challengeService.updateChallengeInterestPayment(authUser,
+            challengeId);
+
+        return CommonResponse.onSuccess(challengeDTO);
     }
 }
