@@ -24,14 +24,10 @@ public class KidChallengeListDTO {
     private Long kidId;
 
     @ApiModelProperty(example = "true")
-    private Boolean isFemale;
-
-    @ApiModelProperty(example = "true")
     private List<ChallengeDTO> challengeList;
 
     public KidChallengeListDTO(User user, List<ChallengeDTO> challengeList) {
         this.kidId = user.getKid().getId();
-        this.isFemale = user.getIsFemale();
         this.challengeList = challengeList;
     }
 }

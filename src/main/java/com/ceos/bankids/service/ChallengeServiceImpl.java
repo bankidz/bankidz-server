@@ -438,15 +438,23 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new KidWeekDTO(kid.getKid(), weekDTO);
     }
 
-    // Todo: 후에 돈길 히스토리 추가되면 쿼리파라미터로 넘기기만 하면 작동되게 해놓
     // 완주한 돈길만 가져오기 API
     @Transactional
     @Override
-    public List<ChallengeDTO> readAchievedChallenge(User user) {
+    public List<ChallengeDTO> readAchievedChallenge(User user, String interestPayment) {
 
         List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
                 challenge.getChallengeStatus(), achieved))
+            .filter(challenge -> {
+                if (Objects.equals(interestPayment, "interestPayment")) {
+                    return challenge.getIsInterestPayment();
+                } else if (Objects.equals(interestPayment, "notInterestPayment")) {
+                    return !challenge.getIsInterestPayment();
+                } else {
+                    return challenge.getChallengeStatus() == achieved;
+                }
+            })
             .collect(
                 Collectors.toList());
         return challengeList.stream().map(challenge -> {
@@ -455,6 +463,29 @@ public class ChallengeServiceImpl implements ChallengeService {
                     Collectors.toList());
             return new ChallengeDTO(challenge, progressDTOList, null);
         }).collect(Collectors.toList());
+    }
+
+    // 완주한 돈길에 이자 지급 API
+    @Transactional
+    @Override
+    public ChallengeDTO updateChallengeInterestPayment(User user, Long challengeId) {
+
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(
+            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
+        if (!Objects.equals(challenge.getContractUser().getId(), user.getId())) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
+        }
+        if (challenge.getIsInterestPayment()) {
+            throw new BadRequestException(ErrorCode.ALREADY_INTEREST_PAYMENT.getErrorCode());
+        }
+        challenge.setIsInterestPayment(true);
+        challengeRepository.save(challenge);
+
+        List<ProgressDTO> progressDTOList = challenge.getProgressList().stream()
+            .map(progress -> new ProgressDTO(progress, challenge))
+            .collect(
+                Collectors.toList());
+        return new ChallengeDTO(challenge, progressDTOList, null);
     }
 
     private void userRoleValidation(User user, Boolean approveRole) {
