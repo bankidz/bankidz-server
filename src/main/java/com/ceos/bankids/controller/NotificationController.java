@@ -2,11 +2,13 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AllSendNotificationRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -37,6 +39,9 @@ public class NotificationController {
         @RequestBody AllSendNotificationRequest allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
 
+        if (authUser.getId() != 9L) {
+            throw new ForbiddenException(ErrorCode.ALL_NOTIFICATION_AUTH_ERROR.getErrorCode());
+        }
         String title = allSendNotificationRequest.getTitle();
         String body = allSendNotificationRequest.getBody();
         userRepository.findAll().stream()
