@@ -447,9 +447,9 @@ public class ChallengeServiceImpl implements ChallengeService {
             .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
                 challenge.getChallengeStatus(), achieved))
             .filter(challenge -> {
-                if (Objects.equals(interestPayment, "interestPayment")) {
+                if (Objects.equals(interestPayment, "payed")) {
                     return challenge.getIsInterestPayment();
-                } else if (Objects.equals(interestPayment, "notInterestPayment")) {
+                } else if (Objects.equals(interestPayment, "notPayed")) {
                     return !challenge.getIsInterestPayment();
                 } else {
                     return challenge.getChallengeStatus() == achieved;
