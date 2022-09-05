@@ -16,15 +16,19 @@ public class LoginDTO {
     private Long level;
     @ApiModelProperty(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ~~~~")
     private String accessToken;
+    @ApiModelProperty(example = "kakao")
+    private String provider;
 
-    public LoginDTO(Boolean isKid, String accessToken) {
+    public LoginDTO(Boolean isKid, String accessToken, String provider) {
         this.isKid = isKid;
         this.accessToken = accessToken;
+        this.provider = provider;
     }
 
-    public LoginDTO(Boolean isKid, String accessToken, Long level) {
+    public LoginDTO(Boolean isKid, String accessToken, Long level, String provider) {
         this.isKid = isKid;
         this.level = level;
         this.accessToken = accessToken;
+        this.provider = provider;
     }
 }

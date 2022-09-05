@@ -1606,7 +1606,7 @@ public class ChallengeControllerTest {
         progressList.add(newProgress);
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
-        progressDTOList.add(new ProgressDTO(newProgress));
+        progressDTOList.add(new ProgressDTO(newProgress, newChallenge1));
 
         newChallenge1.setProgressList(progressList);
 
@@ -1719,8 +1719,8 @@ public class ChallengeControllerTest {
         progressList.add(newProgress1);
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
-        progressDTOList.add(new ProgressDTO(newProgress));
-        progressDTOList.add(new ProgressDTO(newProgress1));
+        progressDTOList.add(new ProgressDTO(newProgress, newChallenge1));
+        progressDTOList.add(new ProgressDTO(newProgress1, newChallenge1));
 
         newChallenge1.setProgressList(progressList);
 
@@ -1918,14 +1918,16 @@ public class ChallengeControllerTest {
 
         newChallenge3.setProgressList(progressList3);
 
-        ProgressDTO progressDTO = new ProgressDTO(newProgress);
-        ProgressDTO progressDTO1 = new ProgressDTO(progress);
-        ProgressDTO progressDTO2 = new ProgressDTO(progress1);
-        ProgressDTO lowProgressDTO = new ProgressDTO(lowProgress);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress, newChallenge1);
+        ProgressDTO progressDTO1 = new ProgressDTO(progress, newChallenge);
+        ProgressDTO progressDTO2 = new ProgressDTO(progress1, newChallenge);
+        ProgressDTO lowProgressDTO = new ProgressDTO(lowProgress, newChallenge2);
 
         List<ProgressDTO> lowProgressDTOList = List.of(lowProgressDTO);
 
-        List<ProgressDTO> middleProgressDTOList = progressList3.stream().map(ProgressDTO::new)
+        List<ProgressDTO> middleProgressDTOList = progressList3.stream().map(p -> {
+                return new ProgressDTO(p, newChallenge3);
+            })
             .collect(Collectors.toList());
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
@@ -2058,9 +2060,9 @@ public class ChallengeControllerTest {
 
         newChallenge1.setProgressList(progressList);
 
-        ProgressDTO progressDTO = new ProgressDTO(newProgress);
-        ProgressDTO progressDTO1 = new ProgressDTO(progress);
-        ProgressDTO progressDTO2 = new ProgressDTO(progress1);
+        ProgressDTO progressDTO = new ProgressDTO(newProgress, newChallenge1);
+        ProgressDTO progressDTO1 = new ProgressDTO(progress, newChallenge);
+        ProgressDTO progressDTO2 = new ProgressDTO(progress1, newChallenge);
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
         progressDTOList.add(progressDTO);
@@ -2158,7 +2160,9 @@ public class ChallengeControllerTest {
 
         newChallenge.setProgressList(progressList);
 
-        List<ProgressDTO> progressDTOList = progressList.stream().map(ProgressDTO::new)
+        List<ProgressDTO> progressDTOList = progressList.stream().map(p -> {
+                return new ProgressDTO(p, newChallenge);
+            })
             .collect(Collectors.toList());
 
         Mockito.when(mockChallengeUserRepository.findByUserId(son.getId()))
@@ -2357,9 +2361,9 @@ public class ChallengeControllerTest {
             Timestamp.class
         );
 
-        ProgressDTO progressDTO = new ProgressDTO(successProgress);
-        ProgressDTO progressDTO1 = new ProgressDTO(successProgress1);
-        ProgressDTO progressDTO2 = new ProgressDTO(successProgress2);
+        ProgressDTO progressDTO = new ProgressDTO(successProgress, newChallenge3);
+        ProgressDTO progressDTO1 = new ProgressDTO(successProgress1, newChallenge3);
+        ProgressDTO progressDTO2 = new ProgressDTO(successProgress2, newChallenge3);
 
         List<ProgressDTO> successProgressDTOList = List.of(progressDTO, progressDTO1, progressDTO2);
 
@@ -2376,7 +2380,7 @@ public class ChallengeControllerTest {
         progressList.add(newProgress1);
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
-        progressDTOList.add(new ProgressDTO(newProgress));
+        progressDTOList.add(new ProgressDTO(newProgress, newChallenge1));
 
         newChallenge1.setProgressList(progressList);
 
@@ -2491,14 +2495,6 @@ public class ChallengeControllerTest {
         FamilyUser newFamilyUser1 = FamilyUser.builder().id(2L)
             .family(newFamily).user(son).build();
 
-        List<ProgressDTO> progressDTOList = new ArrayList<>();
-        for (int i = 1; i <= newChallenge.getWeeks(); i++) {
-            Progress newProgress = Progress.builder().weeks((long) i)
-                .challenge(newChallenge)
-                .isAchieved(false).build();
-            progressDTOList.add(new ProgressDTO(newProgress));
-        }
-
         List<ChallengeUser> challengeUserList = new ArrayList<>();
         challengeUserList.add(newChallengeUser);
 
@@ -2541,6 +2537,13 @@ public class ChallengeControllerTest {
 
         //then
 
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        for (int i = 1; i <= newChallenge.getWeeks(); i++) {
+            Progress newProgress = Progress.builder().weeks((long) i)
+                .challenge(newChallenge)
+                .isAchieved(false).build();
+            progressDTOList.add(new ProgressDTO(newProgress, newChallenge));
+        }
         newChallenge1.setComment(newComment);
         ChallengeDTO successChallengeDTO = new ChallengeDTO(newChallenge, progressDTOList, null);
         ChallengeDTO falseChallengeDTO = new ChallengeDTO(newChallenge1, null, newComment);

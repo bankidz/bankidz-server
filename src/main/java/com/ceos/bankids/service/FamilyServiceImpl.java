@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
@@ -28,6 +29,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     private final FamilyRepository fRepo;
     private final FamilyUserRepository fuRepo;
+    private final NotificationController notificationController;
 
     @Override
     @Transactional
@@ -35,15 +37,7 @@ public class FamilyServiceImpl implements FamilyService {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
 
         if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
-            if (family.isEmpty()) {
-                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
-            }
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(
-                familyUser.get().getFamily(), user);
-            FamilyDTO familyDTO = new FamilyDTO(familyUser.get().getFamily(), familyUserDTOList);
-
-            return familyDTO;
+            throw new BadRequestException(ErrorCode.FAMILY_ALREADY_EXISTS.getErrorCode());
         } else {
             String newFamilyCode = UUID.randomUUID().toString();
             Family newFamily = Family.builder()
@@ -57,24 +51,11 @@ public class FamilyServiceImpl implements FamilyService {
                 .build();
             fuRepo.save(newFamilyUser);
 
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily, user);
-            FamilyDTO familyDTO = new FamilyDTO(newFamily, familyUserDTOList);
-
-            return familyDTO;
+            return FamilyDTO.builder()
+                .family(newFamily)
+                .familyUserList(List.of())
+                .build();
         }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<FamilyUserDTO> getFamilyUserList(Family family, User user) {
-        List<FamilyUser> familyUser = fuRepo.findByFamily(family);
-
-        List<FamilyUserDTO> userDTOList = familyUser.stream().map(FamilyUser::getUser)
-            .filter(u -> !u.getId().equals(user.getId()))
-            .map(FamilyUserDTO::new)
-            .collect(Collectors.toList());
-
-        return userDTOList;
     }
 
     @Override
@@ -86,12 +67,21 @@ public class FamilyServiceImpl implements FamilyService {
             if (family.isEmpty()) {
                 throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
             }
-            List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family.get(), user);
-            FamilyDTO familyDTO = new FamilyDTO(family.get(), familyUserDTOList);
-            return familyDTO;
+            List<FamilyUser> familyUserList = fuRepo.findByFamilyAndUserNot(family.get(), user);
+
+            return FamilyDTO.builder()
+                .family(family.get())
+                .familyUserList(
+                    familyUserList
+                        .stream()
+                        .map(FamilyUserDTO::new)
+                        .collect(Collectors.toList())
+                ).build();
         } else {
-            FamilyDTO familyDTO = new FamilyDTO(new Family(), new ArrayList<>());
-            return familyDTO;
+            return FamilyDTO.builder()
+                .family(new Family())
+                .familyUserList(List.of())
+                .build();
         }
     }
 
@@ -163,10 +153,16 @@ public class FamilyServiceImpl implements FamilyService {
             .build();
         fuRepo.save(newFamilyUser);
 
-        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(newFamily.get(), user);
-        FamilyDTO familyDTO = new FamilyDTO(newFamily.get(), familyUserDTOList);
+        notificationController.newFamilyUserNotification(user, familyUserList);
 
-        return familyDTO;
+        return FamilyDTO.builder()
+            .family(newFamily.get())
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
     }
 
     @Override
@@ -183,14 +179,19 @@ public class FamilyServiceImpl implements FamilyService {
         }
         fuRepo.delete(familyUser.get());
 
-        List<FamilyUserDTO> familyUserDTOList = getFamilyUserList(family, user);
-        FamilyDTO familyDTO = new FamilyDTO(family, familyUserDTOList);
-
-        if (familyUserDTOList.size() == 0) {
+        List<FamilyUser> familyUserList = fuRepo.findByFamilyAndUserNot(family, user);
+        if (familyUserList.size() == 0) {
             fRepo.delete(family);
         }
-        
-        return familyDTO;
+
+        return FamilyDTO.builder()
+            .family(family)
+            .familyUserList(
+                familyUserList
+                    .stream()
+                    .map(FamilyUserDTO::new)
+                    .collect(Collectors.toList())
+            ).build();
     }
 
 

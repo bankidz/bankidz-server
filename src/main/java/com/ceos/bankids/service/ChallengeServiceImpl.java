@@ -17,7 +17,10 @@ import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AchievedChallengeDTO;
+import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
@@ -114,6 +117,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(pending)
             .interestRate(challengeRequest.getInterestRate())
+            .interestPrice(challengeRequest.getInterestPrice())
             .challengeCategory(challengeCategory).targetItem(targetItem)
             .filename(challengeRequest.getFileName()).build();
         challengeRepository.save(newChallenge);
@@ -233,7 +237,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                     Long risk = 0L;
                     Long falseCnt = 0L;
                     if (interestRate == 10L) {
-                        risk = challenge.getWeeks();
+                        risk = 1000L;
                     } else if (interestRate == 20L) {
                         risk = 4L;
                     } else if (interestRate == 30L) {
@@ -244,7 +248,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                             if (!progress.getIsAchieved() && progress.getWeeks() < diffWeeks) {
                                 falseCnt += 1;
                             }
-                            progressDTOList.add(new ProgressDTO(progress));
+                            progressDTOList.add(new ProgressDTO(progress, challenge));
                         }
                     }
                     if (falseCnt >= risk) {
@@ -266,8 +270,10 @@ public class ChallengeServiceImpl implements ChallengeService {
                         notificationController.achieveChallengeNotification(
                             challenge.getContractUser(), r);
                     }
-                    challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-                        r.getChallenge().getComment()));
+                    if (challenge.getChallengeStatus() != achieved) {
+                        challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
+                            r.getChallenge().getComment()));
+                    }
                 } else if (r.getChallenge().getChallengeStatus() == failed) {
                     List<Progress> progressList = r.getChallenge().getProgressList();
                     List<ProgressDTO> progressDTOList = new ArrayList<>();
@@ -276,17 +282,9 @@ public class ChallengeServiceImpl implements ChallengeService {
                             .getWeeks() : (long) timeLogic(progressList);
                     for (Progress progress : progressList) {
                         if (progress.getWeeks() <= diffWeeks) {
-                            progressDTOList.add(new ProgressDTO(progress));
+                            progressDTOList.add(new ProgressDTO(progress, r.getChallenge()));
                         }
                     }
-                    challengeDTOList.add(
-                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
-                            .getComment()));
-                } else if (r.getChallenge().getChallengeStatus() == achieved) {
-                    List<Progress> progressList = r.getChallenge().getProgressList();
-                    List<ProgressDTO> progressDTOList = progressList.stream()
-                        .map(ProgressDTO::new).collect(
-                            Collectors.toList());
                     challengeDTOList.add(
                         new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
                             .getComment()));
@@ -379,7 +377,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 Progress newProgress = Progress.builder().weeks((long) i)
                     .challenge(challenge)
                     .isAchieved(false).build();
-                progressDTOList.add(new ProgressDTO(newProgress));
+                progressDTOList.add(new ProgressDTO(newProgress, challenge));
                 progressRepository.save(newProgress);
             }
         } else {
@@ -391,8 +389,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-        // Todo: 알림
-//        notificationController.notification(challenge, user);
         notificationController.notification(challenge, user);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
@@ -444,6 +440,87 @@ public class ChallengeServiceImpl implements ChallengeService {
         WeekDTO weekDTO = readWeekInfo(kid);
 
         return new KidWeekDTO(kid.getKid(), weekDTO);
+    }
+
+    // 완주한 돈길만 가져오기 API
+    @Transactional
+    @Override
+    public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment) {
+
+        List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
+            .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
+                challenge.getChallengeStatus(), achieved))
+            .filter(challenge -> {
+                if (Objects.equals(interestPayment, "payed")) {
+                    return challenge.getIsInterestPayment();
+                } else if (Objects.equals(interestPayment, "notPayed")) {
+                    return !challenge.getIsInterestPayment();
+                } else {
+                    return challenge.getChallengeStatus() == achieved;
+                }
+            })
+            .collect(
+                Collectors.toList());
+        Long[] totalInterestPrice = {0L};
+        List<AchievedChallengeDTO> achievedChallengeDTOList = challengeList.stream()
+            .map(challenge -> {
+                totalInterestPrice[0] += (challenge.getInterestPrice() / challenge.getWeeks())
+                    * challenge.getSuccessWeeks();
+                return new AchievedChallengeDTO(challenge);
+            }).collect(Collectors.toList());
+        return new AchievedChallengeListDTO(
+            totalInterestPrice[0], achievedChallengeDTOList);
+    }
+
+    // 완주한 돈길에 이자 지급 API
+    @Transactional
+    @Override
+    public AchievedChallengeDTO updateChallengeInterestPayment(User user, Long challengeId) {
+
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(
+            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
+        if (!Objects.equals(challenge.getContractUser().getId(), user.getId())) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
+        }
+        if (challenge.getIsInterestPayment()) {
+            throw new BadRequestException(ErrorCode.ALREADY_INTEREST_PAYMENT.getErrorCode());
+        }
+        if (challenge.getChallengeStatus() != achieved) {
+            throw new BadRequestException(ErrorCode.NOT_ALREADY_ACHIEVED_CHALLENGE.getErrorCode());
+        }
+        challenge.setIsInterestPayment(true);
+        challengeRepository.save(challenge);
+
+        return new AchievedChallengeDTO(challenge);
+    }
+
+    //자녀의 완주한 돈길 리스트 가져오기 API
+    @Transactional
+    @Override
+    public KidAchievedChallengeListDTO readKidAchievedChallenge(User user, Long kidId,
+        String interestPayment) {
+
+        userRoleValidation(user, false);
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
+        Kid kid = kidRepository.findById(kidId)
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
+        User kidUser = kid.getUser();
+        FamilyUser kidFamilyUser = familyUserRepository.findByUserId(kidUser.getId())
+            .orElseThrow(() -> new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
+        if (familyUser.getFamily() != kidFamilyUser.getFamily()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_FAMILY.getErrorCode());
+        }
+
+        if (!Objects.equals(interestPayment, "payed") && !Objects.equals(interestPayment,
+            "notPayed")) {
+            throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
+        }
+
+        AchievedChallengeListDTO achievedChallengeListDTO = readAchievedChallenge(kidUser,
+            interestPayment);
+
+        return new KidAchievedChallengeListDTO(kidId, achievedChallengeListDTO);
     }
 
     private void userRoleValidation(User user, Boolean approveRole) {

@@ -34,10 +34,6 @@ public class Notification extends AbstractTimestamp {
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challengeId", nullable = false)
-    private Challenge challenge;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
@@ -52,7 +48,6 @@ public class Notification extends AbstractTimestamp {
         this.id = id;
         this.title = title;
         this.message = message;
-        this.challenge = challenge;
         this.user = user;
     }
 }

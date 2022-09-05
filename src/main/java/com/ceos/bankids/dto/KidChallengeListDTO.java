@@ -23,19 +23,11 @@ public class KidChallengeListDTO {
     @ApiModelProperty(example = "1")
     private Long kidId;
 
-    @ApiModelProperty(example = "string")
-    private String username;
-
-    @ApiModelProperty(example = "true")
-    private Boolean isFemale;
-
     @ApiModelProperty(example = "true")
     private List<ChallengeDTO> challengeList;
 
     public KidChallengeListDTO(User user, List<ChallengeDTO> challengeList) {
         this.kidId = user.getKid().getId();
-        this.username = user.getUsername();
-        this.isFemale = user.getIsFemale();
         this.challengeList = challengeList;
     }
 }

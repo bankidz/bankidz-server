@@ -1,6 +1,8 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.domain.Notification;
+import com.ceos.bankids.domain.User;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.InternalServerException;
 import com.ceos.bankids.repository.NotificationRepository;
@@ -18,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.GenericJDBCException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -27,9 +30,15 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    public void sendMessage(String token, String title, String body, Map<String, Object> data) {
+    public void sendMessage(User user, String title, String body, Map<String, Object> data) {
 
+        String token = user.getExpoToken();
+        if (token == null) {
+            log.info("token = {}", user.getExpoToken());
+            throw new BadRequestException(ErrorCode.NOTIFICATION_ACCESSCODE_ERROR.getErrorCode());
+        }
         if (!PushClient.isExponentPushToken(token)) {
+            log.info("token = {}", user.getExpoToken());
             throw new BadRequestException(ErrorCode.NOTIFICATION_ACCESSCODE_ERROR.getErrorCode());
         }
         ExpoPushMessage expoPushMessage = new ExpoPushMessage();
@@ -51,7 +60,10 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             for (List<ExpoPushMessage> chunk : chunks) {
                 messageRepliesFutures.add(pushClient.sendPushNotificationsAsync(chunk));
             }
-
+            //Todo 메서드 인자가 user로 바뀌면 데이터 베이스에 꽂기
+            Notification notification = Notification.builder().title(title).message(body).user(user)
+                .build();
+            notificationRepository.save(notification);
             List<ExpoPushTicket> allTickets = new ArrayList<>();
             for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {
                 try {
@@ -81,8 +93,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                     .getError()).collect(Collectors.joining(","));
             log.info("Recieved ERROR ticket for " + errorTicketMessages.size() + " messages: "
                 + errorTicketMessagesString);
-            //Todo 메서드 인자가 user로 바뀌면 데이터 베이스에 꽂기
-        } catch (PushClientException | PushNotificationException e) {
+        } catch (PushClientException | PushNotificationException | GenericJDBCException e) {
             log.info("error message = {}", e.getMessage());
             throw new InternalServerException(ErrorCode.NOTIFICATION_SERVICE_ERROR.getErrorCode());
         }

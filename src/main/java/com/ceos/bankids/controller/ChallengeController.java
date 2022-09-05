@@ -4,7 +4,10 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AchievedChallengeDTO;
+import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -114,5 +117,46 @@ public class ChallengeController {
         KidWeekDTO kidWeekDTO = challengeService.readKidWeekInfo(authUser, kidId);
 
         return CommonResponse.onSuccess(kidWeekDTO);
+    }
+
+    @ApiOperation(value = "완주한 돈길 리스트 가져오기")
+    @GetMapping(value = "/achieved", produces = "application/json; charset=utf-8")
+    public CommonResponse<AchievedChallengeListDTO> getAchievedListChallenge(
+        @AuthenticationPrincipal User authUser, @RequestParam String interestPayment) {
+
+        log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
+        AchievedChallengeListDTO achievedChallengeListDTO = challengeService.readAchievedChallenge(
+            authUser,
+            interestPayment);
+
+        return CommonResponse.onSuccess(achievedChallengeListDTO);
+    }
+
+    @ApiOperation(value = "완주한 돈길에 이자 지급하기")
+    @PatchMapping(value = "/interestPayment/{challengeId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<AchievedChallengeDTO> patchInterestPayment(
+        @AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        log.info("api = 완주한 돈길에 이자 지급, user = {}, challengeId = {}", authUser.getUsername(),
+            challengeId);
+        AchievedChallengeDTO achievedChallengeDTO = challengeService.updateChallengeInterestPayment(
+            authUser,
+            challengeId);
+
+        return CommonResponse.onSuccess(achievedChallengeDTO);
+    }
+
+    @ApiOperation(value = "자녀의 완주한 돈길 리스트 가져오기")
+    @GetMapping(value = "kid/achieved/{kidId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<KidAchievedChallengeListDTO> getKidAchievedListChallenge(
+        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
+        @RequestParam String interestPayment) {
+
+        log.info("api = 완주한 돈길 리스트 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
+        KidAchievedChallengeListDTO kidAchievedChallengeListDTO = challengeService.readKidAchievedChallenge(
+            authUser, kidId, interestPayment);
+
+        return CommonResponse.onSuccess(kidAchievedChallengeListDTO);
     }
 }
