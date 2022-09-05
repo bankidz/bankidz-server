@@ -86,8 +86,8 @@ public class FamilyControllerTest {
     }
 
     @Test
-    @DisplayName("생성 시 기존 가족 있을 때, 가족 정보 반환하는지 확인")
-    public void testIfFamilyExistThenReturnPostResult() {
+    @DisplayName("생성 시 기존 가족 있을 때, 에러 처리 하는지 확인")
+    public void testIfFamilyExistThenThrowBadRequestException() {
         // given
         User user1 = User.builder()
             .id(1L)
@@ -135,18 +135,11 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService, challengeService
         );
-        CommonResponse<FamilyDTO> result = familyController.postFamily(user1);
 
         // then
-        FamilyDTO familyDTO = FamilyDTO.builder()
-            .family(family)
-            .familyUserList(
-                familyUserList
-                    .stream()
-                    .map(FamilyUserDTO::new)
-                    .collect(Collectors.toList())
-            ).build();
-        Assertions.assertEquals(CommonResponse.onSuccess(familyDTO), result);
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            familyController.postFamily(user1);
+        });
     }
 
     @Test

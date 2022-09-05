@@ -208,57 +208,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("인증 유저 없어서 패치 실패시, 에러 처리 되는지 확인")
-    public void testIfUserTypePatchFailWithoutValidUserThrowBadRequestException() {
-        // given
-        User user = User.builder()
-            .id(1L)
-            .username("user1")
-            .authenticationCode("code")
-            .provider("kakao")
-            .refreshToken("token")
-            .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest("19990521", false, true);
-        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        Mockito.when(mockUserRepository.findById(1L))
-            .thenReturn(Optional.ofNullable(null));
-        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
-        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-
-        // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
-            jwtTokenServiceImpl
-        );
-        FamilyServiceImpl familyService = null;
-        ChallengeServiceImpl challengeService = null;
-        KidBackupServiceImpl kidBackupService = null;
-        ParentBackupServiceImpl parentBackupService = null;
-        KidServiceImpl kidService = null;
-        ParentServiceImpl parentService = null;
-        SlackServiceImpl slackService = null;
-
-        UserController userController = new UserController(
-            userService,
-            familyService,
-            challengeService,
-            kidBackupService,
-            parentBackupService,
-            kidService,
-            parentService,
-            slackService
-        );
-
-        // then
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            userController.patchUserType(user, userTypeRequest);
-        });
-    }
-
-    @Test
     @DisplayName("100세 초과 생년월일 입력으로 패치 실패시, 에러 처리 되는지 확인")
     public void testIfUserTypePatchFailWithTooEarlyBirthdayThrowBadRequestException() {
         // given
