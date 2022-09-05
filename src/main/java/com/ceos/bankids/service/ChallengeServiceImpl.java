@@ -473,7 +473,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 완주한 돈길에 이자 지급 API
     @Transactional
     @Override
-    public ChallengeDTO updateChallengeInterestPayment(User user, Long challengeId) {
+    public AchievedChallengeDTO updateChallengeInterestPayment(User user, Long challengeId) {
 
         Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(
             () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
@@ -486,11 +486,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         challenge.setIsInterestPayment(true);
         challengeRepository.save(challenge);
 
-        List<ProgressDTO> progressDTOList = challenge.getProgressList().stream()
-            .map(progress -> new ProgressDTO(progress, challenge))
-            .collect(
-                Collectors.toList());
-        return new ChallengeDTO(challenge, progressDTOList, null);
+        return new AchievedChallengeDTO(challenge);
     }
 
     private void userRoleValidation(User user, Boolean approveRole) {
