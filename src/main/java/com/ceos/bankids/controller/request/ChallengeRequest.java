@@ -44,6 +44,10 @@ public class ChallengeRequest {
     @NotNull(message = "돈길의 이자율을 입력해주세요")
     private Long interestRate;
 
+    @ApiModelProperty(example = "3000")
+    @NotNull(message = "돈길의 총 이자 금액을 입력해주세요")
+    private Long interestPrice;
+
     @ApiModelProperty(example = "150000")
     @NotNull(message = "돈길의 목표 금액을 입력해주세요")
     @Min(value = 1500, message = "목표 금액이 너무 적습니다.")
