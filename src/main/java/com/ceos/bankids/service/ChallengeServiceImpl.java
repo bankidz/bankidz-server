@@ -20,6 +20,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
@@ -487,6 +488,35 @@ public class ChallengeServiceImpl implements ChallengeService {
         challengeRepository.save(challenge);
 
         return new AchievedChallengeDTO(challenge);
+    }
+
+    //자녀의 완주한 돈길 리스트 가져오기 API
+    @Transactional
+    @Override
+    public KidAchievedChallengeListDTO readKidAchievedChallenge(User user, Long kidId,
+        String interestPayment) {
+
+        userRoleValidation(user, false);
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
+        Kid kid = kidRepository.findById(kidId)
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
+        User kidUser = kid.getUser();
+        FamilyUser kidFamilyUser = familyUserRepository.findByUserId(kidUser.getId())
+            .orElseThrow(() -> new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
+        if (familyUser.getFamily() != kidFamilyUser.getFamily()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_FAMILY.getErrorCode());
+        }
+
+        if (!Objects.equals(interestPayment, "payed") && !Objects.equals(interestPayment,
+            "notPayed")) {
+            throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
+        }
+
+        AchievedChallengeListDTO achievedChallengeListDTO = readAchievedChallenge(kidUser,
+            interestPayment);
+
+        return new KidAchievedChallengeListDTO(kidId, achievedChallengeListDTO);
     }
 
     private void userRoleValidation(User user, Boolean approveRole) {
