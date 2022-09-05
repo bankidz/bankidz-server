@@ -454,7 +454,7 @@ public class ChallengeServiceImpl implements ChallengeService {
                 } else if (Objects.equals(interestPayment, "notPayed")) {
                     return !challenge.getIsInterestPayment();
                 } else {
-                    throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
+                    return challenge.getChallengeStatus() == achieved;
                 }
             })
             .collect(
