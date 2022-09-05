@@ -4,6 +4,7 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
@@ -118,14 +119,15 @@ public class ChallengeController {
 
     @ApiOperation(value = "완주한 돈길 리스트 가져오기")
     @GetMapping(value = "/achieved", produces = "application/json; charset=utf-8")
-    public CommonResponse<List<ChallengeDTO>> getAchievedListChallenge(
+    public CommonResponse<AchievedChallengeListDTO> getAchievedListChallenge(
         @AuthenticationPrincipal User authUser, @RequestParam String interestPayment) {
 
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
-        List<ChallengeDTO> challengeDTOList = challengeService.readAchievedChallenge(authUser,
+        AchievedChallengeListDTO achievedChallengeListDTO = challengeService.readAchievedChallenge(
+            authUser,
             interestPayment);
 
-        return CommonResponse.onSuccess(challengeDTOList);
+        return CommonResponse.onSuccess(achievedChallengeListDTO);
     }
 
     @ApiOperation(value = "완주한 돈길에 이자 지급하기")

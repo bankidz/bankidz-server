@@ -17,6 +17,8 @@ import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AchievedChallengeDTO;
+import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
@@ -441,7 +443,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 완주한 돈길만 가져오기 API
     @Transactional
     @Override
-    public List<ChallengeDTO> readAchievedChallenge(User user, String interestPayment) {
+    public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment) {
 
         List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
@@ -457,12 +459,15 @@ public class ChallengeServiceImpl implements ChallengeService {
             })
             .collect(
                 Collectors.toList());
-        return challengeList.stream().map(challenge -> {
-            List<ProgressDTO> progressDTOList = challenge.getProgressList().stream()
-                .map(progress -> new ProgressDTO(progress, challenge)).collect(
-                    Collectors.toList());
-            return new ChallengeDTO(challenge, progressDTOList, null);
-        }).collect(Collectors.toList());
+        Long[] totalInterestPrice = {0L};
+        List<AchievedChallengeDTO> achievedChallengeDTOList = challengeList.stream()
+            .map(challenge -> {
+                totalInterestPrice[0] += (challenge.getInterestPrice() / challenge.getWeeks())
+                    * challenge.getSuccessWeeks();
+                return new AchievedChallengeDTO(challenge);
+            }).collect(Collectors.toList());
+        return new AchievedChallengeListDTO(
+            totalInterestPrice[0], achievedChallengeDTOList);
     }
 
     // 완주한 돈길에 이자 지급 API

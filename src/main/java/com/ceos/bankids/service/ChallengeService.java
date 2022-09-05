@@ -3,6 +3,7 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
@@ -29,7 +30,7 @@ public interface ChallengeService {
 
     public KidWeekDTO readKidWeekInfo(User user, Long kidId);
 
-    public List<ChallengeDTO> readAchievedChallenge(User user, String interestPayment);
+    public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment);
 
     public ChallengeDTO updateChallengeInterestPayment(User user, Long challengeId);
 
