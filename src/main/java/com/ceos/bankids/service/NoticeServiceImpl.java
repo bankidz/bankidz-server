@@ -5,6 +5,8 @@ import com.ceos.bankids.domain.Notice;
 import com.ceos.bankids.dto.NoticeDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.NoticeRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,10 +21,12 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Transactional
     @Override
-    public void postNotice(String title, String body) {
+    public NoticeDTO postNotice(String title, String body) {
 
         Notice notice = Notice.builder().title(title).body(body).build();
         noticeRepository.save(notice);
+
+        return new NoticeDTO(notice);
     }
 
     @Transactional
@@ -33,6 +37,15 @@ public class NoticeServiceImpl implements NoticeService {
             () -> new BadRequestException(ErrorCode.NOT_EXIST_NOTICE_ERROR.getErrorCode()));
 
         return new NoticeDTO(notice);
+    }
+
+    @Transactional
+    @Override
+    public List<NoticeDTO> readNoticeList() {
+
+        return noticeRepository.findAll().stream()
+            .map(NoticeDTO::new)
+            .collect(Collectors.toList());
     }
 
 
