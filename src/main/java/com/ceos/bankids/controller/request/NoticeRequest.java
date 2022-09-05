@@ -17,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
-public class AllSendNotificationRequest {
+public class NoticeRequest {
 
     @ApiModelProperty(value = "알림 제목", example = "공지사항")
     @NotBlank(message = "알림의 제목은 필수값입니다.")

@@ -3,7 +3,7 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.request.AllSendNotificationRequest;
+import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
@@ -36,7 +36,7 @@ public class NotificationController {
     @ApiOperation(value = "모든 유저에게 알림")
     @PostMapping(value = "/allUser", produces = "application/json; charset=utf-8")
     public CommonResponse<String> allSendNotification(
-        @RequestBody AllSendNotificationRequest allSendNotificationRequest,
+        @RequestBody NoticeRequest allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
 
         if (authUser.getId() != 9L) {
