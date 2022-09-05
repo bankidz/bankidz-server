@@ -63,6 +63,9 @@ public class Challenge extends AbstractTimestamp {
     private Long interestRate;
 
     @Column(nullable = false)
+    private Long interestPrice;
+
+    @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean isInterestPayment;
 
@@ -104,6 +107,7 @@ public class Challenge extends AbstractTimestamp {
         Long weekPrice,
         Long weeks,
         Long interestRate,
+        Long interestPrice,
         Boolean isInterestPayment,
         Long successWeeks,
         String filename,
@@ -147,6 +151,7 @@ public class Challenge extends AbstractTimestamp {
         this.weekPrice = weekPrice;
         this.weeks = weeks;
         this.interestRate = interestRate;
+        this.interestPrice = interestPrice;
         this.isInterestPayment = isInterestPayment;
         this.successWeeks = successWeeks;
         this.fileName = filename;
