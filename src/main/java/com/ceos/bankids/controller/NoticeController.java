@@ -6,6 +6,7 @@ import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NoticeDTO;
+import com.ceos.bankids.dto.NoticeListDTO;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.service.NoticeServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -65,10 +66,11 @@ public class NoticeController {
 
     @ApiOperation(value = "공지사항 리스트 가져오기")
     @GetMapping(produces = "application/json; charset=utf-8")
-    public CommonResponse<List<NoticeDTO>> getNoticeList(@AuthenticationPrincipal User authUser) {
+    public CommonResponse<List<NoticeListDTO>> getNoticeList(
+        @AuthenticationPrincipal User authUser) {
 
         log.info("api = 공지사항 리스트 가져오기 user = {}", authUser.getUsername());
-        List<NoticeDTO> noticeDTOList = noticeService.readNoticeList();
+        List<NoticeListDTO> noticeDTOList = noticeService.readNoticeList();
 
         return CommonResponse.onSuccess(noticeDTOList);
     }

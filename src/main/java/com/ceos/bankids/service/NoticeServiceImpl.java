@@ -3,6 +3,7 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Notice;
 import com.ceos.bankids.dto.NoticeDTO;
+import com.ceos.bankids.dto.NoticeListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.NoticeRepository;
 import java.util.List;
@@ -41,10 +42,10 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Transactional
     @Override
-    public List<NoticeDTO> readNoticeList() {
+    public List<NoticeListDTO> readNoticeList() {
 
         return noticeRepository.findAll().stream()
-            .map(NoticeDTO::new)
+            .map(NoticeListDTO::new)
             .collect(Collectors.toList());
     }
 
