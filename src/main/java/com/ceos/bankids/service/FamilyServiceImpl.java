@@ -37,20 +37,7 @@ public class FamilyServiceImpl implements FamilyService {
         Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
 
         if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
-            if (family.isEmpty()) {
-                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
-            }
-            List<FamilyUser> familyUserList = fuRepo.findByFamilyAndUserNot(family.get(), user);
-
-            return FamilyDTO.builder()
-                .family(family.get())
-                .familyUserList(
-                    familyUserList
-                        .stream()
-                        .map(FamilyUserDTO::new)
-                        .collect(Collectors.toList())
-                ).build();
+            throw new BadRequestException(ErrorCode.FAMILY_ALREADY_EXISTS.getErrorCode());
         } else {
             String newFamilyCode = UUID.randomUUID().toString();
             Family newFamily = Family.builder()

@@ -35,7 +35,7 @@ public class KakaoServiceImpl implements KakaoService {
             return kakaoTokenDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BadRequestException(ErrorCode.KAKAO_BAD_REQUEST.getErrorCode());
+            throw new BadRequestException(ErrorCode.KAKAO_ACCESS_TOKEN_ERROR.getErrorCode());
         }
     }
 
@@ -51,7 +51,7 @@ public class KakaoServiceImpl implements KakaoService {
             return kakaoUserDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BadRequestException(ErrorCode.KAKAO_BAD_REQUEST.getErrorCode());
+            throw new BadRequestException(ErrorCode.KAKAO_USER_CODE_ERROR.getErrorCode());
         }
     }
 

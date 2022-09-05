@@ -93,43 +93,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUserType(User authUser, UserTypeRequest userTypeRequest) {
-        Long userId = authUser.getId();
-        Optional<User> user = uRepo.findById(userId);
+    public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
 
         Calendar cal = Calendar.getInstance();
         Integer currYear = cal.get(Calendar.YEAR);
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
-        if (user.isEmpty()) {
-            throw new BadRequestException(ErrorCode.USER_NOT_EXISTS.getErrorCode());
-        } else if (user.get().getIsFemale() != null) {
+         if (user.getIsFemale() != null) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
         } else if (birthYear > currYear || birthYear <= currYear - 100) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         } else {
-            user.get().setBirthday(userTypeRequest.getBirthday());
-            user.get().setIsFemale(userTypeRequest.getIsFemale());
-            user.get().setIsKid(userTypeRequest.getIsKid());
-            uRepo.save(user.get());
+            user.setBirthday(userTypeRequest.getBirthday());
+            user.setIsFemale(userTypeRequest.getIsFemale());
+            user.setIsKid(userTypeRequest.getIsKid());
+            uRepo.save(user);
 
-            if (user.get().getIsKid() == true) {
+            if (user.getIsKid() == true) {
                 Kid newKid = Kid.builder()
                     .savings(0L)
                     .achievedChallenge(0L)
                     .totalChallenge(0L)
                     .level(1L)
-                    .user(user.get())
+                    .user(user)
                     .build();
                 kRepo.save(newKid);
             } else {
                 Parent newParent = Parent.builder()
                     .acceptedRequest(0L)
                     .totalRequest(0L)
-                    .user(user.get())
+                    .user(user)
                     .build();
                 pRepo.save(newParent);
             }
-            UserDTO userDTO = new UserDTO(user.get());
+            UserDTO userDTO = new UserDTO(user);
             return userDTO;
         }
     }

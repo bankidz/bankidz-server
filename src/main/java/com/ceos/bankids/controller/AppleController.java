@@ -74,6 +74,6 @@ public class AppleController {
 
         Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
 
-        response.sendRedirect("https://bankidz.com/auth/apple/callback");
+        response.sendRedirect("https://bankidz.com/setting/withdraw/callback");
     }
 }

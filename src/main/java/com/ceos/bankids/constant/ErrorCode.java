@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ErrorCode implements EnumMapperType {
 
     // Kakao
-    KAKAO_BAD_REQUEST("E400-10001"),
+    KAKAO_ACCESS_TOKEN_ERROR("E400-10001"),
+    KAKAO_USER_CODE_ERROR("E400-10002"),
 
     // User
     USER_NOT_EXISTS("E400-20001"),
@@ -26,6 +27,7 @@ public enum ErrorCode implements EnumMapperType {
     USER_ALREADY_IN_THIS_FAMILY("E403-30007"),
     USER_NOT_IN_THIS_FAMILY("E400-30008"),
     USER_NOT_IN_ANY_FAMILY("E400-30009"),
+    FAMILY_ALREADY_EXISTS("E403-30010"),
 
     // Challenge
     CHALLENGE_COUNT_OVER_FIVE("E403-40001"),
