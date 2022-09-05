@@ -485,6 +485,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (challenge.getIsInterestPayment()) {
             throw new BadRequestException(ErrorCode.ALREADY_INTEREST_PAYMENT.getErrorCode());
         }
+        if (challenge.getChallengeStatus() != achieved) {
+            throw new BadRequestException(ErrorCode.NOT_ALREADY_ACHIEVED_CHALLENGE.getErrorCode());
+        }
         challenge.setIsInterestPayment(true);
         challengeRepository.save(challenge);
 
