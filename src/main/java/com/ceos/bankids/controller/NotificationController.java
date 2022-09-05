@@ -2,15 +2,14 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
-import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
+import com.ceos.bankids.service.NoticeServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
+    private final NoticeServiceImpl noticeService;
     private final UserRepository userRepository;
 
     @ApiOperation(value = "모든 유저에게 알림")
@@ -39,16 +39,18 @@ public class NotificationController {
         @RequestBody NoticeRequest allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
 
-        if (authUser.getId() != 9L) {
-            throw new ForbiddenException(ErrorCode.ALL_NOTIFICATION_AUTH_ERROR.getErrorCode());
-        }
+//        if (authUser.getId() != 9L) {
+//            throw new ForbiddenException(ErrorCode.ALL_NOTIFICATION_AUTH_ERROR.getErrorCode());
+//        }
         String title = allSendNotificationRequest.getTitle();
         String body = allSendNotificationRequest.getBody();
+        String message = allSendNotificationRequest.getMessage();
+        noticeService.postNotice(title, body);
         userRepository.findAll().stream()
             .filter(user -> user.getExpoToken() != null && !Objects.equals(user.getExpoToken(),
                 "web"))
             .forEach(user -> {
-                expoNotificationService.sendMessage(user, title, body, null);
+                expoNotificationService.sendMessage(user, title, message, null);
             });
         return CommonResponse.onSuccess("NOTIFICATION SUCCESS");
     }
