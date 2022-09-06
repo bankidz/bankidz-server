@@ -230,4 +230,13 @@ public class UserServiceImpl implements UserService {
 
         return new OptInDTO(user);
     }
+
+    @Override
+    @Transactional
+    public OptInDTO updateActionOptIn(User user) {
+        user.setActionOptIn(!user.getActionOptIn());
+        uRepo.save(user);
+
+        return new OptInDTO(user);
+    }
 }

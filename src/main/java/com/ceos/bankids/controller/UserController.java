@@ -160,4 +160,15 @@ public class UserController {
 
         return CommonResponse.onSuccess(optInDTO);
     }
+
+    @ApiOperation(value = "가족 활동 알림 동의")
+    @PatchMapping(value = "/action", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<OptInDTO> patchActionOptIn(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 가족 활동 알림 동의, user = {}", authUser.getUsername());
+        OptInDTO optInDTO = userService.updateActionOptIn(authUser);
+
+        return CommonResponse.onSuccess(optInDTO);
+    }
 }
