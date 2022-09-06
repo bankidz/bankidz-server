@@ -3,7 +3,9 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.NotificationDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.InternalServerException;
 import com.ceos.bankids.repository.NotificationRepository;
 import io.github.jav.exposerversdk.ExpoPushMessage;
@@ -15,6 +17,7 @@ import io.github.jav.exposerversdk.PushNotificationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -29,6 +33,32 @@ import org.springframework.stereotype.Service;
 public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     private final NotificationRepository notificationRepository;
+
+    @Transactional
+    @Override
+    public List<NotificationDTO> readNotificationList(User user) {
+        return notificationRepository.findAllByUserId(user.getId())
+            .stream().map(NotificationDTO::new)
+            .collect(
+                Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public NotificationDTO updateNotification(User user, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(
+            () -> new BadRequestException(ErrorCode.NOT_EXIST_NOTIFICATION_ERROR.getErrorCode()));
+        if (notification.getIsRead()) {
+            throw new BadRequestException(ErrorCode.ALREADY_READ_NOTIFICATION_ERROR.getErrorCode());
+        }
+        if (!Objects.equals(notification.getUser().getId(), user.getId())) {
+            throw new ForbiddenException(
+                ErrorCode.NOT_MATCH_NOTIFICATION_USER_ERROR.getErrorCode());
+        }
+        notification.setIsRead(true);
+        notificationRepository.save(notification);
+        return new NotificationDTO(notification);
+    }
 
     public void sendMessage(User user, String title, String body, Map<String, Object> data) {
 
