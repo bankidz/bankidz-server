@@ -10,6 +10,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
         Calendar cal = Calendar.getInstance();
         Integer currYear = cal.get(Calendar.YEAR);
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
-         if (user.getIsFemale() != null) {
+        if (user.getIsFemale() != null) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
         } else if (birthYear > currYear || birthYear <= currYear - 100) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
@@ -219,5 +220,14 @@ public class UserServiceImpl implements UserService {
         uRepo.save(user);
 
         return user;
+    }
+
+    @Override
+    @Transactional
+    public OptInDTO updateNoticeOptIn(User user) {
+        user.setNoticeOptIn(!user.getNoticeOptIn());
+        uRepo.save(user);
+
+        return new OptInDTO(user);
     }
 }
