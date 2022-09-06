@@ -8,6 +8,7 @@ import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationListDTO;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
@@ -56,13 +57,13 @@ public class NotificationController {
     }
 
     @ApiOperation(value = "유저 알림 리스트 가져오기")
-    @GetMapping(produces = "application/json; charset=utf-8")
-    public CommonResponse<List<NotificationDTO>> getNotificationList(
-        @AuthenticationPrincipal User authUser) {
+    @GetMapping(value = "/{lastId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<NotificationListDTO> getNotificationList(
+        @AuthenticationPrincipal User authUser, @PathVariable Long lastId) {
 
         log.info("api = 유저 알림 리스트 가져오기 user = {}", authUser.getUsername());
-        List<NotificationDTO> notificationListDTOS = expoNotificationService.readNotificationList(
-            authUser);
+        NotificationListDTO notificationListDTOS = expoNotificationService.readNotificationList(
+            authUser, lastId);
         return CommonResponse.onSuccess(notificationListDTOS);
     }
 

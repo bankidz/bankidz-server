@@ -4,6 +4,7 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.exception.InternalServerException;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.GenericJDBCException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +38,12 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     @Transactional
     @Override
-    public List<NotificationDTO> readNotificationList(User user) {
-        return notificationRepository.findAllByUserId(user.getId())
-            .stream().map(NotificationDTO::new)
-            .collect(
-                Collectors.toList());
+    public NotificationListDTO readNotificationList(User user, Long lastId) {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanAndUserIdOrderByIdDesc(
+                lastId, user.getId(), pageRequest).stream()
+            .map(NotificationDTO::new).collect(Collectors.toList());
+        return new NotificationListDTO(0L, notificationDTOList);
     }
 
     @Transactional
