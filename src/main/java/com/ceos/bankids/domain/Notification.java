@@ -14,6 +14,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Setter
@@ -21,6 +23,7 @@ import lombok.Setter;
 @Table(name = "Notification")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@DynamicInsert
 public class Notification extends AbstractTimestamp {
 
     @Id
@@ -33,6 +36,10 @@ public class Notification extends AbstractTimestamp {
     @Column
     private String message;
 
+    @Column(nullable = false)
+    @ColumnDefault(value = "false")
+    private Boolean isRead;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
@@ -42,12 +49,13 @@ public class Notification extends AbstractTimestamp {
         Long id,
         String title,
         String message,
-        Challenge challenge,
+        Boolean isRead,
         User user
     ) {
         this.id = id;
         this.title = title;
         this.message = message;
+        this.isRead = isRead;
         this.user = user;
     }
 }
