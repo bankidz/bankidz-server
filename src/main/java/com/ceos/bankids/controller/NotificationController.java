@@ -7,6 +7,7 @@ import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
+import com.ceos.bankids.dto.NotificationDTO;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
@@ -18,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +53,29 @@ public class NotificationController {
                     allSendNotificationRequest.getNewMap());
             });
         return CommonResponse.onSuccess("NOTIFICATION SUCCESS");
+    }
+
+    @ApiOperation(value = "유저 알림 리스트 가져오기")
+    @GetMapping(produces = "application/json; charset=utf-8")
+    public CommonResponse<List<NotificationDTO>> getNotificationList(
+        @AuthenticationPrincipal User authUser) {
+
+        log.info("api = 유저 알림 리스트 가져오기 user = {}", authUser.getUsername());
+        List<NotificationDTO> notificationListDTOS = expoNotificationService.readNotificationList(
+            authUser);
+        return CommonResponse.onSuccess(notificationListDTOS);
+    }
+
+    @ApiOperation(value = "유저 알림 읽음 확인")
+    @PatchMapping(value = "/{notificationId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<NotificationDTO> patchNotification(@AuthenticationPrincipal User authUser,
+        @PathVariable Long notificationId) {
+
+        log.info("api = 유저 알림 읽음 처리 user = {} notification = {}", authUser.getUsername(),
+            notificationId);
+        NotificationDTO notificationDTO = expoNotificationService.updateNotification(authUser,
+            notificationId);
+        return CommonResponse.onSuccess(notificationDTO);
     }
 
     @Async

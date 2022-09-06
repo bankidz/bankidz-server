@@ -50,9 +50,9 @@ jobs:
       - name: Make logging-spring.xml
         run: |
           touch ./src/main/resources/logback-spring.xml
-          echo "$LOGGINGBACK" > ./src/main/resources/logback-spring.xml
+          echo "$LOGGINGBACK_PROD" > ./src/main/resources/logback-spring.xml
         env:
-          LOGGINGBACK: ${{ secrets.LOGGINGBACK }}
+          LOGGINGBACK_PROD: ${{ secrets.LOGGINGBACK_PROD }}
 
       - name: Make firebase-key.json
         run: |
@@ -60,7 +60,7 @@ jobs:
           echo "$FIREBASEKEY" > ./src/main/resources/bankidz-firebase.json
         env:
           FIREBASEKEY: ${{ secrets.FIREBASE_KEY }}
-          
+
       - name: Make apple-auth-key.p8
         run: |
           touch ./src/main/resources/apple-auth-key.p8
