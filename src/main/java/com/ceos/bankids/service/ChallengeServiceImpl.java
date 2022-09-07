@@ -519,6 +519,19 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         AchievedChallengeListDTO achievedChallengeListDTO = readAchievedChallenge(kidUser,
             interestPayment);
+        List<AchievedChallengeDTO> challengeDTOList = achievedChallengeListDTO.getChallengeDTOList();
+        List<AchievedChallengeDTO> contractUserChallengeDTOList = challengeDTOList.stream().filter(
+            achievedChallengeDTO -> achievedChallengeDTO.getChallenge().getIsMom()
+                == user.getIsFemale()).collect(
+            Collectors.toList());
+        achievedChallengeListDTO.setChallengeDTOList(contractUserChallengeDTOList);
+        Long[] totalInterestPrice = {0L};
+        contractUserChallengeDTOList.forEach(challenge -> {
+            totalInterestPrice[0] +=
+                (challenge.getChallenge().getInterestPrice() / challenge.getChallenge().getWeeks())
+                    * challenge.getChallenge().getSuccessWeeks();
+        });
+        achievedChallengeListDTO.setTotalInterestPrice(totalInterestPrice[0]);
 
         return new KidAchievedChallengeListDTO(kidId, achievedChallengeListDTO);
     }

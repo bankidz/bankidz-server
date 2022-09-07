@@ -35,8 +35,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .setIssuer("bankids")
             .setIssuedAt(now)
             .setSubject(tokenDTO.getId().toString())
-//            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(2880).toMillis()))
-            .setExpiration(new Date(now.getTime() + Duration.ofMinutes(40320).toMillis()))
+            .setExpiration(new Date(now.getTime() + Duration.ofDays(180).toMillis()))
             .claim("id", tokenDTO.getId())
             .claim("roles", "USER")
             .signWith(SignatureAlgorithm.HS256,
