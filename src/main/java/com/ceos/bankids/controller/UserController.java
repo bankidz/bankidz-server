@@ -14,6 +14,7 @@ import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
@@ -50,6 +51,7 @@ public class UserController {
     private final KidServiceImpl kidService;
     private final ParentServiceImpl parentService;
     private final SlackServiceImpl slackService;
+    private final ExpoNotificationServiceImpl notificationService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -131,7 +133,7 @@ public class UserController {
                 withdrawalRequest.getMessage());
             parentService.deleteParent(authUser);
         }
-
+        notificationService.deleteAllNotification(authUser);
         UserDTO userDTO = userService.deleteUser(authUser);
 
         return CommonResponse.onSuccess(userDTO);
