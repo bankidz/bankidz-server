@@ -2,12 +2,16 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationListDTO;
+import com.ceos.bankids.exception.ForbiddenException;
+import com.ceos.bankids.repository.NotificationRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -36,12 +41,17 @@ public class NotificationController {
     private final ExpoNotificationServiceImpl expoNotificationService;
     private final NoticeServiceImpl noticeService;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     @ApiOperation(value = "모든 유저에게 알림")
     @PostMapping(value = "/all_user", produces = "application/json; charset=utf-8")
     public CommonResponse<String> allSendNotification(
         @RequestBody AllSendNotificationDTO allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
+
+        if (authUser.getId() != 1L) {
+            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
+        }
 
         String title = allSendNotificationRequest.getTitle();
         String message = allSendNotificationRequest.getMessage();
@@ -57,12 +67,12 @@ public class NotificationController {
 
     @ApiOperation(value = "유저 알림 리스트 가져오기")
     @GetMapping(produces = "application/json; charset=utf-8")
-    public CommonResponse<List<NotificationDTO>> getNotificationList(
-        @AuthenticationPrincipal User authUser) {
+    public CommonResponse<NotificationListDTO> getNotificationList(
+        @AuthenticationPrincipal User authUser, @RequestParam(required = false) Long lastId) {
 
         log.info("api = 유저 알림 리스트 가져오기 user = {}", authUser.getUsername());
-        List<NotificationDTO> notificationListDTOS = expoNotificationService.readNotificationList(
-            authUser);
+        NotificationListDTO notificationListDTOS = expoNotificationService.readNotificationList(
+            authUser, lastId);
         return CommonResponse.onSuccess(notificationListDTOS);
     }
 
