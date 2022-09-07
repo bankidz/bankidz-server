@@ -18,6 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,6 +64,14 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String expoToken;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean noticeOptIn;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean serviceOptIn;
+
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Kid kid;
 
@@ -93,6 +102,8 @@ public class User extends AbstractTimestamp implements UserDetails {
         Boolean isKid,
         String refreshToken,
         String expoToken,
+        Boolean noticeOptIn,
+        Boolean serviceOptIn,
         Parent parent,
         Kid kid
     ) {
@@ -119,6 +130,8 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.isKid = isKid;
         this.refreshToken = refreshToken;
         this.expoToken = expoToken;
+        this.noticeOptIn = noticeOptIn;
+        this.serviceOptIn = serviceOptIn;
     }
 
     @Override

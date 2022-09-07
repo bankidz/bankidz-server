@@ -10,6 +10,7 @@ import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
@@ -147,5 +148,27 @@ public class UserController {
 
         userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(null);
+    }
+
+    @ApiOperation(value = "유저 공지 및 이벤트 알림 동의")
+    @PatchMapping(value = "/notice", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<OptInDTO> patchNoticeOptIn(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 유저 공지 및 이벤트 알림 동의, user = {}", authUser.getUsername());
+        OptInDTO optInDTO = userService.updateNoticeOptIn(authUser);
+
+        return CommonResponse.onSuccess(optInDTO);
+    }
+
+    @ApiOperation(value = "가족 활동 알림 동의")
+    @PatchMapping(value = "/action", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<OptInDTO> patchActionOptIn(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 가족 활동 알림 동의, user = {}", authUser.getUsername());
+        OptInDTO optInDTO = userService.updateServiceOptIn(authUser);
+
+        return CommonResponse.onSuccess(optInDTO);
     }
 }
