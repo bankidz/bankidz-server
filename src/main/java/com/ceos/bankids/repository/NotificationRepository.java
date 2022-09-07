@@ -14,4 +14,6 @@ public interface NotificationRepository extends
     //    @Query("select n from Notification n where n.id < ")
     public Page<Notification> findByIdLessThanAndUserIdOrderByIdDesc(Long id, Long userId,
         Pageable pageRequest);
+
+    public Page<Notification> findByUserIdOrderByIdDesc(Long userId, Pageable pageRequest);
 }

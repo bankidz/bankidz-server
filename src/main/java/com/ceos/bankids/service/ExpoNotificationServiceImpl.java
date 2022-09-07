@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.GenericJDBCException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +40,23 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
     @Transactional
     @Override
     public NotificationListDTO readNotificationList(User user, Long lastId) {
-        PageRequest pageRequest = PageRequest.of(0, 10);
+        PageRequest pageRequest = PageRequest.of(0, 11);
+        if (lastId == null) {
+            Page<Notification> byUserIdOrderByIdDesc = notificationRepository.findByUserIdOrderByIdDesc(
+                user.getId(), pageRequest);
+            List<NotificationDTO> notificationDTOS = byUserIdOrderByIdDesc.stream()
+                .map(NotificationDTO::new)
+                .collect(Collectors.toList());
+            NotificationDTO lastNotification = notificationDTOS.get(notificationDTOS.size() - 1);
+            Long lastNotificationId = lastNotification.getId();
+            return new NotificationListDTO(lastNotificationId, notificationDTOS);
+        }
         List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanAndUserIdOrderByIdDesc(
                 lastId, user.getId(), pageRequest).stream()
             .map(NotificationDTO::new).collect(Collectors.toList());
-        return new NotificationListDTO(0L, notificationDTOList);
+        NotificationDTO lastNotification = notificationDTOList.get(notificationDTOList.size() - 1);
+        Long last = lastNotification.getId();
+        return new NotificationListDTO(last, notificationDTOList);
     }
 
     @Transactional

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -57,9 +58,9 @@ public class NotificationController {
     }
 
     @ApiOperation(value = "유저 알림 리스트 가져오기")
-    @GetMapping(value = "/{lastId}", produces = "application/json; charset=utf-8")
+    @GetMapping(produces = "application/json; charset=utf-8")
     public CommonResponse<NotificationListDTO> getNotificationList(
-        @AuthenticationPrincipal User authUser, @PathVariable Long lastId) {
+        @AuthenticationPrincipal User authUser, @RequestParam(required = false) Long lastId) {
 
         log.info("api = 유저 알림 리스트 가져오기 user = {}", authUser.getUsername());
         NotificationListDTO notificationListDTOS = expoNotificationService.readNotificationList(
