@@ -19,6 +19,8 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
@@ -99,9 +101,16 @@ public class UserServiceImpl implements UserService {
         Calendar cal = Calendar.getInstance();
         Integer currYear = cal.get(Calendar.YEAR);
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(userTypeRequest.getBirthday());
+        } catch (ParseException e) {
+            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
+        }
         if (user.getIsFemale() != null) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
-        } else if (birthYear > currYear || birthYear <= currYear - 100) {
+        } else if (birthYear >= currYear || birthYear <= currYear - 100) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         } else {
             user.setBirthday(userTypeRequest.getBirthday());
