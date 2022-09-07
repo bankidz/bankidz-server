@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
         if (user.getIsFemale() != null) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
-        } else if (birthYear > currYear || birthYear <= currYear - 100) {
+        } else if (birthYear >= currYear || birthYear <= currYear - 100) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         } else {
             user.setBirthday(userTypeRequest.getBirthday());
