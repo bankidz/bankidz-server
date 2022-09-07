@@ -167,7 +167,7 @@ public class UserController {
     public CommonResponse<OptInDTO> patchActionOptIn(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 활동 알림 동의, user = {}", authUser.getUsername());
-        OptInDTO optInDTO = userService.updateActionOptIn(authUser);
+        OptInDTO optInDTO = userService.updateServiceOptIn(authUser);
 
         return CommonResponse.onSuccess(optInDTO);
     }

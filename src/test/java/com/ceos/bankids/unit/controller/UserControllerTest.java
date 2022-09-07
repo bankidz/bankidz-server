@@ -1446,7 +1446,7 @@ public class UserControllerTest {
             .refreshToken("token")
             .expoToken("ExponentPushToken[dd]")
             .noticeOptIn(false)
-            .actionOptIn(false)
+            .serviceOptIn(false)
             .build();
 
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -1507,7 +1507,7 @@ public class UserControllerTest {
             .refreshToken("token")
             .expoToken("ExponentPushToken[dd]")
             .noticeOptIn(false)
-            .actionOptIn(false)
+            .serviceOptIn(false)
             .build();
 
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -1543,12 +1543,12 @@ public class UserControllerTest {
 
         CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
 
-        user.setActionOptIn(true);
+        user.setServiceOptIn(true);
         OptInDTO optInDTO = new OptInDTO(user);
 
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
-        Assertions.assertEquals(user.getActionOptIn(), uCaptor.getValue().getActionOptIn());
+        Assertions.assertEquals(user.getServiceOptIn(), uCaptor.getValue().getServiceOptIn());
 
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);
@@ -1568,7 +1568,7 @@ public class UserControllerTest {
             .refreshToken("token")
             .expoToken("ExponentPushToken[dd]")
             .noticeOptIn(true)
-            .actionOptIn(false)
+            .serviceOptIn(false)
             .build();
 
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -1629,7 +1629,7 @@ public class UserControllerTest {
             .refreshToken("token")
             .expoToken("ExponentPushToken[dd]")
             .noticeOptIn(false)
-            .actionOptIn(true)
+            .serviceOptIn(true)
             .build();
 
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
@@ -1662,15 +1662,15 @@ public class UserControllerTest {
             parentService,
             slackService
         );
-
+    
         CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
 
-        user.setActionOptIn(false);
+        user.setServiceOptIn(false);
         OptInDTO optInDTO = new OptInDTO(user);
 
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
-        Assertions.assertEquals(user.getActionOptIn(), uCaptor.getValue().getActionOptIn());
+        Assertions.assertEquals(user.getServiceOptIn(), uCaptor.getValue().getServiceOptIn());
 
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);

@@ -70,7 +70,7 @@ public class User extends AbstractTimestamp implements UserDetails {
 
     @Column(nullable = false)
     @ColumnDefault("false")
-    private Boolean actionOptIn;
+    private Boolean serviceOptIn;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Kid kid;
@@ -103,7 +103,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         String refreshToken,
         String expoToken,
         Boolean noticeOptIn,
-        Boolean actionOptIn,
+        Boolean serviceOptIn,
         Parent parent,
         Kid kid
     ) {
@@ -131,7 +131,7 @@ public class User extends AbstractTimestamp implements UserDetails {
         this.refreshToken = refreshToken;
         this.expoToken = expoToken;
         this.noticeOptIn = noticeOptIn;
-        this.actionOptIn = actionOptIn;
+        this.serviceOptIn = serviceOptIn;
     }
 
     @Override

@@ -233,8 +233,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public OptInDTO updateActionOptIn(User user) {
-        user.setActionOptIn(!user.getActionOptIn());
+    public OptInDTO updateServiceOptIn(User user) {
+        user.setServiceOptIn(!user.getServiceOptIn());
         uRepo.save(user);
 
         return new OptInDTO(user);
