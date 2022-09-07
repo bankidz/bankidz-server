@@ -30,6 +30,7 @@ import com.ceos.bankids.repository.ParentBackupRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
@@ -83,6 +84,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -92,7 +94,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
         CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
 
@@ -139,6 +142,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -148,7 +152,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         // then
@@ -190,6 +195,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -199,7 +205,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         // then
@@ -241,6 +248,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -250,7 +258,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         // then
@@ -292,6 +301,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -301,7 +311,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
         // then
         Assertions.assertThrows(BadRequestException.class, () -> {
@@ -349,6 +360,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -358,7 +370,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
@@ -417,6 +430,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -426,7 +440,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
@@ -482,6 +497,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -491,7 +507,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         // then
@@ -541,6 +558,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -550,7 +568,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
         CommonResponse result = userController.refreshUserToken("rT", response);
 
@@ -605,6 +624,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -614,7 +634,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.refreshUserToken("rT", response);
@@ -666,6 +687,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -675,7 +697,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.refreshUserToken("rT", response);
@@ -726,6 +749,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -735,7 +759,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.getUserInfo(user);
@@ -788,6 +813,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -797,7 +823,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.getUserInfo(user);
@@ -850,6 +877,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -859,7 +887,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         // then
@@ -901,6 +930,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -910,7 +940,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.patchUserLogout(user);
@@ -990,6 +1021,7 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("ParentBackup ", parentBackup.getId(),
                 withdrawalRequest.getMessage());
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -999,7 +1031,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1096,6 +1129,7 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("KidBackup ", kidBackup.getId(),
                 withdrawalRequest.getMessage());
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1105,7 +1139,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1202,6 +1237,8 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("ParentBackup ", parentBackup.getId(),
                 withdrawalRequest.getMessage());
+        ExpoNotificationServiceImpl notificationService = null;
+
         UserController userController = new UserController(
             userService,
             familyService,
@@ -1210,7 +1247,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1325,6 +1363,7 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("KidBackup ", kidBackup.getId(),
                 withdrawalRequest.getMessage());
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1334,7 +1373,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1410,6 +1450,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1419,7 +1460,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse result = userController.patchExpoToken(user, expoRequest, response);
@@ -1468,6 +1510,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1477,7 +1520,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse<OptInDTO> result = userController.patchNoticeOptIn(user);
@@ -1529,6 +1573,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1538,7 +1583,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
@@ -1590,6 +1636,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1599,7 +1646,8 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
 
         CommonResponse<OptInDTO> result = userController.patchNoticeOptIn(user);
@@ -1651,6 +1699,7 @@ public class UserControllerTest {
         KidServiceImpl kidService = null;
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
 
         UserController userController = new UserController(
             userService,
@@ -1660,9 +1709,10 @@ public class UserControllerTest {
             parentBackupService,
             kidService,
             parentService,
-            slackService
+            slackService,
+            notificationService
         );
-    
+
         CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
 
         user.setServiceOptIn(false);

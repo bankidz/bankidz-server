@@ -76,6 +76,11 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         return new NotificationDTO(notification);
     }
 
+    @Transactional
+    public void deleteAllNotification(User user) {
+        notificationRepository.deleteAllByUserId(user.getId());
+    }
+
     public void sendMessage(User user, String title, String body, Map<String, Object> data) {
 
         String token = user.getExpoToken();

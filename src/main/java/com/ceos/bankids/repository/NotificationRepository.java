@@ -16,4 +16,6 @@ public interface NotificationRepository extends
         Pageable pageRequest);
 
     public Page<Notification> findByUserIdOrderByIdDesc(Long userId, Pageable pageRequest);
+
+    public void deleteAllByUserId(Long userId);
 }
