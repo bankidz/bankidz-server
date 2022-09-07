@@ -17,6 +17,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
@@ -1429,5 +1430,249 @@ public class UserControllerTest {
 
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(null), result);
+    }
+
+    @Test
+    @DisplayName("유저 공지 및 이벤트 알림 동의 시, 결과 반환하는지 확인")
+    public void testIfUserPatchNoticeOptInSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .expoToken("ExponentPushToken[dd]")
+            .noticeOptIn(false)
+            .serviceOptIn(false)
+            .build();
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService
+        );
+
+        CommonResponse<OptInDTO> result = userController.patchNoticeOptIn(user);
+
+        user.setNoticeOptIn(true);
+        OptInDTO optInDTO = new OptInDTO(user);
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
+        Assertions.assertEquals(user.getNoticeOptIn(), uCaptor.getValue().getNoticeOptIn());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);
+    }
+
+    @Test
+    @DisplayName("유저 가족 활동 알림 동의 시, 결과 반환하는지 확인")
+    public void testIfUserPatchActionOptInSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .expoToken("ExponentPushToken[dd]")
+            .noticeOptIn(false)
+            .serviceOptIn(false)
+            .build();
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService
+        );
+
+        CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
+
+        user.setServiceOptIn(true);
+        OptInDTO optInDTO = new OptInDTO(user);
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
+        Assertions.assertEquals(user.getServiceOptIn(), uCaptor.getValue().getServiceOptIn());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);
+    }
+
+    @Test
+    @DisplayName("유저 공지 및 이벤트 알림 비동의 시, 결과 반환하는지 확인")
+    public void testIfUserPatchNoticeOptOutSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .expoToken("ExponentPushToken[dd]")
+            .noticeOptIn(true)
+            .serviceOptIn(false)
+            .build();
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService
+        );
+
+        CommonResponse<OptInDTO> result = userController.patchNoticeOptIn(user);
+
+        user.setNoticeOptIn(false);
+        OptInDTO optInDTO = new OptInDTO(user);
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
+        Assertions.assertEquals(user.getNoticeOptIn(), uCaptor.getValue().getNoticeOptIn());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);
+    }
+
+    @Test
+    @DisplayName("유저 가족 활동 알림 비동의 시, 결과 반환하는지 확인")
+    public void testIfUserPatchActionOptOutSucceedThenReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .expoToken("ExponentPushToken[dd]")
+            .noticeOptIn(false)
+            .serviceOptIn(true)
+            .build();
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService
+        );
+    
+        CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
+
+        user.setServiceOptIn(false);
+        OptInDTO optInDTO = new OptInDTO(user);
+
+        ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1)).save(uCaptor.capture());
+        Assertions.assertEquals(user.getServiceOptIn(), uCaptor.getValue().getServiceOptIn());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);
     }
 }

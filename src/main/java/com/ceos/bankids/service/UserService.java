@@ -6,6 +6,7 @@ import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
+import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import javax.servlet.http.HttpServletResponse;
@@ -34,4 +35,8 @@ public interface UserService {
     public UserDTO deleteUser(User user);
 
     public User updateUserExpoToken(User user, ExpoRequest expoRequest);
+
+    public OptInDTO updateNoticeOptIn(User user);
+
+    public OptInDTO updateServiceOptIn(User user);
 }

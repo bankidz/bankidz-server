@@ -2,12 +2,17 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
+import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationListDTO;
+import com.ceos.bankids.exception.ForbiddenException;
+import com.ceos.bankids.repository.NotificationRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -36,6 +42,7 @@ public class NotificationController {
     private final ExpoNotificationServiceImpl expoNotificationService;
     private final NoticeServiceImpl noticeService;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     @ApiOperation(value = "모든 유저에게 알림")
     @PostMapping(value = "/all_user", produces = "application/json; charset=utf-8")
@@ -43,26 +50,36 @@ public class NotificationController {
         @RequestBody AllSendNotificationDTO allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
 
+        if (authUser.getId() != 1L) {
+            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
+        }
+
         String title = allSendNotificationRequest.getTitle();
         String message = allSendNotificationRequest.getMessage();
         userRepository.findAll().stream()
             .filter(user -> user.getExpoToken() != null && !Objects.equals(user.getExpoToken(),
                 "web"))
             .forEach(user -> {
-                expoNotificationService.sendMessage(user, title, message,
-                    allSendNotificationRequest.getNewMap());
+                if (user.getNoticeOptIn()) {
+                    expoNotificationService.sendMessage(user, title, message,
+                        allSendNotificationRequest.getNewMap());
+                } else {
+                    Notification notification = Notification.builder().user(user).title(title)
+                        .message(message).build();
+                    notificationRepository.save(notification);
+                }
             });
         return CommonResponse.onSuccess("NOTIFICATION SUCCESS");
     }
 
     @ApiOperation(value = "유저 알림 리스트 가져오기")
     @GetMapping(produces = "application/json; charset=utf-8")
-    public CommonResponse<List<NotificationDTO>> getNotificationList(
-        @AuthenticationPrincipal User authUser) {
+    public CommonResponse<NotificationListDTO> getNotificationList(
+        @AuthenticationPrincipal User authUser, @RequestParam(required = false) Long lastId) {
 
         log.info("api = 유저 알림 리스트 가져오기 user = {}", authUser.getUsername());
-        List<NotificationDTO> notificationListDTOS = expoNotificationService.readNotificationList(
-            authUser);
+        NotificationListDTO notificationListDTOS = expoNotificationService.readNotificationList(
+            authUser, lastId);
         return CommonResponse.onSuccess(notificationListDTOS);
     }
 
@@ -92,7 +109,10 @@ public class NotificationController {
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("challengeId", challenge.getId());
         newMap.put("userId", authUser.getId());
-        expoNotificationService.sendMessage(authUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(authUser, title, notificationBody, newMap);
+        }
         log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
             challenge.getChallengeStatus());
     }
@@ -105,7 +125,10 @@ public class NotificationController {
         String notificationBody = "레벨업하기까지 \uD83D\uDD381 개\uD83D\uDD38의 돈길만 완주하면 돼요";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("userId", authUser.getId());
-        expoNotificationService.sendMessage(authUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(authUser, title, notificationBody, newMap);
+        }
         log.info("유저 id = {}의 레벨업 직전 알림", authUser.getId());
     }
 
@@ -118,7 +141,10 @@ public class NotificationController {
 
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("userId", authUser.getId());
-        expoNotificationService.sendMessage(authUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(authUser, title, notificationBody, newMap);
+        }
         log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
     }
 
@@ -132,7 +158,10 @@ public class NotificationController {
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
         newMap.put("challenge", challengeUser.getChallenge().getId());
-        expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        }
         log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
@@ -147,7 +176,10 @@ public class NotificationController {
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
         newMap.put("challenge", challengeUser.getChallenge().getId());
-        expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
@@ -163,7 +195,10 @@ public class NotificationController {
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
         newMap.put("challenge", challengeUser.getChallenge().getId());
-        expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
@@ -177,7 +212,10 @@ public class NotificationController {
             user.getUsername() + "님이 레벨" + level + "에서 레벨" + afterLevel + "로 올랐어요! 확인해볼까요?";
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", user.getId());
-        expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        }
         log.info("부모 유저 id = {}에게 유저 id = {}의 레벨업 알림 전송", contractUser.getId(), user.getId());
     }
 
@@ -190,7 +228,10 @@ public class NotificationController {
         HashMap<String, Object> newMap = new HashMap<>();
         newMap.put("user", challengeUser.getUser().getId());
         newMap.put("challenge", challengeUser.getChallenge().getId());
-        expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody);
+        if (checkServiceOptIn) {
+            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap);
+        }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 실패 알림 전송", contractUser.getId(),
             challengeUser.getChallenge().getId(), challengeUser.getChallenge().getId());
     }
@@ -204,9 +245,22 @@ public class NotificationController {
 //        newMap.put("user", newFamilyUser.getId());
         familyUserList.forEach(familyUser -> {
             User user = familyUser.getUser();
-            expoNotificationService.sendMessage(user, title, notificationBody, newMap);
+            Boolean checkServiceOptIn = checkServiceOptIn(user, title, notificationBody);
+            if (checkServiceOptIn) {
+                expoNotificationService.sendMessage(user, title, notificationBody, newMap);
+            }
             log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
                 newFamilyUser.getId());
         });
+    }
+
+    private Boolean checkServiceOptIn(User user, String title, String body) {
+        if (!user.getServiceOptIn()) {
+            Notification notification = Notification.builder().user(user).title(title).message(body)
+                .build();
+            notificationRepository.save(notification);
+            return false;
+        }
+        return true;
     }
 }

@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "알림 리스트로 줄 때 DTO")
+@ApiModel(value = "알림 줄 때 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode
