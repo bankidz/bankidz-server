@@ -19,8 +19,13 @@ public class NotificationListDTO {
     @ApiModelProperty(example = "list")
     private List<NotificationDTO> notificationList;
 
-    public NotificationListDTO(Long lastId, List<NotificationDTO> notificationList) {
+    @ApiModelProperty(example = "false")
+    private Boolean isLast;
+
+    public NotificationListDTO(Long lastId, Boolean isLast,
+        List<NotificationDTO> notificationList) {
         this.lastId = lastId;
         this.notificationList = notificationList;
+        this.isLast = isLast;
     }
 }
