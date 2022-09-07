@@ -1729,4 +1729,59 @@ public class UserControllerTest {
         // then
         Assertions.assertEquals(CommonResponse.onSuccess(optInDTO), result);
     }
+
+    @Test
+    @DisplayName("유저 생년월일이 유효하지 않아 실패 시, 에러 처리 되는지 확인")
+    public void testIfUserTypePatchFailWithInvalidBirthdayThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("19990231", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            mockKidRepository,
+            mockParentRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService,
+            notificationService
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.patchUserType(user, userTypeRequest);
+        });
+    }
 }
