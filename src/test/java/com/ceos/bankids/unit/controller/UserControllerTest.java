@@ -1021,7 +1021,8 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("ParentBackup ", parentBackup.getId(),
                 withdrawalRequest.getMessage());
-        ExpoNotificationServiceImpl notificationService = null;
+        ExpoNotificationServiceImpl notificationService = Mockito.mock(
+            ExpoNotificationServiceImpl.class);
 
         UserController userController = new UserController(
             userService,
@@ -1129,7 +1130,8 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("KidBackup ", kidBackup.getId(),
                 withdrawalRequest.getMessage());
-        ExpoNotificationServiceImpl notificationService = null;
+        ExpoNotificationServiceImpl notificationService = Mockito.mock(
+            ExpoNotificationServiceImpl.class);
 
         UserController userController = new UserController(
             userService,
@@ -1237,7 +1239,8 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("ParentBackup ", parentBackup.getId(),
                 withdrawalRequest.getMessage());
-        ExpoNotificationServiceImpl notificationService = null;
+        ExpoNotificationServiceImpl notificationService = Mockito.mock(
+            ExpoNotificationServiceImpl.class);
 
         UserController userController = new UserController(
             userService,
@@ -1363,7 +1366,8 @@ public class UserControllerTest {
         Mockito.doNothing().when(slackService)
             .sendWithdrawalMessage("KidBackup ", kidBackup.getId(),
                 withdrawalRequest.getMessage());
-        ExpoNotificationServiceImpl notificationService = null;
+        ExpoNotificationServiceImpl notificationService = Mockito.mock(
+            ExpoNotificationServiceImpl.class);
 
         UserController userController = new UserController(
             userService,
