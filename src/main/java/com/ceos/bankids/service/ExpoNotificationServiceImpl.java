@@ -1,6 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.constant.NotificationCategory;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
@@ -91,7 +92,8 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         notificationRepository.deleteAllByUserId(user.getId());
     }
 
-    public void sendMessage(User user, String title, String body, Map<String, Object> data) {
+    public void sendMessage(User user, String title, String body, Map<String, Object> data,
+        NotificationCategory notificationCategory) {
 
         String token = user.getExpoToken();
         if (token == null) {
@@ -123,7 +125,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             }
             //Todo 메서드 인자가 user로 바뀌면 데이터 베이스에 꽂기
             Notification notification = Notification.builder().title(title).message(body).user(user)
-                .build();
+                .notificationCategory(notificationCategory).build();
             notificationRepository.save(notification);
             List<ExpoPushTicket> allTickets = new ArrayList<>();
             for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {
