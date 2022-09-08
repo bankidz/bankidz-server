@@ -5,6 +5,7 @@ import com.ceos.bankids.constant.NotificationCategory;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
@@ -85,6 +86,21 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         notification.setIsRead(true);
         notificationRepository.save(notification);
         return new NotificationDTO(notification);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public NotificationIsReadDTO readNotificationIsAllRead(User user) {
+
+        List<Notification> notificationList = notificationRepository.findAllByUserId(user.getId())
+            .stream()
+            .filter(notification -> !notification.getIsRead()).collect(
+                Collectors.toList());
+        if (notificationList.size() == 0) {
+            return new NotificationIsReadDTO(true);
+        } else {
+            return new NotificationIsReadDTO(false);
+        }
     }
 
     @Transactional

@@ -11,6 +11,7 @@ import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.NotificationRepository;
@@ -84,6 +85,18 @@ public class NotificationController {
             authUser, lastId);
         return CommonResponse.onSuccess(notificationListDTOS);
     }
+
+    @ApiOperation(value = "유저 안읽은 알림 있는지 확인")
+    @GetMapping(value = "/isRead", produces = "application/json; charset=utf-8")
+    public CommonResponse<NotificationIsReadDTO> getNotificationIsAllRead(
+        @AuthenticationPrincipal User authUser) {
+
+        log.info("api = 안읽은 알림 있는지 확인 user = {}", authUser.getId());
+        NotificationIsReadDTO notificationIsReadDTO = expoNotificationService.readNotificationIsAllRead(
+            authUser);
+        return CommonResponse.onSuccess(notificationIsReadDTO);
+    }
+
 
     @ApiOperation(value = "유저 알림 읽음 확인")
     @PatchMapping(value = "/{notificationId}", produces = "application/json; charset=utf-8")
