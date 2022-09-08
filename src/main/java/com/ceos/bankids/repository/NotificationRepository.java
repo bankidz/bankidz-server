@@ -12,7 +12,7 @@ public interface NotificationRepository extends
     public List<Notification> findAllByUserId(Long userId);
 
     //    @Query("select n from Notification n where n.id < ")
-    public Page<Notification> findByIdLessThanAndUserIdOrderByIdDesc(Long id, Long userId,
+    public Page<Notification> findByIdLessThanEqualAndUserIdOrderByIdDesc(Long id, Long userId,
         Pageable pageRequest);
 
     public Page<Notification> findByUserIdOrderByIdDesc(Long userId, Pageable pageRequest);

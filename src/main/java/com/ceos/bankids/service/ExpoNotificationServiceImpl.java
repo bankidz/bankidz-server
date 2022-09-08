@@ -1,9 +1,11 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.constant.NotificationCategory;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
+import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
@@ -56,12 +58,12 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                 return new NotificationListDTO(lastNotificationId, true, notificationDTOS);
             }
         }
-        List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanAndUserIdOrderByIdDesc(
+        List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanEqualAndUserIdOrderByIdDesc(
                 lastId, user.getId(), pageRequest).stream()
             .map(NotificationDTO::new).collect(Collectors.toList());
         NotificationDTO lastNotification = notificationDTOList.get(notificationDTOList.size() - 1);
         Long last = lastNotification.getId();
-        if (notificationDTOList.size() <= 11L) {
+        if (notificationDTOList.size() == 11L) {
             notificationDTOList.remove(10);
             return new NotificationListDTO(last, false, notificationDTOList);
         } else {
@@ -86,12 +88,28 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         return new NotificationDTO(notification);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public NotificationIsReadDTO readNotificationIsAllRead(User user) {
+
+        List<Notification> notificationList = notificationRepository.findAllByUserId(user.getId())
+            .stream()
+            .filter(notification -> !notification.getIsRead()).collect(
+                Collectors.toList());
+        if (notificationList.size() == 0) {
+            return new NotificationIsReadDTO(true);
+        } else {
+            return new NotificationIsReadDTO(false);
+        }
+    }
+
     @Transactional
     public void deleteAllNotification(User user) {
         notificationRepository.deleteAllByUserId(user.getId());
     }
 
-    public void sendMessage(User user, String title, String body, Map<String, Object> data) {
+    public void sendMessage(User user, String title, String body, Map<String, Object> data,
+        NotificationCategory notificationCategory) {
 
         String token = user.getExpoToken();
         if (token == null) {
@@ -123,7 +141,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             }
             //Todo 메서드 인자가 user로 바뀌면 데이터 베이스에 꽂기
             Notification notification = Notification.builder().title(title).message(body).user(user)
-                .build();
+                .notificationCategory(notificationCategory).build();
             notificationRepository.save(notification);
             List<ExpoPushTicket> allTickets = new ArrayList<>();
             for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {
