@@ -57,12 +57,12 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                 return new NotificationListDTO(lastNotificationId, true, notificationDTOS);
             }
         }
-        List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanAndUserIdOrderByIdDesc(
+        List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanEqualAndUserIdOrderByIdDesc(
                 lastId, user.getId(), pageRequest).stream()
             .map(NotificationDTO::new).collect(Collectors.toList());
         NotificationDTO lastNotification = notificationDTOList.get(notificationDTOList.size() - 1);
         Long last = lastNotification.getId();
-        if (notificationDTOList.size() <= 11L) {
+        if (notificationDTOList.size() == 11L) {
             notificationDTOList.remove(10);
             return new NotificationListDTO(last, false, notificationDTOList);
         } else {
