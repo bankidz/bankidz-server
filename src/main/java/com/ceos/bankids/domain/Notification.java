@@ -1,7 +1,10 @@
 package com.ceos.bankids.domain;
 
+import com.ceos.bankids.constant.NotificationCategory;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,6 +43,10 @@ public class Notification extends AbstractTimestamp {
     @ColumnDefault(value = "false")
     private Boolean isRead;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private NotificationCategory notificationCategory;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
@@ -50,12 +57,15 @@ public class Notification extends AbstractTimestamp {
         String title,
         String message,
         Boolean isRead,
+        NotificationCategory notificationCategory,
         User user
     ) {
+
         this.id = id;
         this.title = title;
         this.message = message;
         this.isRead = isRead;
+        this.notificationCategory = notificationCategory;
         this.user = user;
     }
 }
