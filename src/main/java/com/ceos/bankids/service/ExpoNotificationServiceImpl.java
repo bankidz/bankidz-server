@@ -49,25 +49,27 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             List<NotificationDTO> notificationDTOS = byUserIdOrderByIdDesc.stream()
                 .map(NotificationDTO::new)
                 .collect(Collectors.toList());
-            NotificationDTO lastNotification = notificationDTOS.get(notificationDTOS.size() - 1);
-            Long lastNotificationId = lastNotification.getId();
             if (notificationDTOS.size() == 11L) {
+                NotificationDTO lastNotification = notificationDTOS.get(
+                    notificationDTOS.size() - 1);
+                Long lastNotificationId = lastNotification.getId();
                 notificationDTOS.remove(10);
                 return new NotificationListDTO(lastNotificationId, false, notificationDTOS);
             } else if (notificationDTOS.size() < 11L) {
-                return new NotificationListDTO(lastNotificationId, true, notificationDTOS);
+                return new NotificationListDTO(null, true, notificationDTOS);
             }
         }
         List<NotificationDTO> notificationDTOList = notificationRepository.findByIdLessThanEqualAndUserIdOrderByIdDesc(
                 lastId, user.getId(), pageRequest).stream()
             .map(NotificationDTO::new).collect(Collectors.toList());
-        NotificationDTO lastNotification = notificationDTOList.get(notificationDTOList.size() - 1);
-        Long last = lastNotification.getId();
         if (notificationDTOList.size() == 11L) {
+            NotificationDTO lastNotification = notificationDTOList.get(
+                notificationDTOList.size() - 1);
+            Long last = lastNotification.getId();
             notificationDTOList.remove(10);
             return new NotificationListDTO(last, false, notificationDTOList);
         } else {
-            return new NotificationListDTO(last, true, notificationDTOList);
+            return new NotificationListDTO(null, true, notificationDTOList);
         }
     }
 
