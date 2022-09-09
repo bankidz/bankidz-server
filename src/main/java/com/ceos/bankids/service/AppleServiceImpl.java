@@ -140,13 +140,13 @@ public class AppleServiceImpl implements AppleService {
     }
 
     @Override
-    public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest) {
+    public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest, String option) {
         APPLE_SECRET = makeClientSecret();
 
         String getTokenURL =
             "https://appleid.apple.com/auth/token?client_id=" + APPLE_CLIENT_ID + "&client_secret="
                 + APPLE_SECRET + "&grant_type=authorization_code&code=" + appleRequest.getCode()
-                + "&redirect_uri=" + APPLE_URI;
+                + "&redirect_uri=" + APPLE_URI + option;
 
         WebClient.ResponseSpec responseSpec = webClient.post().uri(getTokenURL).retrieve();
 
@@ -155,7 +155,7 @@ public class AppleServiceImpl implements AppleService {
             return appleTokenDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BadRequestException(ErrorCode.APPLE_BAD_REQUEST.getErrorCode());
+            throw new BadRequestException(ErrorCode.APPLE_ACCESS_TOKEN_ERROR.getErrorCode());
         }
     }
 

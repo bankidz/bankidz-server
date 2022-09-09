@@ -389,7 +389,8 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-        notificationController.notification(challenge, user);
+
+        notificationController.notification(challenge, cUser);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
@@ -549,7 +550,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         nowCal.setTime(nowTimestamp);
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
-        if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
+        if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
             throw new ForbiddenException(ErrorCode.SUNDAY_ERROR.getErrorCode());
         }
     }
@@ -626,7 +627,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         kid.setSavings(0L);
         kid.setTotalChallenge(0L);
         kid.setAchievedChallenge(0L);
-        kid.setLevel(0L);
+        kid.setLevel(1L);
         kidRepository.save(kid);
         Family family = familyRepository.findByCode(familyRequest.getCode())
             .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));

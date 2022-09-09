@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(SwaggerPatterns).permitAll()
             .antMatchers("/kakao/login").permitAll()
             .antMatchers("/apple/login").permitAll()
+            .antMatchers("/apple/revoke").permitAll()
             .antMatchers("/user/refresh").permitAll()
             .anyRequest().authenticated()
             .and()

@@ -60,7 +60,7 @@ jobs:
           echo "$FIREBASEKEY" > ./src/main/resources/bankidz-firebase.json
         env:
           FIREBASEKEY: ${{ secrets.FIREBASE_KEY }}
-          
+
       - name: Make apple-auth-key.p8
         run: |
           touch ./src/main/resources/apple-auth-key.p8
@@ -121,7 +121,9 @@ jobs:
           key: ${{ secrets.KEY_DEV }}
           script: |
             sh ~/srv/ubuntu/config/scripts/deploy.sh
-            sudo docker image prune -a
+            sudo docker stop $(sudo docker ps -a -q)
+            sudo docker rm $(sudo docker ps -a -q)
+            sudo docker rmi $(sudo docker images -q)
             sudo docker-compose -f ~/srv/ubuntu/docker-compose.yml pull
             sudo docker-compose -f ~/srv/ubuntu/docker-compose.yml up --build -d
 

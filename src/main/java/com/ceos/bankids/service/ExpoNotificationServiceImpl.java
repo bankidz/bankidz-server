@@ -111,7 +111,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
     }
 
     public void sendMessage(User user, String title, String body, Map<String, Object> data,
-        NotificationCategory notificationCategory) {
+        NotificationCategory notificationCategory, String linkUrl) {
 
         String token = user.getExpoToken();
         if (token == null) {
@@ -143,7 +143,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             }
             //Todo 메서드 인자가 user로 바뀌면 데이터 베이스에 꽂기
             Notification notification = Notification.builder().title(title).message(body).user(user)
-                .notificationCategory(notificationCategory).build();
+                .notificationCategory(notificationCategory).linkUrl(linkUrl).build();
             notificationRepository.save(notification);
             List<ExpoPushTicket> allTickets = new ArrayList<>();
             for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {

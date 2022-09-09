@@ -1,5 +1,6 @@
 package com.ceos.bankids.unit.controller;
 
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.AppleController;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.domain.Kid;
@@ -10,6 +11,7 @@ import com.ceos.bankids.dto.oauth.AppleKeyDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.KidRepository;
 import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
@@ -87,7 +89,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "login");
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -150,7 +153,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "login");
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -219,7 +223,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "login");
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -284,9 +289,71 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "revoke");
         Mockito.doReturn(object).when(appleService).revokeAppleAccount(appleTokenDTO);
 
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            kidRepository,
+            parentRepository,
+            jwtTokenServiceImpl
+        );
+        AppleController appleController = new AppleController(
+            appleService,
+            userService
+        );
+
+        // then
+        try {
+            appleController.deleteAppleLogin(formData, response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    @DisplayName("유저 탈퇴 전 애플 연동 해제 실패 시, 리다이렉트하는지 확인")
+    public void testIfUserRevokeFailReturnResult() {
+        // given
+        User user = User.builder()
+            .username("홍길동")
+            .isFemale(null)
+            .authenticationCode("1234")
+            .provider("kakao")
+            .isKid(null)
+            .refreshToken("rT")
+            .build();
+        LoginDTO login = new LoginDTO(null, "aT", "apple");
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository kidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        MultiValueMap<String, String> formData = null;
+
+        AppleRequest appleRequest = new AppleRequest("code",
+            "eyJraWQiOiJmaDZCczhDIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmJhbmtpZHouYmFua2lkei13ZWIiLCJleHAiOjE2NjE5MzUyNDEsImlhdCI6MTY2MTg0ODg0MSwic3ViIjoiMDAxMzYyLjE0ZjNiODk3ZDY2MTRlZjI4ODZiZDM5NDIyZGE5ZGY0LjA5MzUiLCJub25jZSI6ImhpIiwiY19oYXNoIjoiWnplMVpsOGhXLUFwdDRHbHpBUk9ZUSIsImF1dGhfdGltZSI6MTY2MTg0ODg0MSwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.lwp2PLBkaGm08riMEMWrzZREXfbMMQvxnYppUENgeWCOq76BdrTdLHpEMnYNiTzGSEXgXtFw8TQZIPY4uPJfEmHZ0lxoiHaReloaGHISZBt50wC2eEYI3-0CPM5sB-GMa8rExYxfq8FL6BbRf5g9jIDhdOfJa4X9xqtJFgfbGf8NMTHnVV8YvjmNkWpFotVcjHHUkkjqo_8u8YA-DFDQr46hDvDzIL2Oq2q10EhD9Z3BubfJQV5QgIfot1BMOMmAvyXANzAN1YEJUhkDNlbaY3fiBtyCYWRzbNi8cX5jW69lkIT4Isxxw5Tj3GvlQRjkC_OA3TuzO8jq87bjQjTPcw",
+            user.getUsername());
+        List<AppleKeyDTO> appleKeyDTOList = new ArrayList<>();
+        appleKeyDTOList.add(appleKeyDTO1);
+        appleKeyDTOList.add(appleKeyDTO2);
+        appleKeyDTOList.add(appleKeyDTO3);
+        AppleKeyListDTO appleKeyListDTO = new AppleKeyListDTO(appleKeyDTOList);
+        AppleSubjectDTO appleSubjectDTO = new AppleSubjectDTO("1234");
+        AppleTokenDTO appleTokenDTO = null;
+        Object object = null;
+
+        AppleServiceImpl appleService = Mockito.mock(AppleServiceImpl.class);
+        Mockito.doReturn(appleRequest).when(appleService).getAppleRequest(formData);
+        Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
+        Mockito.doReturn(appleSubjectDTO).when(appleService)
+            .verifyIdentityToken(appleRequest, appleKeyListDTO);
+        Mockito.doThrow(new BadRequestException(ErrorCode.APPLE_ACCESS_TOKEN_ERROR.getErrorCode()))
+            .when(appleService).getAppleAccessToken(appleRequest, "revoke");
+     
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
