@@ -15,7 +15,7 @@ public interface AppleService {
     public AppleSubjectDTO verifyIdentityToken(AppleRequest appleRequest,
         AppleKeyListDTO appleKeyListDTO);
 
-    public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest);
+    public AppleTokenDTO getAppleAccessToken(AppleRequest appleRequest, String option);
 
     public Object revokeAppleAccount(AppleTokenDTO appleTokenDTO);
 

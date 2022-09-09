@@ -44,7 +44,7 @@ public class AppleController {
         AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
             appleKeyListDTO);
 
-        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
+        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
 
         LoginDTO loginDTO = userService.loginWithAppleAuthenticationCode(
             appleSubjectDTO.getAuthenticationCode(), appleRequest);
@@ -70,7 +70,7 @@ public class AppleController {
         AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
             appleKeyListDTO);
 
-        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
+        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "revoke");
 
         Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
 
