@@ -133,7 +133,7 @@ public class ChallengeController {
     }
 
     @ApiOperation(value = "완주한 돈길에 이자 지급하기")
-    @PatchMapping(value = "/interest_payment/{challengeId}", produces = "application/json; charset=utf-8")
+    @PatchMapping(value = "/interest-payment/{challengeId}", produces = "application/json; charset=utf-8")
     public CommonResponse<AchievedChallengeDTO> patchInterestPayment(
         @AuthenticationPrincipal User authUser,
         @PathVariable Long challengeId) {

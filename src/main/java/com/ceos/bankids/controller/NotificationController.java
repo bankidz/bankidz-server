@@ -47,7 +47,7 @@ public class NotificationController {
     private final NotificationRepository notificationRepository;
 
     @ApiOperation(value = "모든 유저에게 알림")
-    @PostMapping(value = "/all_user", produces = "application/json; charset=utf-8")
+    @PostMapping(produces = "application/json; charset=utf-8")
     public CommonResponse<String> allSendNotification(
         @RequestBody AllSendNotificationDTO allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
