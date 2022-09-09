@@ -248,4 +248,10 @@ public class UserServiceImpl implements UserService {
 
         return new OptInDTO(user);
     }
+
+    @Override
+    @Transactional
+    public OptInDTO getOptIn(User user) {
+        return new OptInDTO(user);
+    }
 }

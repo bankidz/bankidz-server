@@ -173,4 +173,15 @@ public class UserController {
 
         return CommonResponse.onSuccess(optInDTO);
     }
+
+    @ApiOperation(value = "유저 알림 동의 조회")
+    @GetMapping(value = "/opt-in", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<OptInDTO> getOptIn(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 유저 알림 동의 조회, user = {}", authUser.getUsername());
+        OptInDTO optInDTO = userService.getOptIn(authUser);
+
+        return CommonResponse.onSuccess(optInDTO);
+    }
 }
