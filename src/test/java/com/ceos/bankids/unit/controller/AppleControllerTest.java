@@ -87,7 +87,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "login");
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -150,7 +151,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "login");
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -219,7 +221,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "login");
 
         // when
         UserServiceImpl userService = new UserServiceImpl(
@@ -284,7 +287,8 @@ public class AppleControllerTest {
         Mockito.doReturn(appleKeyListDTO).when(appleService).getAppleIdentityToken();
         Mockito.doReturn(appleSubjectDTO).when(appleService)
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
-        Mockito.doReturn(appleTokenDTO).when(appleService).getAppleAccessToken(appleRequest);
+        Mockito.doReturn(appleTokenDTO).when(appleService)
+            .getAppleAccessToken(appleRequest, "revoke");
         Mockito.doReturn(object).when(appleService).revokeAppleAccount(appleTokenDTO);
 
         // when
