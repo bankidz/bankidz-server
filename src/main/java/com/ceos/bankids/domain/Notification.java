@@ -47,6 +47,9 @@ public class Notification extends AbstractTimestamp {
     @Enumerated(EnumType.STRING)
     private NotificationCategory notificationCategory;
 
+    @Column(nullable = false)
+    private String linkUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
@@ -58,6 +61,7 @@ public class Notification extends AbstractTimestamp {
         String message,
         Boolean isRead,
         NotificationCategory notificationCategory,
+        String linkUrl,
         User user
     ) {
 
@@ -66,6 +70,7 @@ public class Notification extends AbstractTimestamp {
         this.message = message;
         this.isRead = isRead;
         this.notificationCategory = notificationCategory;
+        this.linkUrl = linkUrl;
         this.user = user;
     }
 }

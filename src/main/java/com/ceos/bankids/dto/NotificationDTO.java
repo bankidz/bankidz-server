@@ -31,6 +31,9 @@ public class NotificationDTO {
     @ApiModelProperty(example = "CHALLENGE")
     private NotificationCategory notificationCategory;
 
+    @ApiModelProperty(example = "/")
+    private String linkUrl;
+
     @ApiModelProperty(example = "2022/07/05 05:05:05")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
     private Timestamp createdAt;
@@ -41,6 +44,7 @@ public class NotificationDTO {
         this.message = notification.getMessage();
         this.isRead = notification.getIsRead();
         this.notificationCategory = notification.getNotificationCategory();
+        this.linkUrl = notification.getLinkUrl();
         this.createdAt = notification.getCreatedAt();
     }
 }
