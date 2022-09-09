@@ -1591,7 +1591,7 @@ public class UserControllerTest {
             notificationService
         );
 
-        CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
+        CommonResponse<OptInDTO> result = userController.patchServiceOptIn(user);
 
         user.setServiceOptIn(true);
         OptInDTO optInDTO = new OptInDTO(user);
@@ -1717,7 +1717,7 @@ public class UserControllerTest {
             notificationService
         );
 
-        CommonResponse<OptInDTO> result = userController.patchActionOptIn(user);
+        CommonResponse<OptInDTO> result = userController.patchServiceOptIn(user);
 
         user.setServiceOptIn(false);
         OptInDTO optInDTO = new OptInDTO(user);
