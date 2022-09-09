@@ -65,10 +65,11 @@ public class NotificationController {
             .forEach(user -> {
                 if (user.getNoticeOptIn()) {
                     expoNotificationService.sendMessage(user, title, message,
-                        allSendNotificationRequest.getNewMap(), notificationCategory);
+                        allSendNotificationRequest.getNewMap(), notificationCategory, "/");
                 } else {
                     Notification notification = Notification.builder().user(user).title(title)
-                        .message(message).notificationCategory(notificationCategory).build();
+                        .message(message).notificationCategory(notificationCategory).linkUrl("/")
+                        .build();
                     notificationRepository.save(notification);
                 }
             });
@@ -126,10 +127,10 @@ public class NotificationController {
         newMap.put("userId", authUser.getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "/");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(authUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "/");
         }
         log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
             challenge.getChallengeStatus());
@@ -145,10 +146,10 @@ public class NotificationController {
         newMap.put("userId", authUser.getId());
         NotificationCategory notificationCategory = NotificationCategory.LEVEL;
         Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "/mypage");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(authUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "/mypage");
         }
         log.info("유저 id = {}의 레벨업 직전 알림", authUser.getId());
     }
@@ -164,10 +165,10 @@ public class NotificationController {
         newMap.put("userId", authUser.getId());
         NotificationCategory notificationCategory = NotificationCategory.LEVEL;
         Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "/mypage");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(authUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "/mypage");
         }
         log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
     }
@@ -184,10 +185,10 @@ public class NotificationController {
         newMap.put("challenge", challengeUser.getChallenge().getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "");
         }
         log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
@@ -205,10 +206,10 @@ public class NotificationController {
         newMap.put("challenge", challengeUser.getChallenge().getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "/");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
@@ -227,10 +228,10 @@ public class NotificationController {
         newMap.put("challenge", challengeUser.getChallenge().getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "/");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
@@ -247,10 +248,10 @@ public class NotificationController {
         newMap.put("user", user.getId());
         NotificationCategory notificationCategory = NotificationCategory.LEVEL;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 레벨업 알림 전송", contractUser.getId(), user.getId());
     }
@@ -266,10 +267,10 @@ public class NotificationController {
         newMap.put("challenge", challengeUser.getChallenge().getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory);
+            notificationCategory, "/");
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory);
+                notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 실패 알림 전송", contractUser.getId(),
             challengeUser.getChallenge().getId(), challengeUser.getChallenge().getId());
@@ -286,10 +287,10 @@ public class NotificationController {
         familyUserList.forEach(familyUser -> {
             User user = familyUser.getUser();
             Boolean checkServiceOptIn = checkServiceOptIn(user, title, notificationBody,
-                notificationCategory);
+                notificationCategory, "");
             if (checkServiceOptIn) {
                 expoNotificationService.sendMessage(user, title, notificationBody, newMap,
-                    notificationCategory);
+                    notificationCategory, "");
             }
             log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
                 newFamilyUser.getId());
@@ -297,10 +298,10 @@ public class NotificationController {
     }
 
     private Boolean checkServiceOptIn(User user, String title, String body,
-        NotificationCategory notificationCategory) {
+        NotificationCategory notificationCategory, String linkUrl) {
         if (!user.getServiceOptIn()) {
             Notification notification = Notification.builder().user(user).title(title).message(body)
-                .notificationCategory(notificationCategory)
+                .notificationCategory(notificationCategory).linkUrl(linkUrl)
                 .build();
             notificationRepository.save(notification);
             return false;
