@@ -389,7 +389,8 @@ public class ChallengeServiceImpl implements ChallengeService {
             challengeRepository.save(challenge);
             progressDTOList = null;
         }
-        notificationController.notification(challenge, user);
+
+        notificationController.notification(challenge, cUser);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
     }
 
