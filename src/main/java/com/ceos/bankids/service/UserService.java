@@ -39,4 +39,6 @@ public interface UserService {
     public OptInDTO updateNoticeOptIn(User user);
 
     public OptInDTO updateServiceOptIn(User user);
+
+    public OptInDTO getOptIn(User user);
 }

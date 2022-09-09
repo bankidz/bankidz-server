@@ -164,12 +164,23 @@ public class UserController {
     }
 
     @ApiOperation(value = "가족 활동 알림 동의")
-    @PatchMapping(value = "/action", produces = "application/json; charset=utf-8")
+    @PatchMapping(value = "/service", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<OptInDTO> patchActionOptIn(@AuthenticationPrincipal User authUser) {
+    public CommonResponse<OptInDTO> patchServiceOptIn(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 활동 알림 동의, user = {}", authUser.getUsername());
         OptInDTO optInDTO = userService.updateServiceOptIn(authUser);
+
+        return CommonResponse.onSuccess(optInDTO);
+    }
+
+    @ApiOperation(value = "유저 알림 동의 조회")
+    @GetMapping(value = "/opt-in", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public CommonResponse<OptInDTO> getOptIn(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 유저 알림 동의 조회, user = {}", authUser.getUsername());
+        OptInDTO optInDTO = userService.getOptIn(authUser);
 
         return CommonResponse.onSuccess(optInDTO);
     }
