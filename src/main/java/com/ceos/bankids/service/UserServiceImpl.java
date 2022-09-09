@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
                 .username(username)
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
                 .provider(provider).refreshToken("")
+                .noticeOptIn(false).serviceOptIn(false)
                 .build();
             uRepo.save(newUser);
 
@@ -85,6 +86,7 @@ public class UserServiceImpl implements UserService {
                 .username(username)
                 .authenticationCode(authenticationCode)
                 .provider("apple").refreshToken("")
+                .noticeOptIn(false).serviceOptIn(false)
                 .build();
             uRepo.save(newUser);
 

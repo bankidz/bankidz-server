@@ -40,13 +40,13 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(nullable = false, length = 10)
     private String username;
 
-    @Column(nullable = true)
+    @Column()
     private Boolean isFemale;
 
-    @Column(nullable = true, length = 8)
+    @Column(length = 8)
     private String birthday;
 
-    @Column(nullable = true, length = 12, unique = true)
+    @Column(length = 12, unique = true)
     private String phone;
 
     @Column(name = "authentication_code", nullable = false, unique = true)
@@ -55,7 +55,7 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(nullable = false, length = 10)
     private String provider;
 
-    @Column(nullable = true)
+    @Column()
     private Boolean isKid;
 
     @Column(columnDefinition = "TEXT")
@@ -64,11 +64,11 @@ public class User extends AbstractTimestamp implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String expoToken;
 
-    @Column(nullable = false)
+    @Column()
     @ColumnDefault("false")
     private Boolean noticeOptIn;
 
-    @Column(nullable = false)
+    @Column()
     @ColumnDefault("false")
     private Boolean serviceOptIn;
 

@@ -44,7 +44,7 @@ public class AppleController {
         AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
             appleKeyListDTO);
 
-        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
+        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
 
         LoginDTO loginDTO = userService.loginWithAppleAuthenticationCode(
             appleSubjectDTO.getAuthenticationCode(), appleRequest);
@@ -63,17 +63,22 @@ public class AppleController {
         throws IOException {
 
         log.info("api = 애플 연동해제");
-        AppleRequest appleRequest = appleService.getAppleRequest(formData);
 
-        AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
+        try {
+            AppleRequest appleRequest = appleService.getAppleRequest(formData);
 
-        AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
-            appleKeyListDTO);
+            AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
 
-        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest);
+            AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
+                appleKeyListDTO);
 
-        Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
+            AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "revoke");
 
-        response.sendRedirect("https://bankidz.com/manage/withdraw/callback");
+            Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
+        } catch (Exception e) {
+            response.sendRedirect("https://bankidz.com/manage/withdraw/callback?isError=true");
+        }
+
+        response.sendRedirect("https://bankidz.com/manage/withdraw/callback?isError=false");
     }
 }
