@@ -626,7 +626,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         kid.setSavings(0L);
         kid.setTotalChallenge(0L);
         kid.setAchievedChallenge(0L);
-        kid.setLevel(0L);
+        kid.setLevel(1L);
         kidRepository.save(kid);
         Family family = familyRepository.findByCode(familyRequest.getCode())
             .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
