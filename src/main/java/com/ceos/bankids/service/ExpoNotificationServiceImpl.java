@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
+import com.ceos.bankids.controller.UserController;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserController userController;
 
     @Transactional
     @Override
@@ -170,7 +172,8 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             List<ExpoPushMessageTicketPair<ExpoPushMessage>> errorTicketMessages = pushClient.filterAllMessagesWithError(
                 zippedMessagesTickets);
             String errorTicketMessagesString = errorTicketMessages.stream().map(
-                p -> "Title: " + p.message.getTitle() + ", Error: " + p.ticket.getDetails()
+                p -> "id: " + user.getId() + ", " + "Title: " + p.message.getTitle() + ", Error: "
+                    + p.ticket.getDetails()
                     .getError()).collect(Collectors.joining(","));
             log.info("Recieved ERROR ticket for " + errorTicketMessages.size() + " messages: "
                 + errorTicketMessagesString);
