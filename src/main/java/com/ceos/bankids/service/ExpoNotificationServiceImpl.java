@@ -2,7 +2,6 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
-import com.ceos.bankids.controller.UserController;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
@@ -39,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final UserController userController;
 
     @Transactional
     @Override
