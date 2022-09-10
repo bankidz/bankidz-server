@@ -2,7 +2,6 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
-import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
@@ -13,7 +12,6 @@ import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
 import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
-import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.NotificationRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
@@ -21,7 +19,6 @@ import com.ceos.bankids.service.NoticeServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -52,18 +49,18 @@ public class NotificationController {
         @RequestBody AllSendNotificationDTO allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
 
-        if (authUser.getId() != 1L) {
-            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
-        }
+//        if (authUser.getId() != 1L) {
+//            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
+//        }
 
         String title = allSendNotificationRequest.getTitle();
         String message = allSendNotificationRequest.getMessage();
         NotificationCategory notificationCategory = NotificationCategory.NOTICE;
         userRepository.findAll().stream()
-            .filter(user -> user.getExpoToken() != null && !Objects.equals(user.getExpoToken(),
-                "web"))
+            .filter(user -> user.getExpoToken() != null)
             .forEach(user -> {
-                if (user.getNoticeOptIn()) {
+                if (user.getNoticeOptIn() && user.getExpoToken()
+                    .startsWith("ExponentPushToken")) {
                     expoNotificationService.sendMessage(user, title, message,
                         allSendNotificationRequest.getNewMap(), notificationCategory, "/");
                 } else {
@@ -126,11 +123,12 @@ public class NotificationController {
         newMap.put("challengeId", challenge.getId());
         newMap.put("userId", authUser.getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
+        String linkUrl = challenge.getChallengeStatus() == ChallengeStatus.WALKING ? "/walk" : "/";
         Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
-            notificationCategory, "/");
+            notificationCategory, linkUrl);
         if (checkServiceOptIn) {
             expoNotificationService.sendMessage(authUser, title, notificationBody, newMap,
-                notificationCategory, "/");
+                notificationCategory, linkUrl);
         }
         log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
             challenge.getChallengeStatus());
@@ -299,7 +297,7 @@ public class NotificationController {
 
     private Boolean checkServiceOptIn(User user, String title, String body,
         NotificationCategory notificationCategory, String linkUrl) {
-        if (!user.getServiceOptIn()) {
+        if (!user.getServiceOptIn() || !user.getExpoToken().startsWith("ExponentPushToken")) {
             Notification notification = Notification.builder().user(user).title(title).message(body)
                 .notificationCategory(notificationCategory).linkUrl(linkUrl)
                 .build();

@@ -1,13 +1,11 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NoticeDTO;
 import com.ceos.bankids.dto.NoticeListDTO;
-import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.service.NoticeServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
@@ -37,9 +35,9 @@ public class NoticeController {
         @RequestBody NoticeRequest noticeRequest) {
 
         log.info("api = 공지사항 작성");
-        if (authUser.getId() != 1L) {
-            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
-        }
+//        if (authUser.getId() != 1L) {
+//            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
+//        }
         String title = noticeRequest.getTitle();
         String body = noticeRequest.getBody();
         String message = noticeRequest.getMessage();
