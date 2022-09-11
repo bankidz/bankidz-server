@@ -51,8 +51,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -85,8 +83,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -166,8 +162,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -244,8 +238,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -323,8 +315,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             mockJwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -408,8 +398,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             mockJwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -488,8 +476,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(
@@ -563,8 +549,6 @@ public class KakaoControllerTest {
         );
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         KakaoController kakaoController = new KakaoController(

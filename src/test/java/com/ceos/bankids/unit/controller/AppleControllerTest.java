@@ -95,8 +95,6 @@ public class AppleControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         AppleController appleController = new AppleController(
@@ -159,8 +157,6 @@ public class AppleControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         AppleController appleController = new AppleController(
@@ -229,8 +225,6 @@ public class AppleControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         AppleController appleController = new AppleController(
@@ -296,8 +290,6 @@ public class AppleControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         AppleController appleController = new AppleController(
@@ -353,12 +345,10 @@ public class AppleControllerTest {
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
         Mockito.doThrow(new BadRequestException(ErrorCode.APPLE_ACCESS_TOKEN_ERROR.getErrorCode()))
             .when(appleService).getAppleAccessToken(appleRequest, "revoke");
-     
+
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            kidRepository,
-            parentRepository,
             jwtTokenServiceImpl
         );
         AppleController appleController = new AppleController(

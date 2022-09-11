@@ -74,15 +74,13 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
-        KidServiceImpl kidService = null;
+        KidServiceImpl kidService = new KidServiceImpl(mockKidRepository);
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
         ExpoNotificationServiceImpl notificationService = null;
@@ -132,8 +130,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -185,8 +181,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -238,8 +232,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -291,8 +283,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -350,15 +340,13 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
-        KidServiceImpl kidService = null;
+        KidServiceImpl kidService = new KidServiceImpl(mockKidRepository);
         ParentServiceImpl parentService = null;
         SlackServiceImpl slackService = null;
         ExpoNotificationServiceImpl notificationService = null;
@@ -420,8 +408,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -429,7 +415,7 @@ public class UserControllerTest {
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
         KidServiceImpl kidService = null;
-        ParentServiceImpl parentService = null;
+        ParentServiceImpl parentService = new ParentServiceImpl(mockParentRepository);
         SlackServiceImpl slackService = null;
         ExpoNotificationServiceImpl notificationService = null;
 
@@ -487,8 +473,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -548,8 +532,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -614,8 +596,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -677,8 +657,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -739,8 +717,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -803,8 +779,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -867,8 +841,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -920,8 +892,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1003,8 +973,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
@@ -1113,8 +1081,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
@@ -1221,8 +1187,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
@@ -1349,8 +1313,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = new FamilyServiceImpl(
@@ -1444,8 +1406,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1504,8 +1464,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1567,8 +1525,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1630,8 +1586,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1693,8 +1647,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1738,13 +1690,13 @@ public class UserControllerTest {
         User user = User.builder()
             .id(1L)
             .username("user1")
-            .isFemale(true)
+            .isFemale(null)
             .authenticationCode("code")
             .provider("kakao")
-            .isKid(true)
+            .isKid(null)
             .refreshToken("token")
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest("19990231", false, true);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("23450231", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -1755,8 +1707,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
@@ -1811,8 +1761,6 @@ public class UserControllerTest {
         // when
         UserServiceImpl userService = new UserServiceImpl(
             mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
             jwtTokenServiceImpl
         );
         FamilyServiceImpl familyService = null;
