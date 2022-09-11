@@ -150,7 +150,7 @@ public class UserController {
         @Valid @RequestBody ExpoRequest expoRequest, HttpServletResponse response) {
 
         log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
-        User user = userService.updateUserExpoToken(authUser, expoRequest);
+        userService.updateUserExpoToken(authUser, expoRequest);
 
         return CommonResponse.onSuccess(null);
     }

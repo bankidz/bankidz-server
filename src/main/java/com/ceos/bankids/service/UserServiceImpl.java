@@ -195,11 +195,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User updateUserExpoToken(User user, ExpoRequest expoRequest) {
+    public void updateUserExpoToken(User user, ExpoRequest expoRequest) {
         user.setExpoToken(expoRequest.getExpoToken());
         uRepo.save(user);
-
-        return user;
     }
 
     @Override

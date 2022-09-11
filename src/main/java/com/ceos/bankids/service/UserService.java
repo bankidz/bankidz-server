@@ -33,7 +33,7 @@ public interface UserService {
 
     public UserDTO deleteUser(User user);
 
-    public User updateUserExpoToken(User user, ExpoRequest expoRequest);
+    public void updateUserExpoToken(User user, ExpoRequest expoRequest);
 
     public OptInDTO updateNoticeOptIn(User user);
 
