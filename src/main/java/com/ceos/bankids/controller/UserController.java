@@ -13,6 +13,7 @@ import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentBackupDTO;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
@@ -81,7 +82,11 @@ public class UserController {
         log.info("api = 토큰 리프레시");
         Long userId = jwtTokenService.getUserIdFromJwtToken(tokenRequest.getAccessToken());
         User user = userService.getUserById(userId);
-        LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
+
+        String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
+        String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
+
+        LoginDTO loginDTO = userService.issueNewTokens(user, newAccessToken, newRefreshToken);
 
         return CommonResponse.onSuccess(loginDTO);
     }

@@ -199,7 +199,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, "kakao")).thenReturn(login);
+        Mockito.when(mockUserService.issueNewTokens(user, "aT", "rT")).thenReturn(login);
         KidRepository kidRepository = Mockito.mock(KidRepository.class);
         ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
@@ -439,7 +439,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, "kakao")).thenReturn(login);
+        Mockito.when(mockUserService.issueNewTokens(user, "aT", "rT")).thenReturn(login);
         KidRepository kidRepository = Mockito.mock(KidRepository.class);
         ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
@@ -512,7 +512,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, "kakao")).thenReturn(login);
+        Mockito.when(mockUserService.issueNewTokens(user, "aT", "rT")).thenReturn(login);
         KidRepository kidRepository = Mockito.mock(KidRepository.class);
         ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);

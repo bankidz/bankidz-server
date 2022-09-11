@@ -10,7 +10,6 @@ import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentDTO;
-import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findByAuthenticationCode(
             kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), "aT", "rT");
 
             return loginDTO;
         } else {
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
                 .build();
             userRepository.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
+            LoginDTO loginDTO = this.issueNewTokens(newUser, "aT", "rT");
 
             return loginDTO;
         }
@@ -67,7 +66,7 @@ public class UserServiceImpl implements UserService {
         String provider = "apple";
         Optional<User> user = userRepository.findByAuthenticationCode(authenticationCode);
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
+            LoginDTO loginDTO = this.issueNewTokens(user.get(), "aT", "rT");
 
             return loginDTO;
         } else {
@@ -83,7 +82,7 @@ public class UserServiceImpl implements UserService {
                 .build();
             userRepository.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
+            LoginDTO loginDTO = this.issueNewTokens(newUser, "aT", "rT");
 
             return loginDTO;
         }
@@ -122,21 +121,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, String provider) {
-        String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
+    public LoginDTO issueNewTokens(User user, String newAccessToken, String newRefreshToken) {
         user.setRefreshToken(newRefreshToken);
         userRepository.save(user);
 
-        TokenDTO tokenDTO = new TokenDTO(user);
-
         LoginDTO loginDTO;
         if (user.getIsKid() == null || user.getIsKid() == false) {
-            loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO), provider);
+            loginDTO = new LoginDTO(user.getIsKid(), newAccessToken, user.getProvider());
         } else {
-            loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO),
-                user.getKid().getLevel(), provider);
+            loginDTO = new LoginDTO(user.getIsKid(), newAccessToken, user.getKid().getLevel(),
+                user.getProvider());
         }
         return loginDTO;
     }
