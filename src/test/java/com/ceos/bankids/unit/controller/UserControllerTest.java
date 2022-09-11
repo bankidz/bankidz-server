@@ -5,6 +5,7 @@ import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.UserController;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.controller.request.TokenRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.domain.Family;
@@ -571,7 +572,7 @@ public class UserControllerTest {
             slackService,
             notificationService
         );
-        CommonResponse result = userController.refreshUserToken("rT", response);
+        CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
 
         // then
         LoginDTO loginDTO = new LoginDTO(false, "aT", user.getProvider());
@@ -638,7 +639,7 @@ public class UserControllerTest {
             notificationService
         );
 
-        CommonResponse result = userController.refreshUserToken("rT", response);
+        CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
 
         // then
         LoginDTO loginDTO = new LoginDTO(true, "aT", 1L, user.getProvider());
@@ -701,7 +702,7 @@ public class UserControllerTest {
             notificationService
         );
 
-        CommonResponse result = userController.refreshUserToken("rT", response);
+        CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
 
         // then
         LoginDTO loginDTO = new LoginDTO(null, "aT", user.getProvider());

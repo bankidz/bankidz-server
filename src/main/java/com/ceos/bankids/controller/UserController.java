@@ -3,6 +3,7 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.controller.request.TokenRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.domain.User;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -68,14 +68,14 @@ public class UserController {
     @ApiOperation(value = "토큰 리프레시")
     @PatchMapping(value = "/refresh", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<LoginDTO> refreshUserToken(
-        @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+    public CommonResponse<LoginDTO> refreshUserToken(@Valid @RequestBody TokenRequest tokenRequest,
+        HttpServletResponse response) {
 
         log.info("api = 토큰 리프레시");
-        User user = userService.getUserByRefreshToken(refreshToken);
+        User user = userService.getUserByRefreshToken(tokenRequest.getAccessToken());
         LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
 
-        userService.setNewCookie(user, response);
+//        userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(loginDTO);
     }
 
@@ -148,7 +148,7 @@ public class UserController {
         log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
         User user = userService.updateUserExpoToken(authUser, expoRequest);
 
-        userService.setNewCookie(user, response);
+//        userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(null);
     }
 
