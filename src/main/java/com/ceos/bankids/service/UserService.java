@@ -9,7 +9,6 @@ import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +23,7 @@ public interface UserService {
 
     public LoginDTO issueNewTokens(User user, String provider);
 
-    public void setNewCookie(User user, HttpServletResponse response);
+//    public void setNewCookie(User user, HttpServletResponse response);
 
     public MyPageDTO getUserInformation(User user);
 

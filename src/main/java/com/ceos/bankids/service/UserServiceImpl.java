@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -163,17 +162,17 @@ public class UserServiceImpl implements UserService {
         return loginDTO;
     }
 
-    @Override
-    @Transactional
-    public void setNewCookie(User user, HttpServletResponse response) {
-        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
-        cookie.setMaxAge(14 * 24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
-    }
+//    @Override
+//    @Transactional
+//    public void setNewCookie(User user, HttpServletResponse response) {
+//        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
+//        cookie.setMaxAge(14 * 24 * 60 * 60);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//
+//        response.addCookie(cookie);
+//    }
 
     @Override
     @Transactional
