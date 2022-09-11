@@ -2,6 +2,7 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
@@ -12,10 +13,10 @@ import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
 import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.NotificationRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
-import com.ceos.bankids.service.NoticeServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
 
     private final ExpoNotificationServiceImpl expoNotificationService;
-    private final NoticeServiceImpl noticeService;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
@@ -49,9 +49,9 @@ public class NotificationController {
         @RequestBody AllSendNotificationDTO allSendNotificationRequest,
         @AuthenticationPrincipal User authUser) {
 
-//        if (authUser.getId() != 1L) {
-//            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
-//        }
+        if (authUser.getId() != 1L) {
+            throw new ForbiddenException(ErrorCode.NOTICE_AUTH_ERROR.getErrorCode());
+        }
 
         String title = allSendNotificationRequest.getTitle();
         String message = allSendNotificationRequest.getMessage();
@@ -62,10 +62,14 @@ public class NotificationController {
                 if (user.getNoticeOptIn() && user.getExpoToken()
                     .startsWith("ExponentPushToken")) {
                     expoNotificationService.sendMessage(user, title, message,
-                        allSendNotificationRequest.getNewMap(), notificationCategory, "/");
+                        allSendNotificationRequest.getNewMap(), notificationCategory,
+                        "/manage/notices/" + allSendNotificationRequest.getNewMap()
+                            .get("noticeId"));
                 } else {
                     Notification notification = Notification.builder().user(user).title(title)
-                        .message(message).notificationCategory(notificationCategory).linkUrl("/")
+                        .message(message).notificationCategory(notificationCategory)
+                        .linkUrl("/manage/notices/" + allSendNotificationRequest.getNewMap()
+                            .get("noticeId"))
                         .build();
                     notificationRepository.save(notification);
                 }
