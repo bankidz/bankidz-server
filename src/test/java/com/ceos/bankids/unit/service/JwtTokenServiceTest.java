@@ -42,10 +42,10 @@ public class JwtTokenServiceTest {
         );
 
         String token = jwtTokenServiceImpl.encodeJwtToken(new TokenDTO(user));
-        String result = jwtTokenServiceImpl.getUserIdFromJwtToken(token);
+        Long result = jwtTokenServiceImpl.getUserIdFromJwtToken(token);
 
         // then
-        Assertions.assertEquals("1", result);
+        Assertions.assertEquals(1L, result);
     }
 
     @Test

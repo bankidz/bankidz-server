@@ -94,7 +94,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
         CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
 
@@ -150,7 +151,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -201,7 +203,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -252,7 +255,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -303,7 +307,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
         // then
         Assertions.assertThrows(BadRequestException.class, () -> {
@@ -360,7 +365,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
@@ -428,7 +434,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
         CommonResponse result = userController.patchUserType(user, userTypeRequest);
 
@@ -493,7 +500,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -525,7 +533,7 @@ public class UserControllerTest {
         TokenDTO tokenDTO = new TokenDTO(user);
         Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
         Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
-        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn("1");
+        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn(1L);
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
@@ -552,7 +560,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
         CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
 
@@ -589,7 +598,7 @@ public class UserControllerTest {
         TokenDTO tokenDTO = new TokenDTO(user);
         Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
         Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
-        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn("1");
+        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn(1L);
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
@@ -616,7 +625,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
@@ -650,7 +660,7 @@ public class UserControllerTest {
         TokenDTO tokenDTO = new TokenDTO(user);
         Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
         Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
-        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn("1");
+        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn(1L);
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
@@ -677,7 +687,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
@@ -685,6 +696,65 @@ public class UserControllerTest {
         // then
         LoginDTO loginDTO = new LoginDTO(null, "aT", user.getProvider());
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
+    }
+
+    @Test
+    @DisplayName("타입 미선택 유저 토큰과 쿠키 정상 입력 시, 성공 결과 반환하는지 확인")
+    public void testIfUserNotExistsAndTokenRefreshFailThenThrowBadRequestException() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(null)
+            .authenticationCode("code")
+            .provider("kakao")
+            .isKid(null)
+            .refreshToken("token")
+            .build();
+
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(null));
+
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        TokenDTO tokenDTO = new TokenDTO(user);
+        Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
+        Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
+        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn(1L);
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(
+            mockUserRepository,
+            jwtTokenServiceImpl
+        );
+        FamilyServiceImpl familyService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = null;
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService,
+            notificationService,
+            jwtTokenServiceImpl
+        );
+
+        // then
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            userController.refreshUserToken(new TokenRequest("rT"), response);
+        });
     }
 
     @Test
@@ -737,7 +807,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.getUserInfo(user);
@@ -799,7 +870,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.getUserInfo(user);
@@ -861,7 +933,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -912,7 +985,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.patchUserLogout(user);
@@ -1002,7 +1076,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1109,7 +1184,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1216,7 +1292,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1341,7 +1418,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
@@ -1426,7 +1504,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse result = userController.patchExpoToken(user, expoRequest, response);
@@ -1484,7 +1563,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<OptInDTO> result = userController.patchNoticeOptIn(user);
@@ -1545,7 +1625,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<OptInDTO> result = userController.patchServiceOptIn(user);
@@ -1606,7 +1687,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<OptInDTO> result = userController.patchNoticeOptIn(user);
@@ -1667,7 +1749,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<OptInDTO> result = userController.patchServiceOptIn(user);
@@ -1727,7 +1810,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -1781,7 +1865,8 @@ public class UserControllerTest {
             kidService,
             parentService,
             slackService,
-            notificationService
+            notificationService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<OptInDTO> result = userController.getOptIn(user);
