@@ -27,14 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository uRepo;
+    private final UserRepository userRepository;
     private final JwtTokenServiceImpl jwtTokenServiceImpl;
 
     @Override
     @Transactional
     public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
         String provider = "kakao";
-        Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
+        Optional<User> user = userRepository.findByAuthenticationCode(
+            kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
             LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
 
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
                 .provider(provider).refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
-            uRepo.save(newUser);
+            userRepository.save(newUser);
 
             LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
 
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
         AppleRequest appleRequest) {
         String provider = "apple";
-        Optional<User> user = uRepo.findByAuthenticationCode(authenticationCode);
+        Optional<User> user = userRepository.findByAuthenticationCode(authenticationCode);
         if (user.isPresent()) {
             LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
 
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
                 .provider("apple").refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
-            uRepo.save(newUser);
+            userRepository.save(newUser);
 
             LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
 
@@ -114,7 +115,7 @@ public class UserServiceImpl implements UserService {
         user.setBirthday(userTypeRequest.getBirthday());
         user.setIsFemale(userTypeRequest.getIsFemale());
         user.setIsKid(userTypeRequest.getIsKid());
-        uRepo.save(user);
+        userRepository.save(user);
 
         return new UserDTO(user);
     }
@@ -124,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public LoginDTO issueNewTokens(User user, String provider) {
         String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
         user.setRefreshToken(newRefreshToken);
-        uRepo.save(user);
+        userRepository.save(user);
 
         TokenDTO tokenDTO = new TokenDTO(user);
 
@@ -156,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User getUserByRefreshToken(String refreshToken) {
         String userId = jwtTokenServiceImpl.getUserIdFromJwtToken(refreshToken);
-        Optional<User> user = uRepo.findById(Long.parseLong(userId));
+        Optional<User> user = userRepository.findById(Long.parseLong(userId));
         return user.get();
     }
 
@@ -182,14 +183,14 @@ public class UserServiceImpl implements UserService {
     public void updateUserLogout(User user) {
         user.setRefreshToken("");
         user.setExpoToken("");
-        uRepo.save(user);
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
     public UserDTO deleteUser(User user) {
         UserDTO userDTO = new UserDTO(user);
-        uRepo.delete(user);
+        userRepository.delete(user);
         return userDTO;
     }
 
@@ -197,14 +198,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUserExpoToken(User user, ExpoRequest expoRequest) {
         user.setExpoToken(expoRequest.getExpoToken());
-        uRepo.save(user);
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
     public OptInDTO updateNoticeOptIn(User user) {
         user.setNoticeOptIn(!user.getNoticeOptIn());
-        uRepo.save(user);
+        userRepository.save(user);
 
         return new OptInDTO(user);
     }
@@ -213,7 +214,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public OptInDTO updateServiceOptIn(User user) {
         user.setServiceOptIn(!user.getServiceOptIn());
-        uRepo.save(user);
+        userRepository.save(user);
 
         return new OptInDTO(user);
     }
