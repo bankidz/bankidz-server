@@ -93,10 +93,8 @@ public class AppleControllerTest {
             .getAppleAccessToken(appleRequest, "login");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         AppleController appleController = new AppleController(
             appleService,
             userService
@@ -155,10 +153,8 @@ public class AppleControllerTest {
             .getAppleAccessToken(appleRequest, "login");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         AppleController appleController = new AppleController(
             appleService,
             userService
@@ -223,10 +219,8 @@ public class AppleControllerTest {
             .getAppleAccessToken(appleRequest, "login");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         AppleController appleController = new AppleController(
             appleService,
             userService
@@ -288,10 +282,8 @@ public class AppleControllerTest {
         Mockito.doReturn(object).when(appleService).revokeAppleAccount(appleTokenDTO);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         AppleController appleController = new AppleController(
             appleService,
             userService
@@ -347,10 +339,8 @@ public class AppleControllerTest {
             .when(appleService).getAppleAccessToken(appleRequest, "revoke");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         AppleController appleController = new AppleController(
             appleService,
             userService

@@ -72,10 +72,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -129,10 +127,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -181,10 +177,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -233,10 +227,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -285,10 +277,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -343,10 +333,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -412,10 +400,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -478,10 +464,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -538,10 +522,8 @@ public class UserControllerTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -603,10 +585,8 @@ public class UserControllerTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -665,10 +645,8 @@ public class UserControllerTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -725,10 +703,7 @@ public class UserControllerTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -785,10 +760,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -848,10 +821,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -911,10 +882,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -963,10 +932,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1045,10 +1012,8 @@ public class UserControllerTest {
             NotificationController.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
             mockFamilyUserRepository,
@@ -1154,10 +1119,8 @@ public class UserControllerTest {
             NotificationController.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
             mockFamilyUserRepository,
@@ -1261,10 +1224,8 @@ public class UserControllerTest {
             NotificationController.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
             mockFamilyUserRepository,
@@ -1388,10 +1349,8 @@ public class UserControllerTest {
             NotificationController.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
             mockFamilyUserRepository,
@@ -1482,10 +1441,8 @@ public class UserControllerTest {
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1541,10 +1498,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1603,10 +1558,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1665,10 +1618,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1727,10 +1678,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1788,10 +1737,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1843,10 +1790,8 @@ public class UserControllerTest {
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         FamilyServiceImpl familyService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;

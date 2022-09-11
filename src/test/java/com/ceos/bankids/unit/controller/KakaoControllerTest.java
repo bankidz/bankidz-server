@@ -49,10 +49,8 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -81,10 +79,8 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -160,10 +156,8 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -236,10 +230,8 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -313,10 +305,7 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            mockJwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -396,10 +385,7 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            mockJwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -474,10 +460,8 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
@@ -547,10 +531,8 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            jwtTokenServiceImpl
-        );
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+
         KakaoController kakaoController = new KakaoController(
             kakaoService,
             userService
