@@ -61,6 +61,11 @@ public class UserController {
 
         log.info("api = 유저 타입 선택, user = {}", authUser.getUsername());
         UserDTO userDTO = userService.updateUserType(authUser, userTypeRequest);
+        if (userDTO.getIsKid() == true) {
+            kidService.createNewKid(authUser);
+        } else {
+            parentService.createNewParent(authUser);
+        }
 
         return CommonResponse.onSuccess(userDTO);
     }

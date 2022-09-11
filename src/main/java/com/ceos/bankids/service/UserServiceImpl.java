@@ -4,8 +4,6 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
-import com.ceos.bankids.domain.Kid;
-import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
@@ -16,8 +14,6 @@ import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository uRepo;
-    private final KidRepository kRepo;
-    private final ParentRepository pRepo;
     private final JwtTokenServiceImpl jwtTokenServiceImpl;
 
     @Override
@@ -99,9 +93,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
 
-        Calendar cal = Calendar.getInstance();
-        Integer currYear = cal.get(Calendar.YEAR);
-        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
+        if (user.getIsFemale() != null) {
+            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
+        }
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateFormat.setLenient(false);
         try {
@@ -109,36 +104,20 @@ public class UserServiceImpl implements UserService {
         } catch (ParseException e) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         }
-        if (user.getIsFemale() != null) {
-            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
-        } else if (birthYear >= currYear || birthYear <= currYear - 100) {
+        
+        Calendar cal = Calendar.getInstance();
+        Integer currYear = cal.get(Calendar.YEAR);
+        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
+        if (birthYear >= currYear || birthYear <= currYear - 100) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
-        } else {
-            user.setBirthday(userTypeRequest.getBirthday());
-            user.setIsFemale(userTypeRequest.getIsFemale());
-            user.setIsKid(userTypeRequest.getIsKid());
-            uRepo.save(user);
-
-            if (user.getIsKid() == true) {
-                Kid newKid = Kid.builder()
-                    .savings(0L)
-                    .achievedChallenge(0L)
-                    .totalChallenge(0L)
-                    .level(1L)
-                    .user(user)
-                    .build();
-                kRepo.save(newKid);
-            } else {
-                Parent newParent = Parent.builder()
-                    .acceptedRequest(0L)
-                    .totalRequest(0L)
-                    .user(user)
-                    .build();
-                pRepo.save(newParent);
-            }
-            UserDTO userDTO = new UserDTO(user);
-            return userDTO;
         }
+
+        user.setBirthday(userTypeRequest.getBirthday());
+        user.setIsFemale(userTypeRequest.getIsFemale());
+        user.setIsKid(userTypeRequest.getIsKid());
+        uRepo.save(user);
+
+        return new UserDTO(user);
     }
 
     @Override
