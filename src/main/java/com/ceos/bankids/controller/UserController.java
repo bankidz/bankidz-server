@@ -101,9 +101,9 @@ public class UserController {
     public CommonResponse<UserDTO> patchUserLogout(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 유저 로그아웃, user = {}", authUser.getUsername());
-        UserDTO userDTO = userService.updateUserLogout(authUser);
+        userService.updateUserLogout(authUser);
 
-        return CommonResponse.onSuccess(userDTO);
+        return CommonResponse.onSuccess(null);
     }
 
     @ApiOperation(value = "유저 탈퇴")

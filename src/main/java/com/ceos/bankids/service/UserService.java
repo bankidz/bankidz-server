@@ -29,7 +29,7 @@ public interface UserService {
 
     public User getUserByRefreshToken(String refreshToken);
 
-    public UserDTO updateUserLogout(User user);
+    public void updateUserLogout(User user);
 
     public UserDTO deleteUser(User user);
 

@@ -19,7 +19,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Optional;
-import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,7 +103,7 @@ public class UserServiceImpl implements UserService {
         } catch (ParseException e) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         }
-        
+
         Calendar cal = Calendar.getInstance();
         Integer currYear = cal.get(Calendar.YEAR);
         Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
@@ -180,18 +179,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUserLogout(User user) {
+    public void updateUserLogout(User user) {
         user.setRefreshToken("");
         user.setExpoToken("");
         uRepo.save(user);
-
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setMaxAge(14 * 24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        return null;
     }
 
     @Override
