@@ -75,7 +75,7 @@ public class UserController {
         User user = userService.getUserByRefreshToken(tokenRequest.getAccessToken());
         LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
 
-        userService.setNewCookie(user, response);
+//        userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(loginDTO);
     }
 
@@ -148,7 +148,7 @@ public class UserController {
         log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
         User user = userService.updateUserExpoToken(authUser, expoRequest);
 
-        userService.setNewCookie(user, response);
+//        userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(null);
     }
 
