@@ -30,14 +30,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
-        String provider = "kakao";
+    public User loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
+        
         Optional<User> user = userRepository.findByAuthenticationCode(
             kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), "aT", "rT");
-
-            return loginDTO;
+            return user.get();
         } else {
             String username = kakaoUserDTO.getKakaoAccount().getProfile().getNickname();
             if (username.getBytes().length > 6) {
@@ -46,28 +44,24 @@ public class UserServiceImpl implements UserService {
             User newUser = User.builder()
                 .username(username)
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-                .provider(provider).refreshToken("")
+                .provider("kakao").refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
             userRepository.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, "aT", "rT");
-
-            return loginDTO;
+            return newUser;
         }
     }
 
 
     @Override
     @Transactional
-    public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
+    public User loginWithAppleAuthenticationCode(String authenticationCode,
         AppleRequest appleRequest) {
-        String provider = "apple";
+
         Optional<User> user = userRepository.findByAuthenticationCode(authenticationCode);
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), "aT", "rT");
-
-            return loginDTO;
+            return user.get();
         } else {
             String username = appleRequest.getUsername();
             if (username.getBytes().length > 6) {
@@ -81,9 +75,7 @@ public class UserServiceImpl implements UserService {
                 .build();
             userRepository.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, "aT", "rT");
-
-            return loginDTO;
+            return newUser;
         }
     }
 

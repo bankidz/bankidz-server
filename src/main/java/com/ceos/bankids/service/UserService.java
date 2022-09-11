@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
 
-    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO);
+    public User loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO);
 
-    public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
+    public User loginWithAppleAuthenticationCode(String authenticationCode,
         AppleRequest appleRequest);
 
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest);

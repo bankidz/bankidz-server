@@ -97,7 +97,8 @@ public class AppleControllerTest {
 
         AppleController appleController = new AppleController(
             appleService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -157,7 +158,8 @@ public class AppleControllerTest {
 
         AppleController appleController = new AppleController(
             appleService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -223,7 +225,8 @@ public class AppleControllerTest {
 
         AppleController appleController = new AppleController(
             appleService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -286,7 +289,8 @@ public class AppleControllerTest {
 
         AppleController appleController = new AppleController(
             appleService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -343,7 +347,8 @@ public class AppleControllerTest {
 
         AppleController appleController = new AppleController(
             appleService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then

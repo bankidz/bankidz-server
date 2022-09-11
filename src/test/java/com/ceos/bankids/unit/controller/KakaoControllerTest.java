@@ -53,7 +53,8 @@ public class KakaoControllerTest {
 
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -83,7 +84,8 @@ public class KakaoControllerTest {
 
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -160,7 +162,8 @@ public class KakaoControllerTest {
 
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
         CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
 
@@ -234,7 +237,8 @@ public class KakaoControllerTest {
 
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
         CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
 
@@ -270,9 +274,9 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
 
-        JwtTokenServiceImpl mockJwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        Mockito.doReturn("rT").when(mockJwtTokenServiceImpl).encodeJwtRefreshToken(1L);
-        Mockito.doReturn("aT").when(mockJwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
         KakaoTokenDTO kakaoTokenDTO = new KakaoTokenDTO("aT", "rT");
@@ -308,7 +312,8 @@ public class KakaoControllerTest {
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
@@ -356,10 +361,10 @@ public class KakaoControllerTest {
         Timestamp timeStamp = Timestamp.valueOf(LocalDateTime.now());
         KakaoUserDTO kakaoUserDTO = new KakaoUserDTO("1234", timeStamp, kakaoAccountDTO);
 
-        JwtTokenServiceImpl mockJwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        Mockito.doReturn("rT").when(mockJwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         user.setUsername(user.getUsername().substring(0, 3));
-        Mockito.doReturn("aT").when(mockJwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+        Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
 
         String getTokenURL =
             "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="
@@ -388,7 +393,8 @@ public class KakaoControllerTest {
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
@@ -464,7 +470,8 @@ public class KakaoControllerTest {
 
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
@@ -535,7 +542,8 @@ public class KakaoControllerTest {
 
         KakaoController kakaoController = new KakaoController(
             kakaoService,
-            userService
+            userService,
+            jwtTokenServiceImpl
         );
 
         // then
