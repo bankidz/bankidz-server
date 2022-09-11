@@ -17,6 +17,7 @@ import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentBackupServiceImpl;
@@ -52,6 +53,7 @@ public class UserController {
     private final ParentServiceImpl parentService;
     private final SlackServiceImpl slackService;
     private final ExpoNotificationServiceImpl notificationService;
+    private final JwtTokenServiceImpl jwtTokenService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -77,7 +79,8 @@ public class UserController {
         HttpServletResponse response) {
 
         log.info("api = 토큰 리프레시");
-        User user = userService.getUserByRefreshToken(tokenRequest.getAccessToken());
+        Long userId = jwtTokenService.getUserIdFromJwtToken(tokenRequest.getAccessToken());
+        User user = userService.getUserById(userId);
         LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
 
         return CommonResponse.onSuccess(loginDTO);

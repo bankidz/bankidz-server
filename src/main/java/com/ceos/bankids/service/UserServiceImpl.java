@@ -155,10 +155,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User getUserByRefreshToken(String refreshToken) {
-        String userId = jwtTokenServiceImpl.getUserIdFromJwtToken(refreshToken);
-        Optional<User> user = userRepository.findById(Long.parseLong(userId));
-        return user.get();
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_EXISTS.getErrorCode()));
     }
 
     @Override

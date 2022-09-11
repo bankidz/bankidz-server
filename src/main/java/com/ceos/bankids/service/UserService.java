@@ -27,7 +27,7 @@ public interface UserService {
 
     public MyPageDTO getUserInformation(User user);
 
-    public User getUserByRefreshToken(String refreshToken);
+    public User getUserById(Long userId);
 
     public void updateUserLogout(User user);
 
