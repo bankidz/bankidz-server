@@ -41,6 +41,7 @@ public class AppleController {
         throws IOException {
 
         log.info("api = 애플 로그인");
+
         AppleRequest appleRequest = appleService.getAppleRequest(formData);
 
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();

@@ -37,9 +37,7 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = Family.builder()
             .code(UUID.randomUUID().toString())
             .build();
-        fRepo.save(family);
-
-        return family;
+        return fRepo.save(family);
     }
 
     @Override

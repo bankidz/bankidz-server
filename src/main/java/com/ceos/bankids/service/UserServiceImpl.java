@@ -47,9 +47,7 @@ public class UserServiceImpl implements UserService {
                 .provider("kakao").refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
-            userRepository.save(newUser);
-
-            return newUser;
+            return userRepository.save(newUser);
         }
     }
 
@@ -73,9 +71,7 @@ public class UserServiceImpl implements UserService {
                 .provider("apple").refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
-            userRepository.save(newUser);
-
-            return newUser;
+            return userRepository.save(newUser);
         }
     }
 

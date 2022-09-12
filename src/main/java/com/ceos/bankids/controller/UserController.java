@@ -62,6 +62,7 @@ public class UserController {
         @Valid @RequestBody UserTypeRequest userTypeRequest) {
 
         log.info("api = 유저 타입 선택, user = {}", authUser.getUsername());
+
         UserDTO userDTO = userService.updateUserType(authUser, userTypeRequest);
         if (userDTO.getIsKid() == true) {
             kidService.createNewKid(authUser);
@@ -76,6 +77,7 @@ public class UserController {
     @PatchMapping(value = "/refresh", produces = "application/json; charset=utf-8")
     @ResponseBody
     public CommonResponse<LoginDTO> refreshUserToken(@AuthenticationPrincipal User authUser) {
+
         log.info("api = 토큰 리프레시, user = {}", authUser.getUsername());
 
         String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(authUser.getId());
@@ -92,6 +94,7 @@ public class UserController {
     public CommonResponse<MyPageDTO> getUserInfo(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 유저 정보 조회하기, user = {}", authUser.getUsername());
+
         MyPageDTO myPageDTO = userService.getUserInformation(authUser);
 
         return CommonResponse.onSuccess(myPageDTO);
@@ -103,6 +106,7 @@ public class UserController {
     public CommonResponse<UserDTO> patchUserLogout(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 유저 로그아웃, user = {}", authUser.getUsername());
+
         userService.updateUserLogout(authUser);
 
         return CommonResponse.onSuccess(null);
@@ -153,6 +157,7 @@ public class UserController {
         @Valid @RequestBody ExpoRequest expoRequest, HttpServletResponse response) {
 
         log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
+
         userService.updateUserExpoToken(authUser, expoRequest);
 
         return CommonResponse.onSuccess(null);
@@ -164,6 +169,7 @@ public class UserController {
     public CommonResponse<OptInDTO> patchNoticeOptIn(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 유저 공지 및 이벤트 알림 동의, user = {}", authUser.getUsername());
+
         OptInDTO optInDTO = userService.updateNoticeOptIn(authUser);
 
         return CommonResponse.onSuccess(optInDTO);
@@ -175,6 +181,7 @@ public class UserController {
     public CommonResponse<OptInDTO> patchServiceOptIn(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 활동 알림 동의, user = {}", authUser.getUsername());
+
         OptInDTO optInDTO = userService.updateServiceOptIn(authUser);
 
         return CommonResponse.onSuccess(optInDTO);
@@ -186,6 +193,7 @@ public class UserController {
     public CommonResponse<OptInDTO> getOptIn(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 유저 알림 동의 조회, user = {}", authUser.getUsername());
+
         OptInDTO optInDTO = userService.getOptIn(authUser);
 
         return CommonResponse.onSuccess(optInDTO);

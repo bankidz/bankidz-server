@@ -39,6 +39,7 @@ public class FamilyController {
     public CommonResponse<FamilyDTO> postFamily(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 생성하기, user = {}", authUser.getUsername());
+
         familyUserService.checkIfFamilyExists(authUser);
 
         Family family = familyService.postNewFamily(authUser);
@@ -53,6 +54,7 @@ public class FamilyController {
     public CommonResponse<FamilyDTO> getFamily(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 정보 조회하기, user = {}", authUser.getUsername());
+
         FamilyDTO familyDTO = familyService.getFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
@@ -65,6 +67,7 @@ public class FamilyController {
         @AuthenticationPrincipal User authUser) {
 
         log.info("api = 아이들 목록 조회하기, user = {}", authUser.getUsername());
+
         List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(authUser);
 
         return CommonResponse.onSuccess(kidListDTOList);
@@ -77,6 +80,7 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 참여하기, user = {}", authUser.getUsername());
+
         FamilyDTO familyDTO = familyService.postNewFamilyUser(authUser, familyRequest.getCode());
 
         return CommonResponse.onSuccess(familyDTO);
@@ -89,6 +93,7 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 나가기, user = {}", authUser.getUsername());
+
         if (authUser.getIsKid()) {
             challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
         } else {

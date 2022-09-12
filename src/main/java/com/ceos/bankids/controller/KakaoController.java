@@ -38,6 +38,7 @@ public class KakaoController {
         HttpServletResponse response) {
 
         log.info("api = 카카오 로그인");
+
         KakaoTokenDTO kakaoTokenDTO = kakaoService.getKakaoAccessToken(kakaoRequest);
 
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
