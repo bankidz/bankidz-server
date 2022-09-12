@@ -11,6 +11,7 @@ import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KakaoServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,18 @@ public class KakaoController {
 
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
 
-        User user = userService.loginWithKakaoAuthenticationCode(kakaoUserDTO);
+        Optional<User> registeredUser = userService.getUserByAuthenticationCodeNullable(
+            kakaoUserDTO.getAuthenticationCode());
+
+        User user;
+        if (registeredUser.isPresent()) {
+            user = registeredUser.get();
+        } else {
+            user = userService.postNewUser(
+                kakaoUserDTO.getKakaoAccount().getProfile().getNickname(),
+                kakaoUserDTO.getAuthenticationCode(),
+                "kakao");
+        }
 
         String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
         String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));

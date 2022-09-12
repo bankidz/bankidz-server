@@ -12,6 +12,7 @@ import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +52,18 @@ public class AppleController {
 
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
 
-        User user = userService.loginWithAppleAuthenticationCode(
-            appleSubjectDTO.getAuthenticationCode(), appleRequest);
+        Optional<User> registeredUser = userService.getUserByAuthenticationCodeNullable(
+            appleSubjectDTO.getAuthenticationCode());
+
+        User user;
+        if (registeredUser.isPresent()) {
+            user = registeredUser.get();
+        } else {
+            user = userService.postNewUser(
+                appleRequest.getUsername(),
+                appleSubjectDTO.getAuthenticationCode(),
+                "apple");
+        }
 
         String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
         String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
