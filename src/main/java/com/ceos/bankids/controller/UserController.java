@@ -2,11 +2,9 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
@@ -120,18 +118,18 @@ public class UserController {
 
         log.info("api = 유저 탈퇴, user = {}", authUser.getUsername());
 
-        FamilyDTO familyDTO = familyService.getFamily(authUser);
-        if (familyDTO.getCode() != null) {
-            FamilyRequest familyRequest = new FamilyRequest(familyDTO.getCode());
-            if (authUser.getIsKid()) {
-                challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
-            } else {
-                challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
-            }
-
-            FamilyDTO deletedFamilyDTO = familyService.deleteFamilyUser(authUser,
-                familyRequest.getCode());
-        }
+//        FamilyDTO familyDTO = familyService.getFamily(authUser);
+//        if (familyDTO.getCode() != null) {
+//            FamilyRequest familyRequest = new FamilyRequest(familyDTO.getCode());
+//            if (authUser.getIsKid()) {
+//                challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
+//            } else {
+//                challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
+//            }
+//
+//            FamilyDTO deletedFamilyDTO = familyService.deleteFamilyUser(authUser,
+//                familyRequest.getCode());
+//        }
 
         if (authUser.getIsKid()) {
             KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(authUser);

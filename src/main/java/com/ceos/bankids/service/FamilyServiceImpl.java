@@ -27,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FamilyServiceImpl implements FamilyService {
 
-    private final FamilyRepository fRepo;
-    private final FamilyUserRepository fuRepo;
+    private final FamilyRepository familyRepository;
+    private final FamilyUserRepository familyUserRepository;
     private final NotificationController notificationController;
 
     @Override
@@ -37,19 +37,21 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = Family.builder()
             .code(UUID.randomUUID().toString())
             .build();
-        return fRepo.save(family);
+        return familyRepository.save(family);
     }
 
     @Override
     @Transactional(readOnly = true)
     public FamilyDTO getFamily(User user) {
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
         if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            Optional<Family> family = familyRepository.findById(
+                familyUser.get().getFamily().getId());
             if (family.isEmpty()) {
                 throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
             }
-            List<FamilyUser> familyUserList = fuRepo.findByFamilyAndUserNot(family.get(), user);
+            List<FamilyUser> familyUserList = familyUserRepository.findByFamilyAndUserNot(
+                family.get(), user);
 
             return FamilyDTO.builder()
                 .family(family.get())
@@ -73,13 +75,14 @@ public class FamilyServiceImpl implements FamilyService {
         if (user.getIsKid()) {
             throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
         }
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
         if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            Optional<Family> family = familyRepository.findById(
+                familyUser.get().getFamily().getId());
             if (family.isEmpty()) {
                 throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
             }
-            List<FamilyUser> familyUserList = fuRepo.findByFamily(family.get());
+            List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family.get());
             List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
                 .filter(User::getIsKid).map(KidListDTO::new).collect(
                     Collectors.toList());
@@ -94,12 +97,12 @@ public class FamilyServiceImpl implements FamilyService {
     @Override
     @Transactional
     public FamilyDTO postNewFamilyUser(User user, String code) {
-        Optional<Family> newFamily = fRepo.findByCode(code);
+        Optional<Family> newFamily = familyRepository.findByCode(code);
         if (newFamily.isEmpty()) {
             throw new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode());
         }
 
-        List<FamilyUser> familyUserList = fuRepo.findByFamily(newFamily.get());
+        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(newFamily.get());
         if (!user.getIsKid()) {
             if (user.getIsFemale() == null) {
                 throw new BadRequestException(ErrorCode.INVALID_USER_TYPE.getErrorCode());
@@ -120,20 +123,21 @@ public class FamilyServiceImpl implements FamilyService {
             }
         }
 
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
         if (familyUser.isPresent()) {
-            Optional<Family> family = fRepo.findById(familyUser.get().getFamily().getId());
+            Optional<Family> family = familyRepository.findById(
+                familyUser.get().getFamily().getId());
             if (family.get().getCode() == code) {
                 throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_THIS_FAMILY.getErrorCode());
             }
-            fuRepo.delete(familyUser.get());
+            familyUserRepository.delete(familyUser.get());
         }
 
         FamilyUser newFamilyUser = FamilyUser.builder()
             .user(user)
             .family(newFamily.get())
             .build();
-        fuRepo.save(newFamilyUser);
+        familyUserRepository.save(newFamilyUser);
 
         notificationController.newFamilyUserNotification(user, familyUserList);
 
@@ -149,31 +153,8 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public FamilyDTO deleteFamilyUser(User user, String code) {
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
-        if (familyUser.isEmpty()) {
-            throw new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode());
-        }
-
-        Family family = familyUser.get().getFamily();
-        if (!code.equals(family.getCode())) {
-            throw new BadRequestException(ErrorCode.USER_NOT_IN_THIS_FAMILY.getErrorCode());
-        }
-        fuRepo.delete(familyUser.get());
-
-        List<FamilyUser> familyUserList = fuRepo.findByFamilyAndUserNot(family, user);
-        if (familyUserList.size() == 0) {
-            fRepo.delete(family);
-        }
-
-        return FamilyDTO.builder()
-            .family(family)
-            .familyUserList(
-                familyUserList
-                    .stream()
-                    .map(FamilyUserDTO::new)
-                    .collect(Collectors.toList())
-            ).build();
+    public void deleteFamily(Family family) {
+        familyRepository.delete(family);
     }
 
 

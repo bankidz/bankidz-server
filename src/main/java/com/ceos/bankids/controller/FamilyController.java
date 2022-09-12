@@ -3,14 +3,17 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.domain.Family;
+import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
+import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,8 +102,20 @@ public class FamilyController {
         } else {
             challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
         }
-        FamilyDTO familyDTO = familyService.deleteFamilyUser(authUser, familyRequest.getCode());
 
-        return CommonResponse.onSuccess(familyDTO);
+        FamilyUser familyUser = familyUserService.findByUserAndCheckCode(authUser,
+            familyRequest.getCode());
+        Family family = familyUser.getFamily();
+        List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+            authUser);
+
+        familyUserService.deleteFamilyUser(familyUser);
+        if (familyUserList.size() == 0) {
+            familyService.deleteFamily(family);
+        }
+
+        return CommonResponse.onSuccess(
+            new FamilyDTO(family, familyUserList.stream()
+                .map(FamilyUserDTO::new).collect(Collectors.toList())));
     }
 }
