@@ -12,8 +12,6 @@ import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.AppleServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
@@ -66,8 +64,6 @@ public class AppleControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(user));
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -127,8 +123,6 @@ public class AppleControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -193,8 +187,6 @@ public class AppleControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         MultiValueMap<String, String> formData = null;
 
         AppleRequest appleRequest = new AppleRequest("code",
@@ -258,8 +250,6 @@ public class AppleControllerTest {
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         MultiValueMap<String, String> formData = null;
 
@@ -317,8 +307,6 @@ public class AppleControllerTest {
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         MultiValueMap<String, String> formData = null;
 
