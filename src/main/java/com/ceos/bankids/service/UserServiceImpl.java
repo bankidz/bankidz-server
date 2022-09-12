@@ -4,26 +4,20 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
-import com.ceos.bankids.domain.Kid;
-import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentDTO;
-import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Optional;
-import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,20 +26,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository uRepo;
-    private final KidRepository kRepo;
-    private final ParentRepository pRepo;
-    private final JwtTokenServiceImpl jwtTokenServiceImpl;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
-    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
-        String provider = "kakao";
-        Optional<User> user = uRepo.findByAuthenticationCode(kakaoUserDTO.getAuthenticationCode());
+    public User loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
+        
+        Optional<User> user = userRepository.findByAuthenticationCode(
+            kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
-
-            return loginDTO;
+            return user.get();
         } else {
             String username = kakaoUserDTO.getKakaoAccount().getProfile().getNickname();
             if (username.getBytes().length > 6) {
@@ -54,28 +44,24 @@ public class UserServiceImpl implements UserService {
             User newUser = User.builder()
                 .username(username)
                 .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-                .provider(provider).refreshToken("")
+                .provider("kakao").refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
-            uRepo.save(newUser);
+            userRepository.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
-
-            return loginDTO;
+            return newUser;
         }
     }
 
 
     @Override
     @Transactional
-    public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
+    public User loginWithAppleAuthenticationCode(String authenticationCode,
         AppleRequest appleRequest) {
-        String provider = "apple";
-        Optional<User> user = uRepo.findByAuthenticationCode(authenticationCode);
-        if (user.isPresent()) {
-            LoginDTO loginDTO = this.issueNewTokens(user.get(), provider);
 
-            return loginDTO;
+        Optional<User> user = userRepository.findByAuthenticationCode(authenticationCode);
+        if (user.isPresent()) {
+            return user.get();
         } else {
             String username = appleRequest.getUsername();
             if (username.getBytes().length > 6) {
@@ -87,11 +73,9 @@ public class UserServiceImpl implements UserService {
                 .provider("apple").refreshToken("")
                 .noticeOptIn(false).serviceOptIn(false)
                 .build();
-            uRepo.save(newUser);
+            userRepository.save(newUser);
 
-            LoginDTO loginDTO = this.issueNewTokens(newUser, provider);
-
-            return loginDTO;
+            return newUser;
         }
     }
 
@@ -99,9 +83,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
 
-        Calendar cal = Calendar.getInstance();
-        Integer currYear = cal.get(Calendar.YEAR);
-        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
+        if (user.getIsFemale() != null) {
+            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
+        }
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateFormat.setLenient(false);
         try {
@@ -109,55 +94,34 @@ public class UserServiceImpl implements UserService {
         } catch (ParseException e) {
             throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         }
-        if (user.getIsFemale() != null) {
-            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
-        } else if (birthYear >= currYear || birthYear <= currYear - 100) {
-            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
-        } else {
-            user.setBirthday(userTypeRequest.getBirthday());
-            user.setIsFemale(userTypeRequest.getIsFemale());
-            user.setIsKid(userTypeRequest.getIsKid());
-            uRepo.save(user);
 
-            if (user.getIsKid() == true) {
-                Kid newKid = Kid.builder()
-                    .savings(0L)
-                    .achievedChallenge(0L)
-                    .totalChallenge(0L)
-                    .level(1L)
-                    .user(user)
-                    .build();
-                kRepo.save(newKid);
-            } else {
-                Parent newParent = Parent.builder()
-                    .acceptedRequest(0L)
-                    .totalRequest(0L)
-                    .user(user)
-                    .build();
-                pRepo.save(newParent);
-            }
-            UserDTO userDTO = new UserDTO(user);
-            return userDTO;
+        Calendar cal = Calendar.getInstance();
+        Integer currYear = cal.get(Calendar.YEAR);
+        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
+        if (birthYear >= currYear || birthYear <= currYear - 100) {
+            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
         }
+
+        user.setBirthday(userTypeRequest.getBirthday());
+        user.setIsFemale(userTypeRequest.getIsFemale());
+        user.setIsKid(userTypeRequest.getIsKid());
+        userRepository.save(user);
+
+        return new UserDTO(user);
     }
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, String provider) {
-        String newRefreshToken = jwtTokenServiceImpl.encodeJwtRefreshToken(user.getId());
+    public LoginDTO issueNewTokens(User user, String newAccessToken, String newRefreshToken) {
         user.setRefreshToken(newRefreshToken);
-        uRepo.save(user);
-
-        TokenDTO tokenDTO = new TokenDTO(user);
+        userRepository.save(user);
 
         LoginDTO loginDTO;
         if (user.getIsKid() == null || user.getIsKid() == false) {
-            loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO), provider);
+            loginDTO = new LoginDTO(user.getIsKid(), newAccessToken, user.getProvider());
         } else {
-            loginDTO = new LoginDTO(user.getIsKid(),
-                jwtTokenServiceImpl.encodeJwtToken(tokenDTO),
-                user.getKid().getLevel(), provider);
+            loginDTO = new LoginDTO(user.getIsKid(), newAccessToken, user.getKid().getLevel(),
+                user.getProvider());
         }
         return loginDTO;
     }
@@ -176,10 +140,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User getUserByRefreshToken(String refreshToken) {
-        String userId = jwtTokenServiceImpl.getUserIdFromJwtToken(refreshToken);
-        Optional<User> user = uRepo.findById(Long.parseLong(userId));
-        return user.get();
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_EXISTS.getErrorCode()));
     }
 
     @Override
@@ -201,42 +164,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO updateUserLogout(User user) {
+    public void updateUserLogout(User user) {
         user.setRefreshToken("");
         user.setExpoToken("");
-        uRepo.save(user);
-
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setMaxAge(14 * 24 * 60 * 60);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        return null;
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
     public UserDTO deleteUser(User user) {
         UserDTO userDTO = new UserDTO(user);
-        uRepo.delete(user);
+        userRepository.delete(user);
         return userDTO;
     }
 
     @Override
     @Transactional
-    public User updateUserExpoToken(User user, ExpoRequest expoRequest) {
+    public void updateUserExpoToken(User user, ExpoRequest expoRequest) {
         user.setExpoToken(expoRequest.getExpoToken());
-        uRepo.save(user);
-
-        return user;
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
     public OptInDTO updateNoticeOptIn(User user) {
         user.setNoticeOptIn(!user.getNoticeOptIn());
-        uRepo.save(user);
+        userRepository.save(user);
 
         return new OptInDTO(user);
     }
@@ -245,7 +198,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public OptInDTO updateServiceOptIn(User user) {
         user.setServiceOptIn(!user.getServiceOptIn());
-        uRepo.save(user);
+        userRepository.save(user);
 
         return new OptInDTO(user);
     }

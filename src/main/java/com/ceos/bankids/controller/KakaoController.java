@@ -2,9 +2,12 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.KakaoRequest;
+import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
+import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KakaoServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +29,7 @@ public class KakaoController {
 
     private final KakaoServiceImpl kakaoService;
     private final UserServiceImpl userService;
-
+    private final JwtTokenServiceImpl jwtTokenService;
 
     @ApiOperation(value = "카카오 로그인")
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8")
@@ -39,7 +42,12 @@ public class KakaoController {
 
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
 
-        LoginDTO loginDTO = userService.loginWithKakaoAuthenticationCode(kakaoUserDTO);
+        User user = userService.loginWithKakaoAuthenticationCode(kakaoUserDTO);
+
+        String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
+        String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
+
+        LoginDTO loginDTO = userService.issueNewTokens(user, newAccessToken, newRefreshToken);
 
         return CommonResponse.onSuccess(loginDTO);
     }

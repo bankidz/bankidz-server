@@ -13,10 +13,12 @@ import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentBackupDTO;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentBackupServiceImpl;
@@ -52,6 +54,7 @@ public class UserController {
     private final ParentServiceImpl parentService;
     private final SlackServiceImpl slackService;
     private final ExpoNotificationServiceImpl notificationService;
+    private final JwtTokenServiceImpl jwtTokenService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -61,6 +64,11 @@ public class UserController {
 
         log.info("api = 유저 타입 선택, user = {}", authUser.getUsername());
         UserDTO userDTO = userService.updateUserType(authUser, userTypeRequest);
+        if (userDTO.getIsKid() == true) {
+            kidService.createNewKid(authUser);
+        } else {
+            parentService.createNewParent(authUser);
+        }
 
         return CommonResponse.onSuccess(userDTO);
     }
@@ -72,10 +80,14 @@ public class UserController {
         HttpServletResponse response) {
 
         log.info("api = 토큰 리프레시");
-        User user = userService.getUserByRefreshToken(tokenRequest.getAccessToken());
-        LoginDTO loginDTO = userService.issueNewTokens(user, user.getProvider());
+        Long userId = jwtTokenService.getUserIdFromJwtToken(tokenRequest.getAccessToken());
+        User user = userService.getUserById(userId);
 
-//        userService.setNewCookie(user, response);
+        String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
+        String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
+
+        LoginDTO loginDTO = userService.issueNewTokens(user, newAccessToken, newRefreshToken);
+
         return CommonResponse.onSuccess(loginDTO);
     }
 
@@ -96,9 +108,9 @@ public class UserController {
     public CommonResponse<UserDTO> patchUserLogout(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 유저 로그아웃, user = {}", authUser.getUsername());
-        UserDTO userDTO = userService.updateUserLogout(authUser);
+        userService.updateUserLogout(authUser);
 
-        return CommonResponse.onSuccess(userDTO);
+        return CommonResponse.onSuccess(null);
     }
 
     @ApiOperation(value = "유저 탈퇴")
@@ -146,9 +158,8 @@ public class UserController {
         @Valid @RequestBody ExpoRequest expoRequest, HttpServletResponse response) {
 
         log.info("api = 유저 엑스포 토큰 등록, user = {}", authUser.getUsername());
-        User user = userService.updateUserExpoToken(authUser, expoRequest);
+        userService.updateUserExpoToken(authUser, expoRequest);
 
-//        userService.setNewCookie(user, response);
         return CommonResponse.onSuccess(null);
     }
 

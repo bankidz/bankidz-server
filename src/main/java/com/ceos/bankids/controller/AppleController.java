@@ -1,11 +1,14 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.controller.request.AppleRequest;
+import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.service.AppleServiceImpl;
+import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
@@ -28,6 +31,7 @@ public class AppleController {
 
     private final AppleServiceImpl appleService;
     private final UserServiceImpl userService;
+    private final JwtTokenServiceImpl jwtTokenService;
 
     @ApiOperation(value = "애플 로그인")
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -46,8 +50,13 @@ public class AppleController {
 
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
 
-        LoginDTO loginDTO = userService.loginWithAppleAuthenticationCode(
+        User user = userService.loginWithAppleAuthenticationCode(
             appleSubjectDTO.getAuthenticationCode(), appleRequest);
+
+        String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
+        String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
+
+        LoginDTO loginDTO = userService.issueNewTokens(user, newAccessToken, newRefreshToken);
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
