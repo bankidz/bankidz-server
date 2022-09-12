@@ -1741,10 +1741,16 @@ public class FamilyControllerTest {
             .isFemale(null)
             .build();
 
-        Parent parent = Parent.builder().id(1L).acceptedRequest(0L).totalRequest(0L).user(user1)
+        Kid kid = Kid.builder()
+            .id(1L)
+            .savings(0L)
+            .achievedChallenge(0L)
+            .totalChallenge(0L)
+            .level(1L)
+            .user(user1)
             .build();
 
-        user1.setParent(parent);
+        user1.setKid(kid);
 
         Family family2 = Family.builder().id(2L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family2).build();
@@ -1754,7 +1760,7 @@ public class FamilyControllerTest {
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
-        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+        Mockito.when(mockFamilyUserRepository.findByUser(user1))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
         NotificationController mockNotificationController = Mockito.mock(
@@ -1808,7 +1814,7 @@ public class FamilyControllerTest {
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
-        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+        Mockito.when(mockFamilyUserRepository.findByUser(user1))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
         NotificationController mockNotificationController = Mockito.mock(
@@ -1834,4 +1840,5 @@ public class FamilyControllerTest {
             familyController.deleteFamilyUser(user1, familyRequest);
         });
     }
+
 }
