@@ -3,7 +3,6 @@ package com.ceos.bankids.controller;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
-import com.ceos.bankids.controller.request.TokenRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.domain.User;
@@ -76,17 +75,13 @@ public class UserController {
     @ApiOperation(value = "토큰 리프레시")
     @PatchMapping(value = "/refresh", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<LoginDTO> refreshUserToken(@Valid @RequestBody TokenRequest tokenRequest,
-        HttpServletResponse response) {
+    public CommonResponse<LoginDTO> refreshUserToken(@AuthenticationPrincipal User authUser) {
+        log.info("api = 토큰 리프레시, user = {}", authUser.getUsername());
 
-        log.info("api = 토큰 리프레시");
-        Long userId = jwtTokenService.getUserIdFromJwtToken(tokenRequest.getAccessToken());
-        User user = userService.getUserById(userId);
+        String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(authUser.getId());
+        String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(authUser));
 
-        String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
-        String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
-
-        LoginDTO loginDTO = userService.issueNewTokens(user, newAccessToken, newRefreshToken);
+        LoginDTO loginDTO = userService.issueNewTokens(authUser, newAccessToken, newRefreshToken);
 
         return CommonResponse.onSuccess(loginDTO);
     }
