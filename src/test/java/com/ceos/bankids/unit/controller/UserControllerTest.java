@@ -32,6 +32,7 @@ import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
@@ -72,8 +73,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -85,6 +86,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -127,8 +129,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -140,6 +142,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -177,8 +180,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -190,6 +193,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -227,8 +231,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -240,6 +244,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -277,8 +282,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -290,6 +295,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -333,8 +339,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -346,6 +352,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -400,8 +407,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -413,6 +420,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -464,8 +472,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -477,6 +485,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -522,8 +531,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -535,6 +544,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -585,8 +595,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -598,6 +608,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -645,8 +656,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -658,6 +669,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -705,8 +717,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -718,6 +730,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -766,8 +779,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -779,6 +792,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -827,8 +841,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -840,6 +854,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -877,8 +892,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -890,6 +905,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -957,10 +973,9 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        FamilyServiceImpl familyService = new FamilyServiceImpl(
-            mockFamilyRepository
-        );
+        FamilyServiceImpl familyService = new FamilyServiceImpl(mockFamilyRepository);
+        FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
+            mockFamilyUserRepository);
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = new ParentBackupServiceImpl(
@@ -977,6 +992,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1062,10 +1078,9 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        FamilyServiceImpl familyService = new FamilyServiceImpl(
-            mockFamilyRepository
-        );
+        FamilyServiceImpl familyService = new FamilyServiceImpl(mockFamilyRepository);
+        FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
+            mockFamilyUserRepository);
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);
         ParentBackupServiceImpl parentBackupService = null;
@@ -1081,6 +1096,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1129,6 +1145,16 @@ public class UserControllerTest {
             .isKid(false)
             .refreshToken("token")
             .build();
+        User user2 = User.builder()
+            .id(2L)
+            .username("user2")
+            .isFemale(true)
+            .authenticationCode("code")
+            .birthday("12345678")
+            .provider("kakao")
+            .isKid(false)
+            .refreshToken("token")
+            .build();
 
         Parent parent = Parent.builder().id(1L).acceptedRequest(0L).totalRequest(0L).user(user1)
             .build();
@@ -1142,15 +1168,18 @@ public class UserControllerTest {
 
         Family family = Family.builder().id(1L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
+        FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser2);
         FamilyRequest familyRequest = new FamilyRequest("test");
         WithdrawalRequest withdrawalRequest = new WithdrawalRequest("탈퇴맨!");
 
         // mock
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
-        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+        Mockito.when(mockFamilyUserRepository.findByUser(user1))
             .thenReturn(Optional.ofNullable(familyUser1));
-
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, user1))
+            .thenReturn(familyUserList);
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
 
@@ -1165,10 +1194,9 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        FamilyServiceImpl familyService = new FamilyServiceImpl(
-            mockFamilyRepository
-        );
+        FamilyServiceImpl familyService = new FamilyServiceImpl(mockFamilyRepository);
+        FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
+            mockFamilyUserRepository);
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = new ParentBackupServiceImpl(
@@ -1185,6 +1213,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1202,12 +1231,6 @@ public class UserControllerTest {
         Mockito.verify(mockFamilyUserRepository, Mockito.times(1))
             .delete(familyUserCaptor.capture());
         Assertions.assertEquals(familyUser1, familyUserCaptor.getValue());
-
-        ArgumentCaptor<Family> familyCaptor = ArgumentCaptor.forClass(
-            Family.class);
-        Mockito.verify(mockFamilyRepository, Mockito.times(1))
-            .delete(familyCaptor.capture());
-        Assertions.assertEquals(family, familyCaptor.getValue());
 
         ArgumentCaptor<ParentBackup> parentBackupCaptor = ArgumentCaptor.forClass(
             ParentBackup.class);
@@ -1245,6 +1268,137 @@ public class UserControllerTest {
             .isKid(true)
             .refreshToken("token")
             .build();
+        User user2 = User.builder()
+            .id(2L)
+            .username("user2")
+            .isFemale(true)
+            .authenticationCode("code")
+            .birthday("12345678")
+            .provider("kakao")
+            .isKid(false)
+            .refreshToken("token")
+            .build();
+
+        Kid kid = Kid.builder()
+            .id(1L)
+            .savings(0L)
+            .achievedChallenge(0L)
+            .totalChallenge(0L)
+            .level(0L)
+            .user(user1)
+            .build();
+        user1.setKid(kid);
+        KidBackup kidBackup = KidBackup.builder()
+            .birthYear(user1.getBirthday().substring(0, 4))
+            .isKid(user1.getIsKid())
+            .savings(user1.getKid().getSavings())
+            .achievedChallenge(user1.getKid().getAchievedChallenge())
+            .totalChallenge(user1.getKid().getTotalChallenge())
+            .level(user1.getKid().getLevel())
+            .build();
+
+        Family family = Family.builder().id(1L).code("test").build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
+        FamilyUser familyUser2 = FamilyUser.builder().user(user2).family(family).build();
+        List<FamilyUser> familyUserList = new ArrayList<>();
+        familyUserList.add(familyUser2);
+
+        FamilyRequest familyRequest = new FamilyRequest("test");
+        WithdrawalRequest withdrawalRequest = new WithdrawalRequest("탈퇴맨!");
+
+        // mock
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        Mockito.when(mockFamilyUserRepository.findByUser(user1))
+            .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, user1))
+            .thenReturn(familyUserList);
+        FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
+        Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
+
+        KidBackupRepository mockKidBackupRepository = Mockito.mock(
+            KidBackupRepository.class);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        NotificationController mockNotificationController = Mockito.mock(
+            NotificationController.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        FamilyServiceImpl familyService = new FamilyServiceImpl(mockFamilyRepository);
+        FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
+            mockFamilyUserRepository);
+        ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
+        KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);
+        ParentBackupServiceImpl parentBackupService = null;
+        KidServiceImpl kidService = new KidServiceImpl(mockKidRepository);
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = Mockito.mock(SlackServiceImpl.class);
+        Mockito.doNothing().when(slackService)
+            .sendWithdrawalMessage("KidBackup ", kidBackup.getId(),
+                withdrawalRequest.getMessage());
+        ExpoNotificationServiceImpl notificationService = Mockito.mock(
+            ExpoNotificationServiceImpl.class);
+
+        UserController userController = new UserController(
+            userService,
+            familyService,
+            familyUserService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService,
+            notificationService,
+            jwtTokenServiceImpl
+        );
+
+        CommonResponse result = userController.deleteUserAccount(user1, withdrawalRequest);
+
+        ArgumentCaptor<FamilyUser> familyUserCaptor = ArgumentCaptor.forClass(
+            FamilyUser.class);
+        Mockito.verify(mockFamilyUserRepository, Mockito.times(1))
+            .delete(familyUserCaptor.capture());
+        Assertions.assertEquals(familyUser1, familyUserCaptor.getValue());
+
+        ArgumentCaptor<KidBackup> kidBackupCaptor = ArgumentCaptor.forClass(
+            KidBackup.class);
+        Mockito.verify(mockKidBackupRepository, Mockito.times(1))
+            .save(kidBackupCaptor.capture());
+        Assertions.assertEquals(kidBackup, kidBackupCaptor.getValue());
+
+        ArgumentCaptor<Kid> kidCaptor = ArgumentCaptor.forClass(
+            Kid.class);
+        Mockito.verify(mockKidRepository, Mockito.times(1))
+            .delete(kidCaptor.capture());
+        Assertions.assertEquals(user1.getKid(), kidCaptor.getValue());
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(
+            User.class);
+        Mockito.verify(mockUserRepository, Mockito.times(1))
+            .delete(userCaptor.capture());
+        Assertions.assertEquals(user1, userCaptor.getValue());
+
+        // then
+        Assertions.assertEquals(CommonResponse.onSuccess(new UserDTO(user1)), result);
+    }
+
+    @Test
+    @DisplayName("가족에 혼자인 유저 탈퇴 성공 시, 삭제 유저 반환하는지 확인")
+    public void testIfKidUserWithFamilyAloneDeleteAccountSucceedThenReturnResult() {
+        // given
+        User user1 = User.builder()
+            .id(1L)
+            .username("user1")
+            .isFemale(true)
+            .authenticationCode("code")
+            .birthday("12345678")
+            .provider("kakao")
+            .isKid(true)
+            .refreshToken("token")
+            .build();
 
         Kid kid = Kid.builder()
             .id(1L)
@@ -1267,13 +1421,16 @@ public class UserControllerTest {
         Family family = Family.builder().id(1L).code("test").build();
         FamilyUser familyUser1 = FamilyUser.builder().user(user1).family(family).build();
         List<FamilyUser> familyUserList = new ArrayList<>();
+
         FamilyRequest familyRequest = new FamilyRequest("test");
         WithdrawalRequest withdrawalRequest = new WithdrawalRequest("탈퇴맨!");
 
         // mock
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
-        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+        Mockito.when(mockFamilyUserRepository.findByUser(user1))
             .thenReturn(Optional.ofNullable(familyUser1));
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, user1))
+            .thenReturn(familyUserList);
         FamilyRepository mockFamilyRepository = Mockito.mock(FamilyRepository.class);
         Mockito.when(mockFamilyRepository.findById(1L)).thenReturn(Optional.ofNullable(family));
 
@@ -1288,10 +1445,9 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        FamilyServiceImpl familyService = new FamilyServiceImpl(
-            mockFamilyRepository
-        );
+        FamilyServiceImpl familyService = new FamilyServiceImpl(mockFamilyRepository);
+        FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
+            mockFamilyUserRepository);
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);
         ParentBackupServiceImpl parentBackupService = null;
@@ -1307,6 +1463,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1378,8 +1535,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1391,6 +1548,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1435,8 +1593,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1448,6 +1606,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1495,8 +1654,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1508,6 +1667,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1555,8 +1715,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1568,6 +1728,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1615,8 +1776,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1628,6 +1789,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1674,8 +1836,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1687,6 +1849,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
@@ -1727,8 +1890,8 @@ public class UserControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
         FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
         ParentBackupServiceImpl parentBackupService = null;
@@ -1740,6 +1903,7 @@ public class UserControllerTest {
         UserController userController = new UserController(
             userService,
             familyService,
+            familyUserService,
             challengeService,
             kidBackupService,
             parentBackupService,
