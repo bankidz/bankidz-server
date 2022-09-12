@@ -960,8 +960,7 @@ public class UserControllerTest {
 
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = null;
@@ -1067,8 +1066,7 @@ public class UserControllerTest {
 
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         ChallengeServiceImpl challengeService = null;
         KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);
@@ -1172,8 +1170,7 @@ public class UserControllerTest {
 
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         KidBackupServiceImpl kidBackupService = null;
@@ -1297,8 +1294,7 @@ public class UserControllerTest {
 
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         ChallengeServiceImpl challengeService = Mockito.mock(ChallengeServiceImpl.class);
         KidBackupServiceImpl kidBackupService = new KidBackupServiceImpl(mockKidBackupRepository);

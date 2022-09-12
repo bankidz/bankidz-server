@@ -73,8 +73,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -82,7 +81,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -135,8 +135,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -144,7 +143,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -185,8 +185,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -194,7 +193,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.postFamily(user1);
         String code = result.getData().getCode();
@@ -264,8 +264,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -273,7 +272,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.getFamily(user1);
 
@@ -314,8 +314,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -323,7 +322,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.getFamily(user1);
 
@@ -375,8 +375,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -384,7 +383,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -435,8 +435,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -444,7 +443,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -495,8 +495,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -504,7 +503,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -583,8 +583,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -592,7 +591,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<List<KidListDTO>> result = familyController.getFamilyKidList(user1);
 
@@ -645,8 +645,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -654,7 +653,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<List<KidListDTO>> result = familyController.getFamilyKidList(user1);
 
@@ -687,8 +687,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -696,7 +695,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<List<KidListDTO>> result = familyController.getFamilyKidList(user1);
 
@@ -741,7 +741,7 @@ public class FamilyControllerTest {
         Mockito.when(mockFamilyRepository.findByCode("test"))
             .thenReturn(Optional.ofNullable(family2));
         FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
-        Mockito.when(mockFamilyUserRepository.findByUserId(1L))
+        Mockito.when(mockFamilyUserRepository.findByUser(user1))
             .thenReturn(Optional.ofNullable(familyUser1));
         Mockito.when(mockFamilyUserRepository.findByFamily(family2)).thenReturn(familyUserList);
         NotificationController mockNotificationController = Mockito.mock(
@@ -750,8 +750,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -759,7 +758,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
         String code = result.getData().getCode();
@@ -822,8 +822,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -831,7 +830,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
         String code = result.getData().getCode();
@@ -889,8 +889,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -898,7 +897,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -987,8 +987,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -996,7 +995,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -1074,8 +1074,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1083,7 +1082,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
         String code = result.getData().getCode();
@@ -1186,8 +1186,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1195,7 +1194,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -1273,8 +1273,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1282,7 +1281,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.postFamilyUser(user1, familyRequest);
         String code = result.getData().getCode();
@@ -1335,8 +1335,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1344,7 +1343,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -1420,8 +1420,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1429,7 +1428,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -1487,8 +1487,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1496,7 +1495,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.deleteFamilyUser(user1, familyRequest);
 
@@ -1572,8 +1572,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1581,7 +1580,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.deleteFamilyUser(user1, familyRequest);
 
@@ -1640,8 +1640,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1649,7 +1648,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
         CommonResponse<FamilyDTO> result = familyController.deleteFamilyUser(user1, familyRequest);
 
@@ -1709,8 +1709,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1718,7 +1717,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -1763,8 +1763,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1772,7 +1771,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
@@ -1817,8 +1817,7 @@ public class FamilyControllerTest {
         // when
         FamilyServiceImpl familyService = new FamilyServiceImpl(
             mockFamilyRepository,
-            mockFamilyUserRepository,
-            mockNotificationController
+            mockFamilyUserRepository
         );
         FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
             mockFamilyUserRepository
@@ -1826,7 +1825,8 @@ public class FamilyControllerTest {
         FamilyController familyController = new FamilyController(
             familyService,
             familyUserService,
-            challengeService
+            challengeService,
+            mockNotificationController
         );
 
         // then
