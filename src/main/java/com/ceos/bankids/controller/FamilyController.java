@@ -35,6 +35,7 @@ public class FamilyController {
     private final FamilyServiceImpl familyService;
     private final FamilyUserServiceImpl familyUserService;
     private final ChallengeServiceImpl challengeService;
+    private final NotificationController notificationController;
 
     @ApiOperation(value = "가족 생성하기")
     @PostMapping(value = "", produces = "application/json; charset=utf-8")
@@ -84,9 +85,17 @@ public class FamilyController {
 
         log.info("api = 가족 참여하기, user = {}", authUser.getUsername());
 
-        FamilyDTO familyDTO = familyService.postNewFamilyUser(authUser, familyRequest.getCode());
+        Family family = familyService.getFamilyByCode(familyRequest.getCode());
+        List<FamilyUser> familyUserList = familyUserService.checkFamilyUserList(family, authUser);
 
-        return CommonResponse.onSuccess(familyDTO);
+        familyUserService.leavePreviousFamily(authUser);
+        familyUserService.postNewFamilyUser(family, authUser);
+
+        notificationController.newFamilyUserNotification(authUser, familyUserList);
+
+        return CommonResponse.onSuccess(new FamilyDTO(family, familyUserList.stream()
+            .map(FamilyUserDTO::new)
+            .collect(Collectors.toList())));
     }
 
     @ApiOperation(value = "가족 나가기")

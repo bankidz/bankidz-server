@@ -1,7 +1,6 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
@@ -29,7 +28,6 @@ public class FamilyServiceImpl implements FamilyService {
 
     private final FamilyRepository familyRepository;
     private final FamilyUserRepository familyUserRepository;
-    private final NotificationController notificationController;
 
     @Override
     @Transactional
@@ -97,61 +95,11 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public FamilyDTO postNewFamilyUser(User user, String code) {
-        Optional<Family> newFamily = familyRepository.findByCode(code);
-        if (newFamily.isEmpty()) {
-            throw new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode());
-        }
-
-        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(newFamily.get());
-        if (!user.getIsKid()) {
-            if (user.getIsFemale() == null) {
-                throw new BadRequestException(ErrorCode.INVALID_USER_TYPE.getErrorCode());
-            } else if (user.getIsFemale()) {
-                List<FamilyUser> checkMomList = familyUserList.stream()
-                    .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
-                    .collect(Collectors.toList());
-                if (!checkMomList.isEmpty()) {
-                    throw new ForbiddenException(ErrorCode.MOM_ALREADY_EXISTS.getErrorCode());
-                }
-            } else {
-                List<FamilyUser> checkDadList = familyUserList.stream()
-                    .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
-                    .collect(Collectors.toList());
-                if (!checkDadList.isEmpty()) {
-                    throw new ForbiddenException(ErrorCode.DAD_ALREADY_EXISTS.getErrorCode());
-                }
-            }
-        }
-
-        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
-        if (familyUser.isPresent()) {
-            Optional<Family> family = familyRepository.findById(
-                familyUser.get().getFamily().getId());
-            if (family.get().getCode() == code) {
-                throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_THIS_FAMILY.getErrorCode());
-            }
-            familyUserRepository.delete(familyUser.get());
-        }
-
-        FamilyUser newFamilyUser = FamilyUser.builder()
-            .user(user)
-            .family(newFamily.get())
-            .build();
-        familyUserRepository.save(newFamilyUser);
-
-        notificationController.newFamilyUserNotification(user, familyUserList);
-
-        return FamilyDTO.builder()
-            .family(newFamily.get())
-            .familyUserList(
-                familyUserList
-                    .stream()
-                    .map(FamilyUserDTO::new)
-                    .collect(Collectors.toList())
-            ).build();
+    public Family getFamilyByCode(String code) {
+        return familyRepository.findByCode(code).orElseThrow(
+            () -> new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode()));
     }
-
+    
     @Override
     @Transactional
     public void deleteFamily(Family family) {

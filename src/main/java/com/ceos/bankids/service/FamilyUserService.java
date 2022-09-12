@@ -13,7 +13,11 @@ public interface FamilyUserService {
 
     public void postNewFamilyUser(Family family, User user);
 
+    public void leavePreviousFamily(User user);
+
     public FamilyUser findByUserAndCheckCode(User user, String code);
+
+    public List<FamilyUser> checkFamilyUserList(Family family, User user);
 
     public void deleteFamilyUser(FamilyUser familyUser);
 
