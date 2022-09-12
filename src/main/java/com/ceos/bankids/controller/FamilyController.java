@@ -44,11 +44,7 @@ public class FamilyController {
         Family family = familyService.postNewFamily(authUser);
         familyUserService.postNewFamilyUser(family, authUser);
 
-        return CommonResponse.onSuccess(
-            FamilyDTO.builder()
-                .family(family)
-                .familyUserList(List.of())
-                .build());
+        return CommonResponse.onSuccess(new FamilyDTO(family, List.of()));
     }
 
     @ApiOperation(value = "가족 정보 조회하기")
