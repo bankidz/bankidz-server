@@ -4,7 +4,6 @@ import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +15,7 @@ public interface FamilyUserService {
 
     public void leavePreviousFamily(User user);
 
-    public Optional<FamilyUser> findByUser(User user);
+    public FamilyUser findByUser(User user);
 
     public FamilyUser findByUserAndCheckCode(User user, String code);
 

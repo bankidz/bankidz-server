@@ -4,8 +4,6 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.FamilyDTO;
-import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
@@ -14,7 +12,6 @@ import com.ceos.bankids.repository.FamilyUserRepository;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -36,35 +33,6 @@ public class FamilyServiceImpl implements FamilyService {
             .build();
         familyRepository.save(family);
         return family;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public FamilyDTO getFamily(User user) {
-        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
-        if (familyUser.isPresent()) {
-            Optional<Family> family = familyRepository.findById(
-                familyUser.get().getFamily().getId());
-            if (family.isEmpty()) {
-                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
-            }
-            List<FamilyUser> familyUserList = familyUserRepository.findByFamilyAndUserNot(
-                family.get(), user);
-
-            return FamilyDTO.builder()
-                .family(family.get())
-                .familyUserList(
-                    familyUserList
-                        .stream()
-                        .map(FamilyUserDTO::new)
-                        .collect(Collectors.toList())
-                ).build();
-        } else {
-            return FamilyDTO.builder()
-                .family(new Family())
-                .familyUserList(List.of())
-                .build();
-        }
     }
 
     @Override

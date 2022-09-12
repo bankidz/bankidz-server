@@ -13,7 +13,6 @@ import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,9 +59,14 @@ public class FamilyController {
 
         log.info("api = 가족 정보 조회하기, user = {}", authUser.getUsername());
 
-        FamilyDTO familyDTO = familyService.getFamily(authUser);
-
-        return CommonResponse.onSuccess(familyDTO);
+        FamilyUser familyUser = familyUserService.findByUser(authUser);
+        Family family = familyUser.getFamily();
+        List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+            authUser);
+        
+        return CommonResponse.onSuccess(new FamilyDTO(family, familyUserList.stream()
+            .map(FamilyUserDTO::new)
+            .collect(Collectors.toList())));
     }
 
     @ApiOperation(value = "아이들 목록 조회하기")
@@ -73,13 +77,10 @@ public class FamilyController {
 
         log.info("api = 아이들 목록 조회하기, user = {}", authUser.getUsername());
 
-        Optional<FamilyUser> familyUser = familyUserService.findByUser(authUser);
-        if (familyUser.isPresent()) {
-            List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(familyUser.get());
-            return CommonResponse.onSuccess(kidListDTOList);
-        } else {
-            return CommonResponse.onSuccess(List.of());
-        }
+        FamilyUser familyUser = familyUserService.findByUser(authUser);
+        List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(familyUser);
+
+        return CommonResponse.onSuccess(kidListDTOList);
     }
 
     @ApiOperation(value = "가족 참여하기")
