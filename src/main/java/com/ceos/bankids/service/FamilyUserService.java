@@ -3,6 +3,7 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.KidListDTO;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,11 @@ public interface FamilyUserService {
 
     public List<FamilyUser> checkFamilyUserList(Family family, User user);
 
+
     public void deleteFamilyUser(FamilyUser familyUser);
 
     public List<FamilyUser> getFamilyUserListExclude(Family family, User user);
+
+    public List<KidListDTO> getKidListFromFamily(FamilyUser familyUser);
+
 }

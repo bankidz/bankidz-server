@@ -63,7 +63,7 @@ public class FamilyController {
         Family family = familyUser.getFamily();
         List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
             authUser);
-        
+
         return CommonResponse.onSuccess(new FamilyDTO(family, familyUserList.stream()
             .map(FamilyUserDTO::new)
             .collect(Collectors.toList())));
@@ -78,7 +78,7 @@ public class FamilyController {
         log.info("api = 아이들 목록 조회하기, user = {}", authUser.getUsername());
 
         FamilyUser familyUser = familyUserService.findByUser(authUser);
-        List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(familyUser);
+        List<KidListDTO> kidListDTOList = familyUserService.getKidListFromFamily(familyUser);
 
         return CommonResponse.onSuccess(kidListDTOList);
     }

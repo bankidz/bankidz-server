@@ -4,9 +4,12 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.FamilyUserRepository;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,5 +112,30 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     @Transactional
     public List<FamilyUser> getFamilyUserListExclude(Family family, User user) {
         return familyUserRepository.findByFamilyAndUserNot(family, user);
+    }
+
+    @Override
+    @Transactional
+    public List<KidListDTO> getKidListFromFamily(FamilyUser familyUser) {
+        User user = familyUser.getUser();
+        Family family = familyUser.getFamily();
+        if (user.getIsKid()) {
+            throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
+        }
+
+        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family);
+        List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .filter(User::getIsKid).map(KidListDTO::new).collect(
+                Collectors.toList());
+        Collections.sort(kidListDTOList, new KidListDTOComparator());
+        return kidListDTOList;
+    }
+    
+    class KidListDTOComparator implements Comparator<KidListDTO> {
+
+        @Override
+        public int compare(KidListDTO k1, KidListDTO k2) {
+            return k1.getUsername().compareTo(k2.getUsername());
+        }
     }
 }
