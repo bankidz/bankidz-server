@@ -2,11 +2,13 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class FamilyController {
 
     private final FamilyServiceImpl familyService;
+    private final FamilyUserServiceImpl familyUserService;
     private final ChallengeServiceImpl challengeService;
 
     @ApiOperation(value = "가족 생성하기")
@@ -36,9 +39,16 @@ public class FamilyController {
     public CommonResponse<FamilyDTO> postFamily(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 생성하기, user = {}", authUser.getUsername());
-        FamilyDTO familyDTO = familyService.postNewFamily(authUser);
+        familyUserService.checkIfFamilyExists(authUser);
 
-        return CommonResponse.onSuccess(familyDTO);
+        Family family = familyService.postNewFamily(authUser);
+        familyUserService.postNewFamilyUser(family, authUser);
+
+        return CommonResponse.onSuccess(
+            FamilyDTO.builder()
+                .family(family)
+                .familyUserList(List.of())
+                .build());
     }
 
     @ApiOperation(value = "가족 정보 조회하기")

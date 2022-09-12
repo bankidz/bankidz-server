@@ -33,29 +33,13 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public FamilyDTO postNewFamily(User user) {
-        Optional<FamilyUser> familyUser = fuRepo.findByUserId(user.getId());
+    public Family postNewFamily(User user) {
+        Family family = Family.builder()
+            .code(UUID.randomUUID().toString())
+            .build();
+        fRepo.save(family);
 
-        if (familyUser.isPresent()) {
-            throw new BadRequestException(ErrorCode.FAMILY_ALREADY_EXISTS.getErrorCode());
-        } else {
-            String newFamilyCode = UUID.randomUUID().toString();
-            Family newFamily = Family.builder()
-                .code(newFamilyCode)
-                .build();
-            fRepo.save(newFamily);
-
-            FamilyUser newFamilyUser = FamilyUser.builder()
-                .user(user)
-                .family(newFamily)
-                .build();
-            fuRepo.save(newFamilyUser);
-
-            return FamilyDTO.builder()
-                .family(newFamily)
-                .familyUserList(List.of())
-                .build();
-        }
+        return family;
     }
 
     @Override
