@@ -2,8 +2,11 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.ExpoRequest;
+import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
+import com.ceos.bankids.domain.Family;
+import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.LoginDTO;
@@ -15,6 +18,7 @@ import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KidBackupServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
@@ -23,6 +27,8 @@ import com.ceos.bankids.service.ParentServiceImpl;
 import com.ceos.bankids.service.SlackServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +50,7 @@ public class UserController {
 
     private final UserServiceImpl userService;
     private final FamilyServiceImpl familyService;
+    private final FamilyUserServiceImpl familyUserService;
     private final ChallengeServiceImpl challengeService;
     private final KidBackupServiceImpl kidBackupService;
     private final ParentBackupServiceImpl parentBackupService;
@@ -118,18 +125,24 @@ public class UserController {
 
         log.info("api = 유저 탈퇴, user = {}", authUser.getUsername());
 
-//        FamilyDTO familyDTO = familyService.getFamily(authUser);
-//        if (familyDTO.getCode() != null) {
-//            FamilyRequest familyRequest = new FamilyRequest(familyDTO.getCode());
-//            if (authUser.getIsKid()) {
-//                challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
-//            } else {
-//                challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
-//            }
-//
-//            FamilyDTO deletedFamilyDTO = familyService.deleteFamilyUser(authUser,
-//                familyRequest.getCode());
-//        }
+        Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(authUser);
+        if (familyUser.isPresent()) {
+            Family family = familyUser.get().getFamily();
+            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+                authUser);
+            FamilyRequest familyRequest = new FamilyRequest(family.getCode());
+
+            if (authUser.getIsKid()) {
+                challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
+            } else {
+                challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
+            }
+
+            familyUserService.deleteFamilyUser(familyUser.get());
+            if (familyUserList.size() == 0) {
+                familyService.deleteFamily(family);
+            }
+        }
 
         if (authUser.getIsKid()) {
             KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(authUser);

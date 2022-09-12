@@ -52,6 +52,12 @@ public class FamilyUserServiceImpl implements FamilyUserService {
 
     @Override
     @Transactional
+    public Optional<FamilyUser> findByUserNullable(User user) {
+        return familyUserRepository.findByUser(user);
+    }
+
+    @Override
+    @Transactional
     public FamilyUser findByUser(User user) {
         return familyUserRepository.findByUser(user)
             .orElseThrow(
@@ -130,7 +136,7 @@ public class FamilyUserServiceImpl implements FamilyUserService {
         Collections.sort(kidListDTOList, new KidListDTOComparator());
         return kidListDTOList;
     }
-    
+
     class KidListDTOComparator implements Comparator<KidListDTO> {
 
         @Override
