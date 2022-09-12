@@ -11,7 +11,6 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -70,27 +69,19 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public List<KidListDTO> getKidListFromFamily(User user) {
+    public List<KidListDTO> getKidListFromFamily(FamilyUser familyUser) {
+        User user = familyUser.getUser();
+        Family family = familyUser.getFamily();
         if (user.getIsKid()) {
             throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
         }
-        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(user.getId());
-        if (familyUser.isPresent()) {
-            Optional<Family> family = familyRepository.findById(
-                familyUser.get().getFamily().getId());
-            if (family.isEmpty()) {
-                throw new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode());
-            }
-            List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family.get());
-            List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
-                .filter(User::getIsKid).map(KidListDTO::new).collect(
-                    Collectors.toList());
-            Collections.sort(kidListDTOList, new KidListDTOComparator());
-            return kidListDTOList;
-        } else {
-            List<KidListDTO> kidListDTOList = new ArrayList<>();
-            return kidListDTOList;
-        }
+
+        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family);
+        List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
+            .filter(User::getIsKid).map(KidListDTO::new).collect(
+                Collectors.toList());
+        Collections.sort(kidListDTOList, new KidListDTOComparator());
+        return kidListDTOList;
     }
 
     @Override
@@ -99,7 +90,7 @@ public class FamilyServiceImpl implements FamilyService {
         return familyRepository.findByCode(code).orElseThrow(
             () -> new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode()));
     }
-    
+
     @Override
     @Transactional
     public void deleteFamily(Family family) {

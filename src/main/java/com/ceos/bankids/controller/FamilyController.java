@@ -13,6 +13,7 @@ import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,9 +73,13 @@ public class FamilyController {
 
         log.info("api = 아이들 목록 조회하기, user = {}", authUser.getUsername());
 
-        List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(authUser);
-
-        return CommonResponse.onSuccess(kidListDTOList);
+        Optional<FamilyUser> familyUser = familyUserService.findByUser(authUser);
+        if (familyUser.isPresent()) {
+            List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(familyUser.get());
+            return CommonResponse.onSuccess(kidListDTOList);
+        } else {
+            return CommonResponse.onSuccess(List.of());
+        }
     }
 
     @ApiOperation(value = "가족 참여하기")
