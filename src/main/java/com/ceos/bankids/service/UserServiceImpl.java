@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
-        
+
         Optional<User> user = userRepository.findByAuthenticationCode(
             kakaoUserDTO.getAuthenticationCode());
         if (user.isPresent()) {
@@ -137,13 +137,6 @@ public class UserServiceImpl implements UserService {
 //
 //        response.addCookie(cookie);
 //    }
-
-    @Override
-    @Transactional
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_EXISTS.getErrorCode()));
-    }
 
     @Override
     @Transactional

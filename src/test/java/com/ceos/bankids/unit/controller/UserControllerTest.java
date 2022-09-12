@@ -5,7 +5,6 @@ import com.ceos.bankids.controller.NotificationController;
 import com.ceos.bankids.controller.UserController;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
-import com.ceos.bankids.controller.request.TokenRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.domain.Family;
@@ -545,7 +544,7 @@ public class UserControllerTest {
             notificationService,
             jwtTokenServiceImpl
         );
-        CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
+        CommonResponse result = userController.refreshUserToken(user);
 
         // then
         LoginDTO loginDTO = new LoginDTO(false, "aT", user.getProvider());
@@ -609,7 +608,7 @@ public class UserControllerTest {
             jwtTokenServiceImpl
         );
 
-        CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
+        CommonResponse result = userController.refreshUserToken(user);
 
         // then
         LoginDTO loginDTO = new LoginDTO(true, "aT", 1L, user.getProvider());
@@ -669,68 +668,13 @@ public class UserControllerTest {
             jwtTokenServiceImpl
         );
 
-        CommonResponse result = userController.refreshUserToken(new TokenRequest("rT"), response);
+        CommonResponse result = userController.refreshUserToken(user);
 
         // then
         LoginDTO loginDTO = new LoginDTO(null, "aT", user.getProvider());
         Assertions.assertEquals(CommonResponse.onSuccess(loginDTO), result);
     }
 
-    @Test
-    @DisplayName("타입 미선택 유저 토큰과 쿠키 정상 입력 시, 성공 결과 반환하는지 확인")
-    public void testIfUserNotExistsAndTokenRefreshFailThenThrowBadRequestException() {
-        // given
-        User user = User.builder()
-            .id(1L)
-            .username("user1")
-            .isFemale(null)
-            .authenticationCode("code")
-            .provider("kakao")
-            .isKid(null)
-            .refreshToken("token")
-            .build();
-
-        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        Mockito.when(mockUserRepository.findById(1L))
-            .thenReturn(Optional.ofNullable(null));
-
-        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        TokenDTO tokenDTO = new TokenDTO(user);
-        Mockito.when(jwtTokenServiceImpl.encodeJwtRefreshToken(1L)).thenReturn("rT");
-        Mockito.when(jwtTokenServiceImpl.encodeJwtToken(tokenDTO)).thenReturn("aT");
-        Mockito.when(jwtTokenServiceImpl.getUserIdFromJwtToken("rT")).thenReturn(1L);
-
-        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-
-        // when
-        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-        FamilyServiceImpl familyService = null;
-        ChallengeServiceImpl challengeService = null;
-        KidBackupServiceImpl kidBackupService = null;
-        ParentBackupServiceImpl parentBackupService = null;
-        KidServiceImpl kidService = null;
-        ParentServiceImpl parentService = null;
-        SlackServiceImpl slackService = null;
-        ExpoNotificationServiceImpl notificationService = null;
-
-        UserController userController = new UserController(
-            userService,
-            familyService,
-            challengeService,
-            kidBackupService,
-            parentBackupService,
-            kidService,
-            parentService,
-            slackService,
-            notificationService,
-            jwtTokenServiceImpl
-        );
-
-        // then
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            userController.refreshUserToken(new TokenRequest("rT"), response);
-        });
-    }
 
     @Test
     @DisplayName("부모 유저 정보 조회 성공 시, 부모 결과 반환하는지 확인")

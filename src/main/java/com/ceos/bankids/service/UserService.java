@@ -26,9 +26,7 @@ public interface UserService {
 //    public void setNewCookie(User user, HttpServletResponse response);
 
     public MyPageDTO getUserInformation(User user);
-
-    public User getUserById(Long userId);
-
+    
     public void updateUserLogout(User user);
 
     public UserDTO deleteUser(User user);
