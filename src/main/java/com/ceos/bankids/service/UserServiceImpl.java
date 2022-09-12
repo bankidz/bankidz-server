@@ -52,7 +52,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
     @Transactional
     public User loginWithAppleAuthenticationCode(String authenticationCode,
@@ -137,7 +136,6 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    @Transactional
     public MyPageDTO getUserInformation(User user) {
         MyPageDTO myPageDTO;
         UserDTO userDTO = new UserDTO(user);
@@ -195,7 +193,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public OptInDTO getOptIn(User user) {
         return new OptInDTO(user);
     }

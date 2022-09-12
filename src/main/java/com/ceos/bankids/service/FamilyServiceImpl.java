@@ -27,7 +27,7 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Family getFamilyByCode(String code) {
         return familyRepository.findByCode(code).orElseThrow(
             () -> new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode()));

@@ -24,7 +24,7 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     private final FamilyUserRepository familyUserRepository;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void checkIfFamilyExists(User user) {
         if (familyUserRepository.findByUser(user).isPresent()) {
             throw new BadRequestException(ErrorCode.FAMILY_ALREADY_EXISTS.getErrorCode());
@@ -51,13 +51,13 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<FamilyUser> findByUserNullable(User user) {
         return familyUserRepository.findByUser(user);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public FamilyUser findByUser(User user) {
         return familyUserRepository.findByUser(user)
             .orElseThrow(
@@ -65,7 +65,7 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public FamilyUser findByUserAndCheckCode(User user, String code) {
         FamilyUser familyUser = familyUserRepository.findByUser(user).orElseThrow(
             () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
@@ -77,7 +77,7 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FamilyUser> checkFamilyUserList(Family family, User user) {
         List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family);
 
@@ -115,13 +115,13 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FamilyUser> getFamilyUserListExclude(Family family, User user) {
         return familyUserRepository.findByFamilyAndUserNot(family, user);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<KidListDTO> getKidListFromFamily(FamilyUser familyUser) {
         User user = familyUser.getUser();
         Family family = familyUser.getFamily();
