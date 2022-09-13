@@ -5,6 +5,7 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import java.util.List;
@@ -29,6 +30,29 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
             .build();
         cuRepo.save(challengeUser);
         return challengeUser;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ChallengeUser getChallengeUser(User authUser, Long challengeId) {
+        ChallengeUser challengeUser = cuRepo.findByChallengeId(challengeId)
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
+        if (challengeUser.getUser().getId() != authUser.getId()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
+        }
+        return challengeUser;
+    }
+
+    @Override
+    public void deleteChallengeUser(User authUser, Long challengeId) {
+        ChallengeUser deleteChallengeUser = cuRepo.findByChallengeId(challengeId).orElseThrow(
+            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
+        if (deleteChallengeUser.getUser().getId() != authUser.getId()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
+        }
+
+        cuRepo.delete(deleteChallengeUser);
     }
 
     public void checkMaxChallengeCount(User user) {

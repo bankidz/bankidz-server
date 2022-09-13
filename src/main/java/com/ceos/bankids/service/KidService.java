@@ -10,4 +10,6 @@ public interface KidService {
 
     public void deleteKid(User user);
 
+    public void checkKidDeleteChallenge(User user);
+
 }

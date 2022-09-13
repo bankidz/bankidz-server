@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
@@ -20,7 +21,11 @@ public interface ChallengeService {
 
     public ChallengeDTO createChallenge(User user, ChallengePostDTO challengePostDTO);
 
-    public ChallengeDTO deleteChallenge(User user, Long challengeId);
+    public ChallengeDTO deleteWalkingChallenge(User user, ChallengeUser challengeUser);
+
+    public ChallengeDTO deleteRejectedChallenge(User user, ChallengeUser challengeUser);
+
+    public ChallengeDTO deletePendingChallenge(User user, ChallengeUser challengeUser);
 
     public List<ChallengeDTO> findChallenge(User user, String status);
 

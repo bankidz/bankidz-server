@@ -108,74 +108,32 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 삭제 API (2주에 한번)
     @Transactional
     @Override
-    public ChallengeDTO deleteChallenge(User user, Long challengeId) {
+    public ChallengeDTO deleteWalkingChallenge(User user, ChallengeUser challengeUser) {
 
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
-        Optional<ChallengeUser> deleteChallengeUserRow = cuRepo.findByChallengeId(
-            challengeId);
-        if (deleteChallengeUserRow.isPresent()) {
-            ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
-            Challenge deleteChallenge = deleteChallengeUser.getChallenge();
-            Kid kid = deleteChallengeUser.getUser().getKid();
-            if (!Objects.equals(deleteChallengeUser.getUser().getId(), user.getId())) {
-                throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
-            } else if (deleteChallenge.getChallengeStatus()
-                == failed) {
-                List<Progress> failureProgressList = deleteChallenge.getProgressList();
-                progressRepository.deleteAll(failureProgressList);
-                cuRepo.delete(deleteChallengeUser);
-                challengeRepository.delete(deleteChallenge);
-                return new ChallengeDTO(deleteChallenge, null, null);
-            } else if (deleteChallenge.getChallengeStatus() == rejected) {
-                commentRepository.delete(deleteChallenge.getComment());
-                cuRepo.delete(deleteChallengeUser);
-                challengeRepository.delete(deleteChallenge);
-                return new ChallengeDTO(deleteChallenge, null, null);
-            } else if (deleteChallenge.getChallengeStatus() == pending) {
-                cuRepo.delete(deleteChallengeUser);
-                challengeRepository.delete(deleteChallenge);
-                return new ChallengeDTO(deleteChallenge, null, null);
-            } else if (kid.getDeleteChallenge() == null) {
-                long datetime = System.currentTimeMillis();
-                Timestamp timestamp = new Timestamp(datetime);
-                kid.setDeleteChallenge(timestamp);
-            } else if (deleteChallenge.getChallengeStatus() == walking && !kid.getDeleteChallenge()
-                .equals(null)) {
-                Timestamp deleteChallengeTimestamp = kid.getDeleteChallenge();
-                Calendar deleteCal = Calendar.getInstance();
-                deleteCal.setTime(deleteChallengeTimestamp);
-                int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
-                int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
-                int diffYears = nowCal.get(Calendar.YEAR) - deleteCal.get(Calendar.YEAR);
-                int l = deleteCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? lastDeleteWeek - 1
-                    : lastDeleteWeek;
-                int c = nowCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? currentWeek - 1
-                    : currentWeek;
-                if (diffYears == 0 && l + 2 > c) {
-                    throw new ForbiddenException(ErrorCode.NOT_TWO_WEEKS_YET.getErrorCode());
-                } else if (diffYears > 0) {
-                    int newC = diffYears * deleteCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + c;
-                    if (l + 2 > newC) {
-                        throw new ForbiddenException(ErrorCode.NOT_TWO_WEEKS_YET.getErrorCode());
-                    }
-                }
-                long datetime = System.currentTimeMillis();
-                Timestamp timestamp = new Timestamp(datetime);
-                kid.setDeleteChallenge(timestamp);
-                kidRepository.save(kid);
-            }
-            List<Progress> progressList = deleteChallenge.getProgressList();
-            progressRepository.deleteAll(progressList);
-            cuRepo.delete(deleteChallengeUser);
-            challengeRepository.delete(deleteChallenge);
+        Challenge deleteChallenge = challengeUser.getChallenge();
+        List<Progress> deleteChallengeProgressList = deleteChallenge.getProgressList();
+        challengeRepository.delete(deleteChallenge);
+        progressRepository.deleteAll(deleteChallengeProgressList);
 
-            return new ChallengeDTO(deleteChallenge, null, null);
-        } else {
-            throw new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode());
-        }
+        return new ChallengeDTO(deleteChallenge, null, null);
+    }
+
+    @Override
+    public ChallengeDTO deleteRejectedChallenge(User user, ChallengeUser challengeUser) {
+        Challenge deleteChallenge = challengeUser.getChallenge();
+        Comment comment = deleteChallenge.getComment();
+        challengeRepository.delete(deleteChallenge);
+        commentRepository.delete(comment);
+
+        return new ChallengeDTO(deleteChallenge, null, null);
+    }
+
+    @Override
+    public ChallengeDTO deletePendingChallenge(User user, ChallengeUser challengeUser) {
+        Challenge deleteChallenge = challengeUser.getChallenge();
+        challengeRepository.delete(deleteChallenge);
+
+        return new ChallengeDTO(deleteChallenge, null, null);
     }
 
     // 돈길 리스트 가져오기 API

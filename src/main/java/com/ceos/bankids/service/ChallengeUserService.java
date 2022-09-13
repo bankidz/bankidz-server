@@ -9,4 +9,8 @@ import org.springframework.stereotype.Service;
 public interface ChallengeUserService {
 
     public ChallengeUser postChallengeUser(User authUser, Challenge challenge);
+
+    public ChallengeUser getChallengeUser(User authUser, Long challengeId);
+
+    public void deleteChallengeUser(User authUser, Long challengeId);
 }
