@@ -12,8 +12,6 @@ import com.ceos.bankids.dto.oauth.KakaoProfileDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KakaoServiceImpl;
@@ -40,8 +38,6 @@ public class KakaoControllerTest {
         // given
         HttpServletResponse response = null;
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         WebClient mockWebClient = Mockito.mock(WebClient.class);
 
@@ -70,9 +66,6 @@ public class KakaoControllerTest {
         HttpServletResponse response = null;
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         WebClient mockWebClient = Mockito.mock(WebClient.class);
-        UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         KakaoRequest kakaoRequest = new KakaoRequest("code");
 
@@ -122,8 +115,6 @@ public class KakaoControllerTest {
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -197,8 +188,6 @@ public class KakaoControllerTest {
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
         Mockito.when(mockUserService.issueNewTokens(user, "aT", "rT")).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -266,8 +255,6 @@ public class KakaoControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         WebClient mockWebClient = Mockito.mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
@@ -346,8 +333,6 @@ public class KakaoControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         WebClient mockWebClient = Mockito.mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
@@ -432,8 +417,6 @@ public class KakaoControllerTest {
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
         Mockito.when(mockUserService.issueNewTokens(user, "aT", "rT")).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
@@ -504,8 +487,6 @@ public class KakaoControllerTest {
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
         Mockito.when(mockUserService.issueNewTokens(user, "aT", "rT")).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
