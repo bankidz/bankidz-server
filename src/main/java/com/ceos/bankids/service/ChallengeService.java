@@ -1,11 +1,12 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
+import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
@@ -17,11 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ChallengeService {
 
-    public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest);
+    public ChallengeDTO createChallenge(User user, ChallengePostDTO challengePostDTO);
 
     public ChallengeDTO deleteChallenge(User user, Long challengeId);
 
-    public List<ChallengeDTO> readChallenge(User user, String status);
+    public List<ChallengeDTO> findChallenge(User user, String status);
 
     public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
 
@@ -38,5 +39,7 @@ public interface ChallengeService {
 
     public KidAchievedChallengeListDTO readKidAchievedChallenge(User user, Long kidId,
         String interestPayment);
+
+    public Challenge findChallenge(Long challengeId);
 
 }

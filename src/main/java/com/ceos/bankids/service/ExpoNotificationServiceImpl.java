@@ -2,6 +2,7 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
@@ -17,7 +18,9 @@ import io.github.jav.exposerversdk.ExpoPushTicket;
 import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
 import io.github.jav.exposerversdk.PushNotificationException;
+import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -179,5 +183,38 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
             log.info("error message = {}", e.getMessage());
             throw new InternalServerException(ErrorCode.NOTIFICATION_SERVICE_ERROR.getErrorCode());
         }
+    }
+
+    @Async
+    @ApiOperation(value = "자녀가 돈길 제안했을 때 부모 알림")
+    public void createPendingChallengeNotification(User contractUser, ChallengeUser challengeUser) {
+
+        String title = "\uD83D\uDD14 " + challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요";
+        String notificationBody =
+            challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요! 수락하러 가볼까요?";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", challengeUser.getUser().getId());
+        newMap.put("challenge", challengeUser.getChallenge().getId());
+        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
+            notificationCategory, "");
+        if (checkServiceOptIn) {
+            this.sendMessage(contractUser, title, notificationBody, newMap,
+                notificationCategory, "");
+        }
+        log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", contractUser.getId(),
+            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
+    }
+
+    private Boolean checkServiceOptIn(User user, String title, String body,
+        NotificationCategory notificationCategory, String linkUrl) {
+        if (!user.getServiceOptIn() || !user.getExpoToken().startsWith("ExponentPushToken")) {
+            Notification notification = Notification.builder().user(user).title(title).message(body)
+                .notificationCategory(notificationCategory).linkUrl(linkUrl)
+                .build();
+            notificationRepository.save(notification);
+            return false;
+        }
+        return true;
     }
 }

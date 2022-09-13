@@ -1,18 +1,32 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
+import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
+import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
+import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
+import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
+import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +49,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChallengeController {
 
     private final ChallengeServiceImpl challengeService;
+    private final UserServiceImpl userService;
+    private final FamilyServiceImpl familyService;
+    private final ChallengeUserServiceImpl challengeUserService;
+    private final ExpoNotificationServiceImpl notificationService;
+    private final ParentServiceImpl parentService;
 
     @ApiOperation(value = "돈길 생성")
     @PostMapping(produces = "application/json; charset=utf-8")
@@ -42,7 +61,25 @@ public class ChallengeController {
         @Valid @RequestBody ChallengeRequest challengeRequest) {
 
         log.info("api = 돈길 생성, req = {}", challengeRequest);
-        ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengeRequest);
+
+        // validation
+        sundayValidation();
+        userRoleValidation(authUser, true);
+        challengeUserService.checkMaxChallengeCount(authUser);
+
+        // 계약 대상 부모 유저 가져오기
+        User contractUser = familyService.getContractUser(authUser, challengeRequest.getIsMom());
+
+        // 실제 돈길 저장로직
+        ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
+        ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengePostDTO);
+        Challenge challenge = challengeService.findChallenge(challengeDTO.getId());
+        ChallengeUser challengeUser = challengeUserService.postChallengeUser(authUser, challenge);
+        parentService.updateParentForCreateChallenge(contractUser);
+
+        // 저장로직 성공시 알림 로직
+        notificationService.createPendingChallengeNotification(contractUser, challengeUser);
+
         return CommonResponse.onSuccess(challengeDTO);
     }
 
@@ -65,7 +102,7 @@ public class ChallengeController {
         @AuthenticationPrincipal User authUser, @RequestParam String status) {
 
         log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
-        List<ChallengeDTO> challengeList = challengeService.readChallenge(authUser, status);
+        List<ChallengeDTO> challengeList = challengeService.findChallenge(authUser, status);
 
         return CommonResponse.onSuccess(challengeList);
     }
@@ -158,5 +195,25 @@ public class ChallengeController {
             authUser, kidId, interestPayment);
 
         return CommonResponse.onSuccess(kidAchievedChallengeListDTO);
+    }
+
+    // 일요일 처리 validation
+    private void sundayValidation() {
+        LocalDateTime now = LocalDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now);
+        Calendar nowCal = Calendar.getInstance();
+        nowCal.setTime(nowTimestamp);
+        DayOfWeek dayOfWeek = now.getDayOfWeek();
+        int value = dayOfWeek.getValue();
+        if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
+            throw new ForbiddenException(ErrorCode.SUNDAY_ERROR.getErrorCode());
+        }
+    }
+
+    // 유저의 역할 검사 validation
+    private void userRoleValidation(User user, Boolean approveRole) {
+        if (user.getIsKid() != approveRole) {
+            throw new ForbiddenException(ErrorCode.USER_ROLE_ERROR.getErrorCode());
+        }
     }
 }

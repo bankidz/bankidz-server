@@ -3,7 +3,6 @@ package com.ceos.bankids.service;
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.NotificationController;
-import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
@@ -20,6 +19,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
@@ -38,7 +38,6 @@ import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,7 +65,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeCategoryRepository challengeCategoryRepository;
     private final TargetItemRepository targetItemRepository;
-    private final ChallengeUserRepository challengeUserRepository;
+    private final ChallengeUserRepository cuRepo;
     private final ProgressRepository progressRepository;
     private final FamilyUserRepository familyUserRepository;
     private final CommentRepository commentRepository;
@@ -78,26 +77,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 생성 API
     @Transactional
     @Override
-    public ChallengeDTO createChallenge(User user, ChallengeRequest challengeRequest) {
-
-        sundayValidation();
-        userRoleValidation(user, true);
-        long count = challengeUserRepository.findByUserId(user.getId()).stream()
-            .filter(challengeUser -> challengeUser.getChallenge().getChallengeStatus()
-                == walking).count();
-        if (count >= 5) {
-            throw new ForbiddenException(ErrorCode.CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
-        }
-        Boolean isMom = challengeRequest.getIsMom();
-        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException(
-                ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
-        User contractUser = familyUserRepository.findByFamily(familyUser.getFamily())
-            .stream()
-            .filter(f -> !f.getUser().getIsKid() && f.getUser().getIsFemale() == isMom).findFirst()
-            .orElseThrow(
-                () -> new BadRequestException(ErrorCode.NOT_EXIST_CONSTRUCT_USER.getErrorCode()))
-            .getUser();
+    public ChallengeDTO createChallenge(User user, ChallengePostDTO challengeRequest) {
 
         String category = challengeRequest.getChallengeCategory();
         String name = challengeRequest.getItemName();
@@ -112,7 +92,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
 
         Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
-            .contractUser(contractUser)
+            .contractUser(challengeRequest.getContractUser())
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(pending)
@@ -122,17 +102,6 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filename(challengeRequest.getFileName()).build();
         challengeRepository.save(newChallenge);
 
-        ChallengeUser newChallengeUser = ChallengeUser.builder().challenge(newChallenge)
-            .member("parent").user(user).build();
-        challengeUserRepository.save(newChallengeUser);
-
-        // 자녀가 제안한 총 돈길
-        Parent parent = contractUser.getParent();
-        parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
-        parentRepository.save(parent);
-
-        notificationController.createPendingChallengeNotification(contractUser, newChallengeUser);
-
         return new ChallengeDTO(newChallenge, null, null);
     }
 
@@ -141,13 +110,11 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public ChallengeDTO deleteChallenge(User user, Long challengeId) {
 
-        sundayValidation();
-        userRoleValidation(user, true);
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
         nowCal.setTime(nowTimestamp);
-        Optional<ChallengeUser> deleteChallengeUserRow = challengeUserRepository.findByChallengeId(
+        Optional<ChallengeUser> deleteChallengeUserRow = cuRepo.findByChallengeId(
             challengeId);
         if (deleteChallengeUserRow.isPresent()) {
             ChallengeUser deleteChallengeUser = deleteChallengeUserRow.get();
@@ -159,16 +126,16 @@ public class ChallengeServiceImpl implements ChallengeService {
                 == failed) {
                 List<Progress> failureProgressList = deleteChallenge.getProgressList();
                 progressRepository.deleteAll(failureProgressList);
-                challengeUserRepository.delete(deleteChallengeUser);
+                cuRepo.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
                 return new ChallengeDTO(deleteChallenge, null, null);
             } else if (deleteChallenge.getChallengeStatus() == rejected) {
                 commentRepository.delete(deleteChallenge.getComment());
-                challengeUserRepository.delete(deleteChallengeUser);
+                cuRepo.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
                 return new ChallengeDTO(deleteChallenge, null, null);
             } else if (deleteChallenge.getChallengeStatus() == pending) {
-                challengeUserRepository.delete(deleteChallengeUser);
+                cuRepo.delete(deleteChallengeUser);
                 challengeRepository.delete(deleteChallenge);
                 return new ChallengeDTO(deleteChallenge, null, null);
             } else if (kid.getDeleteChallenge() == null) {
@@ -202,7 +169,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
             List<Progress> progressList = deleteChallenge.getProgressList();
             progressRepository.deleteAll(progressList);
-            challengeUserRepository.delete(deleteChallengeUser);
+            cuRepo.delete(deleteChallengeUser);
             challengeRepository.delete(deleteChallenge);
 
             return new ChallengeDTO(deleteChallenge, null, null);
@@ -214,13 +181,12 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 리스트 가져오기 API
     @Transactional
     @Override
-    public List<ChallengeDTO> readChallenge(User user, String status) {
+    public List<ChallengeDTO> findChallenge(User user, String status) {
 
-        userRoleValidation(user, true);
         if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
             throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
         }
-        List<ChallengeUser> challengeUserRow = challengeUserRepository.findByUserId(
+        List<ChallengeUser> challengeUserRow = cuRepo.findByUserId(
             user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         for (ChallengeUser r : challengeUserRow) {
@@ -304,7 +270,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
 
-        userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
             .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         Family family = familyUser.getFamily();
@@ -312,7 +277,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filter(f -> f.getUser().getIsKid() && Objects.equals(
                 f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
             .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
-        List<ChallengeDTO> challengeDTOList = readChallenge(kid, status);
+        List<ChallengeDTO> challengeDTOList = findChallenge(kid, status);
         if (Objects.equals(status, "pending")) {
             List<ChallengeDTO> resultList = challengeDTOList.stream()
                 .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
@@ -328,9 +293,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest) {
 
-        sundayValidation();
-        userRoleValidation(user, false);
-        ChallengeUser findChallengeUser = challengeUserRepository.findByChallengeId(challengeId)
+        ChallengeUser findChallengeUser = cuRepo.findByChallengeId(challengeId)
             .orElseThrow(
                 () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
         User cUser = findChallengeUser.getUser();
@@ -352,7 +315,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             throw new BadRequestException(ErrorCode.ALREADY_APPROVED_CHALLENGE.getErrorCode());
         }
         if (kidChallengeRequest.getAccept()) {
-            long count = challengeUserRepository.findByUserId(cUser.getId()).stream()
+            long count = cuRepo.findByUserId(cUser.getId()).stream()
                 .filter(
                     challengeUser -> challengeUser.getChallenge().getChallengeStatus() == walking)
                 .count();
@@ -399,10 +362,9 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public WeekDTO readWeekInfo(User user) {
 
-        userRoleValidation(user, true);
         Long[] currentPrice = {0L};
         Long[] totalPrice = {0L};
-        List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(
+        List<ChallengeUser> challengeUserList = cuRepo.findByUserId(
             user.getId());
         challengeUserList.forEach(challengeUser -> {
             Challenge challenge = challengeUser.getChallenge();
@@ -428,7 +390,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public KidWeekDTO readKidWeekInfo(User user, Long kidId) {
 
-        userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
             .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         Family family = familyUser.getFamily();
@@ -448,7 +409,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment) {
 
-        List<Challenge> challengeList = challengeUserRepository.findByUserId(user.getId()).stream()
+        List<Challenge> challengeList = cuRepo.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
                 challenge.getChallengeStatus(), achieved))
             .filter(challenge -> {
@@ -501,7 +462,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     public KidAchievedChallengeListDTO readKidAchievedChallenge(User user, Long kidId,
         String interestPayment) {
 
-        userRoleValidation(user, false);
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
             .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
         Kid kid = kidRepository.findById(kidId)
@@ -537,22 +497,11 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new KidAchievedChallengeListDTO(kidId, achievedChallengeListDTO);
     }
 
-    private void userRoleValidation(User user, Boolean approveRole) {
-        if (user.getIsKid() != approveRole) {
-            throw new ForbiddenException(ErrorCode.USER_ROLE_ERROR.getErrorCode());
-        }
-    }
-
-    private void sundayValidation() {
-        LocalDateTime now = LocalDateTime.now();
-        Timestamp nowTimestamp = Timestamp.valueOf(now);
-        Calendar nowCal = Calendar.getInstance();
-        nowCal.setTime(nowTimestamp);
-        DayOfWeek dayOfWeek = now.getDayOfWeek();
-        int value = dayOfWeek.getValue();
-        if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
-            throw new ForbiddenException(ErrorCode.SUNDAY_ERROR.getErrorCode());
-        }
+    @Transactional(readOnly = true)
+    @Override
+    public Challenge findChallenge(Long challengeId) {
+        return challengeRepository.findById(challengeId).orElseThrow(
+            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
     }
 
     private int timeLogic(List<Progress> progressList) {
@@ -592,8 +541,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Transactional
     public void challengeCompleteDeleteByKid(User user, FamilyRequest familyRequest) {
         //ToDo: 부모는 가족나가면 어케되냐?
-        userRoleValidation(user, true);
-        List<ChallengeUser> challengeUserList = challengeUserRepository.findByUserId(user.getId());
+        List<ChallengeUser> challengeUserList = cuRepo.findByUserId(user.getId());
         List<Challenge> challengeList = challengeUserList.stream().map(ChallengeUser::getChallenge)
             .collect(
                 Collectors.toList());
@@ -601,7 +549,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         long[] dadRequest = new long[]{0L, 0L};
 
         //challenge / progress / comment 한번에 삭제
-        challengeUserRepository.deleteAll(challengeUserList);
+        cuRepo.deleteAll(challengeUserList);
         challengeList.forEach(challenge -> {
             boolean isMom = challenge.getContractUser().getIsFemale();
             if (isMom) {
@@ -651,7 +599,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Transactional
     public void challengeCompleteDeleteByParent(User user, FamilyRequest familyRequest) {
         //ToDo: 부모는 가족나가면 어케되냐?
-        userRoleValidation(user, false);
         List<Challenge> challengeList = challengeRepository.findByContractUserId(user.getId());
         challengeList.forEach(challenge -> {
             long kidSavings = 0L;
@@ -669,7 +616,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else if (challenge.getChallengeStatus() == rejected) {
                 commentRepository.delete(challenge.getComment());
             }
-            ChallengeUser challengeUser = challengeUserRepository.findByChallengeId(
+            ChallengeUser challengeUser = cuRepo.findByChallengeId(
                 challenge.getId()).orElseThrow(
                 () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
             Kid kid = challengeUser.getUser().getKid();
@@ -677,7 +624,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             kid.setSavings(kid.getSavings() - kidSavings);
             kid.setAchievedChallenge(kid.getAchievedChallenge() - kidAchievedChallenge);
             kidRepository.save(kid);
-            challengeUserRepository.delete(challengeUser);
+            cuRepo.delete(challengeUser);
             challengeRepository.delete(challenge);
         });
         Parent parent = user.getParent();

@@ -10,4 +10,5 @@ public interface ParentService {
 
     public void deleteParent(User user);
 
+    public void updateParentForCreateChallenge(User contractUser);
 }

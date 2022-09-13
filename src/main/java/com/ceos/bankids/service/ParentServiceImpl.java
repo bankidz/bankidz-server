@@ -30,4 +30,12 @@ public class ParentServiceImpl implements ParentService {
         parentRepository.delete(user.getParent());
     }
 
+    @Override
+    public void updateParentForCreateChallenge(User contractUser) {
+        // 자녀가 제안한 총 돈길
+        Parent parent = contractUser.getParent();
+        parent.setTotalRequest(contractUser.getParent().getTotalRequest() + 1);
+        parentRepository.save(parent);
+    }
+
 }

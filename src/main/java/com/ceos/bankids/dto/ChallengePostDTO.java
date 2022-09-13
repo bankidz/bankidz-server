@@ -1,8 +1,8 @@
-package com.ceos.bankids.controller.request;
+package com.ceos.bankids.dto;
 
+import com.ceos.bankids.controller.request.ChallengeRequest;
+import com.ceos.bankids.domain.User;
 import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
@@ -21,11 +20,11 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @Builder
 @ToString
-public class ChallengeRequest {
+public class ChallengePostDTO {
 
     @ApiModelProperty(example = "false")
     @NotNull(message = "계약 대상의 성별은 필수값입니다.")
-    private Boolean isMom;
+    private User contractUser;
 
     @ApiModelProperty(example = "이자율 받기")
     @NotBlank(message = "돈길의 카테고리를 입력해주세요")
@@ -37,7 +36,6 @@ public class ChallengeRequest {
 
     @ApiModelProperty(example = "에어팟 사기")
     @NotBlank(message = "돈길의 제목을 입력해주세요")
-    @Length(max = 12, message = "돈길 제목 길이를 확인해주세요")
     private String title;
 
     @ApiModelProperty(example = "30")
@@ -50,8 +48,6 @@ public class ChallengeRequest {
 
     @ApiModelProperty(example = "150000")
     @NotNull(message = "돈길의 목표 금액을 입력해주세요")
-    @Min(value = 1500, message = "목표 금액이 너무 적습니다.")
-    @Max(value = 500000, message = "목표 금액이 너무 높습니다.")
     private Long totalPrice;
 
 
@@ -61,12 +57,22 @@ public class ChallengeRequest {
 
     @ApiModelProperty(example = "15")
     @NotNull(message = "돈길의 총 주차를 입력해주세요")
-    @Min(value = 1, message = "주차수가 너무 적습니다.")
-    @Max(value = 15, message = "주차수가 너무 많습니다.")
     private Long weeks;
 
     @ApiModelProperty(example = "fileName")
     @NotNull(message = "사인 이미지 이름을 입력해주세요")
     private String fileName;
 
+    public ChallengePostDTO(ChallengeRequest challengeRequest, User contractUser) {
+        this.contractUser = contractUser;
+        this.title = challengeRequest.getTitle();
+        this.challengeCategory = challengeRequest.getChallengeCategory();
+        this.fileName = challengeRequest.getFileName();
+        this.interestPrice = challengeRequest.getInterestPrice();
+        this.interestRate = challengeRequest.getInterestRate();
+        this.itemName = challengeRequest.getItemName();
+        this.totalPrice = challengeRequest.getTotalPrice();
+        this.weekPrice = challengeRequest.getWeekPrice();
+        this.weeks = challengeRequest.getWeeks();
+    }
 }

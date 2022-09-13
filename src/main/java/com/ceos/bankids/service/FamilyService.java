@@ -18,4 +18,6 @@ public interface FamilyService {
     public FamilyDTO postNewFamilyUser(User user, String code);
 
     public FamilyDTO deleteFamilyUser(User user, String code);
+
+    public User getContractUser(User user, Boolean isMom);
 }

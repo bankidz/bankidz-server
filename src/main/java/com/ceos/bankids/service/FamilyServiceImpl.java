@@ -194,6 +194,19 @@ public class FamilyServiceImpl implements FamilyService {
             ).build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public User getContractUser(User user, Boolean isMom) {
+        FamilyUser familyUser = fuRepo.findByUserId(user.getId())
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
+        Family family = fRepo.findByCode(familyUser.getFamily().getCode())
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
+        return family.getFamilyUserList().stream().map(FamilyUser::getUser)
+            .filter(user1 -> !user.getIsKid() && user.getIsFemale() == isMom)
+            .collect(Collectors.toList()).stream().findFirst().orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CONSTRUCT_USER.getErrorCode()));
+    }
+
 
     class KidListDTOComparator implements Comparator<KidListDTO> {
 
