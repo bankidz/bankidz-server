@@ -42,6 +42,7 @@ public class ProgressServiceImpl implements ProgressService {
     private final ChallengeRepository challengeRepository;
     private final KidRepository kidRepository;
     private final NotificationController notificationController;
+    private final ExpoNotificationServiceImpl notificationService;
 
     static int getCurrentWeek(Calendar nowCal, Calendar createdAtCal, int currentWeek) {
         if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
@@ -103,7 +104,7 @@ public class ProgressServiceImpl implements ProgressService {
         notificationController.runProgressNotification(challenge.getContractUser(),
             challengeUser.get());
         if (challenge.getChallengeStatus() == achieved) {
-            notificationController.achieveChallengeNotification(challenge.getContractUser(),
+            notificationService.achieveChallengeNotification(challenge.getContractUser(),
                 challengeUser.get());
         }
 

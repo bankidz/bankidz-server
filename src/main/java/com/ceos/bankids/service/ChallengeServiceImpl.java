@@ -19,9 +19,9 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
-import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -112,8 +112,8 @@ public class ChallengeServiceImpl implements ChallengeService {
 
         Challenge deleteChallenge = challengeUser.getChallenge();
         List<Progress> deleteChallengeProgressList = deleteChallenge.getProgressList();
-        challengeRepository.delete(deleteChallenge);
         progressRepository.deleteAll(deleteChallengeProgressList);
+        challengeRepository.delete(deleteChallenge);
 
         return new ChallengeDTO(deleteChallenge, null, null);
     }
@@ -122,8 +122,8 @@ public class ChallengeServiceImpl implements ChallengeService {
     public ChallengeDTO deleteRejectedChallenge(User user, ChallengeUser challengeUser) {
         Challenge deleteChallenge = challengeUser.getChallenge();
         Comment comment = deleteChallenge.getComment();
-        challengeRepository.delete(deleteChallenge);
         commentRepository.delete(comment);
+        challengeRepository.delete(deleteChallenge);
 
         return new ChallengeDTO(deleteChallenge, null, null);
     }
@@ -136,114 +136,156 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeDTO(deleteChallenge, null, null);
     }
 
+    @Transactional
+    @Override
+    public ChallengeListMapperDTO test(Challenge challenge) {
+
+        List<ProgressDTO> progressDTOList = new ArrayList<>();
+        List<Progress> progressList = challenge.getProgressList();
+        Long diffWeeks =
+            timeLogic(progressList) > challenge.getWeeks() ? challenge
+                .getWeeks() + 1 : (long) timeLogic(progressList);
+        Long interestRate = challenge.getInterestRate();
+        Long risk = 0L;
+        Long falseCnt = 0L;
+        if (interestRate == 10L) {
+            risk = 1000L;
+        } else if (interestRate == 20L) {
+            risk = 4L;
+        } else if (interestRate == 30L) {
+            risk = 2L;
+        }
+        for (Progress progress : progressList) {
+            if (progress.getWeeks() <= diffWeeks) {
+                if (!progress.getIsAchieved() && progress.getWeeks() < diffWeeks) {
+                    falseCnt += 1;
+                }
+                progressDTOList.add(new ProgressDTO(progress, challenge));
+            }
+        }
+        if (falseCnt >= risk) {
+            challenge.setChallengeStatus(failed);
+            challengeRepository.save(challenge);
+            return new ChallengeListMapperDTO(challenge, progressDTOList, true);
+        } else if (diffWeeks > challenge.getWeeks()) {
+            challenge.setChallengeStatus(achieved);
+//                    Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
+//                    kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
+//                    if (!Objects.equals(userLevel, kid.getLevel())) {
+//                        notificationController.kidLevelUpNotification(
+//                            challenge.getContractUser(), user, kid.getLevel(), userLevel);
+//                        kid.setLevel(userLevel);
+//                    }
+            challengeRepository.save(challenge);
+//                    kidRepository.save(kid);
+//                    notificationController.achieveChallengeNotification(
+//                        challenge.getContractUser(), r);
+            return new ChallengeListMapperDTO(challenge, progressDTOList, true);
+        }
+        return new ChallengeListMapperDTO(challenge, progressDTOList, false);
+    }
+
     // 돈길 리스트 가져오기 API
     @Transactional
     @Override
-    public List<ChallengeDTO> findChallenge(User user, String status) {
+    public List<ChallengeDTO> readChallengeList(User user, List<Challenge> challengeList,
+        String status) {
 
-        if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
-            throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
-        }
-        List<ChallengeUser> challengeUserRow = cuRepo.findByUserId(
-            user.getId());
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
-        for (ChallengeUser r : challengeUserRow) {
-            if (status.equals("walking")) {
-                if (r.getChallenge().getChallengeStatus() == walking) {
-                    List<ProgressDTO> progressDTOList = new ArrayList<>();
-                    List<Progress> progressList = r.getChallenge().getProgressList();
-                    Kid kid = user.getKid();
-                    Long diffWeeks =
-                        timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
-                            .getWeeks() + 1 : (long) timeLogic(progressList);
-                    Challenge challenge = r.getChallenge();
-                    Long interestRate = challenge.getInterestRate();
-                    Long risk = 0L;
-                    Long falseCnt = 0L;
-                    if (interestRate == 10L) {
-                        risk = 1000L;
-                    } else if (interestRate == 20L) {
-                        risk = 4L;
-                    } else if (interestRate == 30L) {
-                        risk = 2L;
+        if (Objects.equals(status, "pending")) {
+            challengeList.forEach(challenge -> {
+                challengeDTOList.add(new ChallengeDTO(challenge, null, challenge.getComment()));
+            });
+            return challengeDTOList;
+        } else {
+            challengeList.forEach(challenge -> {
+                List<ProgressDTO> progressDTOList = new ArrayList<>();
+                List<Progress> progressList = challenge.getProgressList();
+                Long diffWeeks =
+                    timeLogic(progressList) > challenge.getWeeks() ? challenge
+                        .getWeeks() + 1 : (long) timeLogic(progressList);
+                Long interestRate = challenge.getInterestRate();
+                Long risk = 0L;
+                Long falseCnt = 0L;
+                if (interestRate == 10L) {
+                    risk = 1000L;
+                } else if (interestRate == 20L) {
+                    risk = 4L;
+                } else if (interestRate == 30L) {
+                    risk = 2L;
+                }
+                for (Progress progress : progressList) {
+                    if (progress.getWeeks() <= diffWeeks) {
+                        if (!progress.getIsAchieved() && progress.getWeeks() < diffWeeks) {
+                            falseCnt += 1;
+                        }
+                        progressDTOList.add(new ProgressDTO(progress, challenge));
                     }
-                    for (Progress progress : progressList) {
-                        if (progress.getWeeks() <= diffWeeks) {
-                            if (!progress.getIsAchieved() && progress.getWeeks() < diffWeeks) {
-                                falseCnt += 1;
-                            }
+                }
+                if (falseCnt >= risk) {
+                    challenge.setChallengeStatus(failed);
+                    challengeRepository.save(challenge);
+//                    notificationController.challengeFailedNotification(
+//                        challenge.getContractUser(), r);
+                } else if (diffWeeks > challenge.getWeeks()) {
+                    challenge.setChallengeStatus(achieved);
+//                    Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
+//                    kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
+//                    if (!Objects.equals(userLevel, kid.getLevel())) {
+//                        notificationController.kidLevelUpNotification(
+//                            challenge.getContractUser(), user, kid.getLevel(), userLevel);
+//                        kid.setLevel(userLevel);
+//                    }
+                    challengeRepository.save(challenge);
+//                    kidRepository.save(kid);
+//                    notificationController.achieveChallengeNotification(
+//                        challenge.getContractUser(), r);
+                }
+                if (challenge.getChallengeStatus() != achieved) {
+                    challengeDTOList.add(new ChallengeDTO(challenge, progressDTOList,
+                        challenge.getComment()));
+                } else if (challenge.getChallengeStatus() == failed) {
+                    List<Progress> failedProgressList = challenge.getProgressList();
+                    List<ProgressDTO> failedProgressDTOList = new ArrayList<>();
+                    Long failedDiffWeeks =
+                        timeLogic(failedProgressList) > challenge.getWeeks() ? challenge
+                            .getWeeks() : (long) timeLogic(failedProgressList);
+                    for (Progress progress : failedProgressList) {
+                        if (progress.getWeeks() <= failedDiffWeeks) {
                             progressDTOList.add(new ProgressDTO(progress, challenge));
                         }
                     }
-                    if (falseCnt >= risk) {
-                        challenge.setChallengeStatus(failed);
-                        challengeRepository.save(challenge);
-                        notificationController.challengeFailedNotification(
-                            challenge.getContractUser(), r);
-                    } else if (diffWeeks > challenge.getWeeks()) {
-                        challenge.setChallengeStatus(achieved);
-                        Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
-                        kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
-                        if (!Objects.equals(userLevel, kid.getLevel())) {
-                            notificationController.kidLevelUpNotification(
-                                challenge.getContractUser(), user, kid.getLevel(), userLevel);
-                            kid.setLevel(userLevel);
-                        }
-                        challengeRepository.save(challenge);
-                        kidRepository.save(kid);
-                        notificationController.achieveChallengeNotification(
-                            challenge.getContractUser(), r);
-                    }
-                    if (challenge.getChallengeStatus() != achieved) {
-                        challengeDTOList.add(new ChallengeDTO(r.getChallenge(), progressDTOList,
-                            r.getChallenge().getComment()));
-                    }
-                } else if (r.getChallenge().getChallengeStatus() == failed) {
-                    List<Progress> progressList = r.getChallenge().getProgressList();
-                    List<ProgressDTO> progressDTOList = new ArrayList<>();
-                    Long diffWeeks =
-                        timeLogic(progressList) > r.getChallenge().getWeeks() ? r.getChallenge()
-                            .getWeeks() : (long) timeLogic(progressList);
-                    for (Progress progress : progressList) {
-                        if (progress.getWeeks() <= diffWeeks) {
-                            progressDTOList.add(new ProgressDTO(progress, r.getChallenge()));
-                        }
-                    }
                     challengeDTOList.add(
-                        new ChallengeDTO(r.getChallenge(), progressDTOList, r.getChallenge()
+                        new ChallengeDTO(challenge, failedProgressDTOList, challenge
                             .getComment()));
                 }
-            } else if ((status.equals("pending"))
-                && (r.getChallenge().getChallengeStatus() == pending
-                || r.getChallenge().getChallengeStatus() == rejected)) {
-                challengeDTOList.add(new ChallengeDTO(r.getChallenge(), null,
-                    r.getChallenge().getComment()));
-            }
+            });
         }
+
         return challengeDTOList;
     }
 
-    // 자녀의 돈길 리스트 가져오기 API
-    @Transactional
-    @Override
-    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
-
-        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
-        Family family = familyUser.getFamily();
-        User kid = familyUserRepository.findByFamily(family).stream()
-            .filter(f -> f.getUser().getIsKid() && Objects.equals(
-                f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
-            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
-        List<ChallengeDTO> challengeDTOList = findChallenge(kid, status);
-        if (Objects.equals(status, "pending")) {
-            List<ChallengeDTO> resultList = challengeDTOList.stream()
-                .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
-                    Collectors.toList());
-            return new KidChallengeListDTO(kid, resultList);
-        }
-        return new KidChallengeListDTO(kid, challengeDTOList);
-    }
+//    // 자녀의 돈길 리스트 가져오기 API
+//    @Transactional
+//    @Override
+//    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
+//
+//        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+//            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
+//        Family family = familyUser.getFamily();
+//        User kid = familyUserRepository.findByFamily(family).stream()
+//            .filter(f -> f.getUser().getIsKid() && Objects.equals(
+//                f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
+//            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
+//        List<ChallengeDTO> challengeDTOList = readChallengeList(kid, status, );
+//        if (Objects.equals(status, "pending")) {
+//            List<ChallengeDTO> resultList = challengeDTOList.stream()
+//                .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
+//                    Collectors.toList());
+//            return new KidChallengeListDTO(kid, resultList);
+//        }
+//        return new KidChallengeListDTO(kid, challengeDTOList);
+//    }
 
     // 돈길 수락 / 거절 API
     @Transactional
@@ -457,7 +499,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Transactional(readOnly = true)
     @Override
-    public Challenge findChallenge(Long challengeId) {
+    public Challenge readChallenge(Long challengeId) {
         return challengeRepository.findById(challengeId).orElseThrow(
             () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
     }

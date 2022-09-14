@@ -176,27 +176,6 @@ public class NotificationController {
     }
 
     @Async
-    @ApiOperation(value = "자녀가 돈길 제안했을 때 부모 알림")
-    public void createPendingChallengeNotification(User contractUser, ChallengeUser challengeUser) {
-
-        String title = "\uD83D\uDD14 " + challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요";
-        String notificationBody =
-            challengeUser.getUser().getUsername() + "님이 돈길을 제안했어요! 수락하러 가볼까요?";
-        HashMap<String, Object> newMap = new HashMap<>();
-        newMap.put("user", challengeUser.getUser().getId());
-        newMap.put("challenge", challengeUser.getChallenge().getId());
-        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
-        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory, "");
-        if (checkServiceOptIn) {
-            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory, "");
-        }
-        log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", contractUser.getId(),
-            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
-    }
-
-    @Async
     @ApiOperation(value = "자녀가 돈길을 걸었을 때 부모 알림")
     public void runProgressNotification(User contractUser, ChallengeUser challengeUser) {
 
@@ -214,28 +193,6 @@ public class NotificationController {
                 notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
-            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
-    }
-
-    @Async
-    @ApiOperation(value = "돈길을 완주했을 때 부모 알림")
-    public void achieveChallengeNotification(User contractUser, ChallengeUser challengeUser) {
-
-        String title = "\uD83D\uDEA8자녀가 돈길을 완주했어요";
-        String notificationBody =
-            "실제로 다 모았는지 확인하시고\n그동안 고생한" + challengeUser.getUser().getUsername()
-                + "님에게 이자\uD83D\uDCB0로 보상해주세요!";
-        HashMap<String, Object> newMap = new HashMap<>();
-        newMap.put("user", challengeUser.getUser().getId());
-        newMap.put("challenge", challengeUser.getChallenge().getId());
-        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
-        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory, "/");
-        if (checkServiceOptIn) {
-            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory, "/");
-        }
-        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 

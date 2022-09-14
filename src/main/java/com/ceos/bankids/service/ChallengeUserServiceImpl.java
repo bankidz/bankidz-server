@@ -9,6 +9,7 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeUserRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,24 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         }
 
         cuRepo.delete(deleteChallengeUser);
+    }
+
+    @Override
+    public List<Challenge> getChallengeUserList(User authUser, String status) {
+        if (Objects.equals(status, "pending")) {
+            return cuRepo.findByUserId(authUser.getId()).stream()
+                .map(ChallengeUser::getChallenge)
+                .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.PENDING
+                    || challenge.getChallengeStatus() == ChallengeStatus.REJECTED).collect(
+                    Collectors.toList());
+        } else {
+            return cuRepo.findByUserId(authUser.getId()).stream()
+                .map(ChallengeUser::getChallenge)
+                .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING
+                    || challenge.getChallengeStatus() == ChallengeStatus.FAILED).collect(
+                    Collectors.toList());
+        }
+
     }
 
     public void checkMaxChallengeCount(User user) {

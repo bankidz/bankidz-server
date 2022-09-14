@@ -11,9 +11,9 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
-import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -31,6 +31,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +78,7 @@ public class ChallengeController {
         // 실제 돈길 저장로직
         ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
         ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengePostDTO);
-        Challenge challenge = challengeService.findChallenge(challengeDTO.getId());
+        Challenge challenge = challengeService.readChallenge(challengeDTO.getId());
         ChallengeUser challengeUser = challengeUserService.postChallengeUser(authUser, challenge);
         parentService.updateParentForCreateChallenge(contractUser);
 
@@ -100,28 +101,28 @@ public class ChallengeController {
         Challenge deleteChallenge = challengeUser.getChallenge();
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
             kidService.checkKidDeleteChallenge(authUser);
+            challengeUserService.deleteChallengeUser(authUser, challengeId);
             ChallengeDTO deleteWalkingChallengeDTO = challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return CommonResponse.onSuccess(deleteWalkingChallengeDTO);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.FAILED) {
+            challengeUserService.deleteChallengeUser(authUser, challengeId);
             ChallengeDTO deleteFailedChallengeDTO = challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return CommonResponse.onSuccess(deleteFailedChallengeDTO);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.REJECTED) {
+            challengeUserService.deleteChallengeUser(authUser, challengeId);
             ChallengeDTO deleteRejectedChallengeDTO = challengeService.deleteRejectedChallenge(
                 authUser,
                 challengeUser);
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return CommonResponse.onSuccess(deleteRejectedChallengeDTO);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.PENDING) {
+            challengeUserService.deleteChallengeUser(authUser, challengeId);
             ChallengeDTO deletePendingChallengeDTO = challengeService.deletePendingChallenge(
                 authUser,
                 challengeUser);
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return CommonResponse.onSuccess(deletePendingChallengeDTO);
         }
 
@@ -134,24 +135,38 @@ public class ChallengeController {
         @AuthenticationPrincipal User authUser, @RequestParam String status) {
 
         log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
-        List<ChallengeDTO> challengeList = challengeService.findChallenge(authUser, status);
-
-        return CommonResponse.onSuccess(challengeList);
-    }
-
-    @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
-    @GetMapping(value = "/kid/{kidId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<KidChallengeListDTO> getListKidChallenge(
-        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
-        @RequestParam String status) {
-
-        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
-            authUser.getUsername(), kidId, status);
-        KidChallengeListDTO kidChallengeList = challengeService.readKidChallenge(authUser, kidId,
+        if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
+            throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
+        }
+        List<Challenge> challengeList = challengeUserService.getChallengeUserList(authUser,
             status);
+        challengeList.forEach(challenge -> {
+            ChallengeListMapperDTO challengeListMapperDTO = challengeService.test(challenge);
+            if (challengeListMapperDTO.getChangeStatus()
+                && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
+                notificationService.achieveChallengeNotification(challenge.getContractUser(),
+                    challenge.getChallengeUser());
+            }
+        });
+        List<ChallengeDTO> challengeDTOList = challengeService.readChallengeList(authUser,
+            challengeList, status);
 
-        return CommonResponse.onSuccess(kidChallengeList);
+        return CommonResponse.onSuccess(challengeDTOList);
     }
+//
+//    @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
+//    @GetMapping(value = "/kid/{kidId}", produces = "application/json; charset=utf-8")
+//    public CommonResponse<KidChallengeListDTO> getListKidChallenge(
+//        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
+//        @RequestParam String status) {
+//
+//        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
+//            authUser.getUsername(), kidId, status);
+//        KidChallengeListDTO kidChallengeList = challengeService.readKidChallenge(authUser, kidId,
+//            status);
+//
+//        return CommonResponse.onSuccess(kidChallengeList);
+//    }
 
     @ApiOperation(value = "자녀의 돈길 수락 / 거절")
     @PatchMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
