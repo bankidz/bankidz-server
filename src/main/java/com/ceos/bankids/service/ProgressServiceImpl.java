@@ -87,7 +87,7 @@ public class ProgressServiceImpl implements ProgressService {
             challenge.setChallengeStatus(achieved);
             kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
             if (!Objects.equals(userLevel, kid.getLevel())) {
-                notificationController.kidLevelUpNotification(challenge.getContractUser(), user,
+                notificationService.kidLevelUpNotification(challenge.getContractUser(), user,
                     kid.getLevel(), userLevel);
                 kid.setLevel(userLevel);
             }
@@ -104,7 +104,7 @@ public class ProgressServiceImpl implements ProgressService {
         notificationController.runProgressNotification(challenge.getContractUser(),
             challengeUser.get());
         if (challenge.getChallengeStatus() == achieved) {
-            notificationService.achieveChallengeNotification(challenge.getContractUser(),
+            notificationService.challengeAchievedNotification(challenge.getContractUser(),
                 challengeUser.get());
         }
 
@@ -155,10 +155,10 @@ public class ProgressServiceImpl implements ProgressService {
 
         if (kidAchievedChallenge == 4 || kidAchievedChallenge == 9 || kidAchievedChallenge == 14
             || kidAchievedChallenge == 19) {
-            notificationController.userLevelUpMinusOne(authUser);
+            notificationService.userLevelUpMinusOne(authUser);
         } else if (kidAchievedChallenge == 3 || kidAchievedChallenge == 8
             || kidAchievedChallenge == 13 || kidAchievedChallenge == 15) {
-            notificationController.userLevelUpHalf(authUser);
+            notificationService.userLevelUpHalf(authUser);
         }
     }
 }

@@ -12,4 +12,6 @@ public interface KidService {
 
     public void checkKidDeleteChallenge(User user);
 
+    public void userLevelUp(User contractUser, User user);
+
 }

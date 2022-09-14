@@ -10,6 +10,7 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
+import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public interface ChallengeService {
     public List<ChallengeDTO> readChallengeList(User user, List<Challenge> challengeList,
         String status);
 
-//    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
+    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
 
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest) throws IOException;
@@ -48,6 +49,8 @@ public interface ChallengeService {
 
     public Challenge readChallenge(Long challengeId);
 
-    public ChallengeListMapperDTO test(Challenge challenge);
+    public ChallengeListMapperDTO readWalkingChallenge(Challenge challenge);
+
+    public ChallengeListMapperDTO readPendingChallenge(Challenge challenge);
 
 }

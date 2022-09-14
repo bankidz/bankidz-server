@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class KidServiceImpl implements KidService {
 
     private final KidRepository kidRepository;
+    private final ExpoNotificationServiceImpl notificationService;
 
     @Override
     @Transactional
@@ -80,6 +81,40 @@ public class KidServiceImpl implements KidService {
         Timestamp timestamp = new Timestamp(datetime);
         kid.setDeleteChallenge(timestamp);
         kidRepository.save(kid);
+    }
+
+    @Override
+    @Transactional
+    public void userLevelUp(User contractUser, User user) {
+
+        Kid kid = user.getKid();
+        Long beforeLevel = kid.getLevel();
+        kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
+        Long kidAchievedChallenge = kid.getAchievedChallenge();
+        if (1 <= kidAchievedChallenge && kidAchievedChallenge < 5) {
+            kid.setLevel(2L);
+        } else if (5 <= kidAchievedChallenge && kidAchievedChallenge < 10) {
+            kid.setLevel(3L);
+        } else if (10 <= kidAchievedChallenge && kidAchievedChallenge < 15) {
+            kid.setLevel(4L);
+        } else if (15 <= kidAchievedChallenge && kidAchievedChallenge < 20) {
+            kid.setLevel(-4L);
+        } else if (20 <= kidAchievedChallenge) {
+            kid.setLevel(5L);
+        }
+        kidRepository.save(kid);
+        if (beforeLevel != kid.getLevel()) {
+            notificationService.kidLevelUpNotification(contractUser, user, kid.getLevel(),
+                beforeLevel);
+        } else if (kidAchievedChallenge == 4 || kidAchievedChallenge == 9
+            || kidAchievedChallenge == 14
+            || kidAchievedChallenge == 19) {
+            notificationService.userLevelUpMinusOne(user);
+        } else if (kidAchievedChallenge == 3 || kidAchievedChallenge == 8
+            || kidAchievedChallenge == 13 || kidAchievedChallenge == 15) {
+            notificationService.userLevelUpHalf(user);
+        }
+
     }
 
 }

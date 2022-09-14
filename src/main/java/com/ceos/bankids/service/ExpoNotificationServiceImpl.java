@@ -208,7 +208,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     @Async
     @ApiOperation(value = "돈길을 완주했을 때 부모 알림")
-    public void achieveChallengeNotification(User contractUser, ChallengeUser challengeUser) {
+    public void challengeAchievedNotification(User contractUser, ChallengeUser challengeUser) {
 
         String title = "\uD83D\uDEA8자녀가 돈길을 완주했어요";
         String notificationBody =
@@ -226,6 +226,82 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
+    }
+
+    @Async
+    @ApiOperation(value = "돈길 실패 시 부모 알림")
+    public void challengeFailedNotification(User contractUser, ChallengeUser challengeUser) {
+
+        String title = "\uD83D\uDEA8자녀가 돈길을 실패했어요";
+        String notificationBody = "실패한 돈길을 확인한 후, 자녀에게 격려해주세요\uD83C\uDD98\u2028 \n실패한 돈길들은 마이페이지 - 돈길 기록에서 확인가능해요";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", challengeUser.getUser().getId());
+        newMap.put("challenge", challengeUser.getChallenge().getId());
+        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
+            notificationCategory, "/");
+        if (checkServiceOptIn) {
+            this.sendMessage(contractUser, title, notificationBody, newMap,
+                notificationCategory, "/");
+        }
+        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 실패 알림 전송", contractUser.getId(),
+            challengeUser.getChallenge().getId(), challengeUser.getChallenge().getId());
+    }
+
+    @Async
+    @ApiOperation(value = "자녀 레벨업 시 부모 알림")
+    public void kidLevelUpNotification(User contractUser, User user, Long level, Long afterLevel) {
+
+        String title = "자녀가 레벨업을 했어요💯";
+        String notificationBody =
+            user.getUsername() + "님이 레벨" + level + "에서 레벨" + afterLevel + "로 올랐어요! 확인해볼까요?";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", user.getId());
+        NotificationCategory notificationCategory = NotificationCategory.LEVEL;
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
+            notificationCategory, "");
+        if (checkServiceOptIn) {
+            this.sendMessage(contractUser, title, notificationBody, newMap,
+                notificationCategory, "");
+        }
+        log.info("부모 유저 id = {}에게 유저 id = {}의 레벨업 알림 전송", contractUser.getId(), user.getId());
+    }
+
+    @Async
+    @ApiOperation(value = "유저 레벨업 직전 알림")
+    public void userLevelUpMinusOne(User authUser) {
+
+        String title = "레벨업까지 딱 한개만!";
+        String notificationBody = "레벨업하기까지 \uD83D\uDD38 1개\uD83D\uDD38의 돈길만 완주하면 돼요";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("userId", authUser.getId());
+        NotificationCategory notificationCategory = NotificationCategory.LEVEL;
+        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
+            notificationCategory, "/mypage");
+        if (checkServiceOptIn) {
+            this.sendMessage(authUser, title, notificationBody, newMap,
+                notificationCategory, "/mypage");
+        }
+        log.info("유저 id = {}의 레벨업 직전 알림", authUser.getId());
+    }
+
+    @Async
+    @ApiOperation(value = "유저 레벨업 절반 달성 알림")
+    public void userLevelUpHalf(User authUser) {
+
+        String title = "벌써 절반이나 왔네요\uD83D\uDCAF";
+        String notificationBody = "레벨업까지 절반 남았어요.힘내세요\uD83D\uDC97";
+
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("userId", authUser.getId());
+        NotificationCategory notificationCategory = NotificationCategory.LEVEL;
+        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
+            notificationCategory, "/mypage");
+        if (checkServiceOptIn) {
+            this.sendMessage(authUser, title, notificationBody, newMap,
+                notificationCategory, "/mypage");
+        }
+        log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
     }
 
     private Boolean checkServiceOptIn(User user, String title, String body,

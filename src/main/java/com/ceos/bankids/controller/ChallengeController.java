@@ -140,14 +140,30 @@ public class ChallengeController {
         }
         List<Challenge> challengeList = challengeUserService.getChallengeUserList(authUser,
             status);
-        challengeList.forEach(challenge -> {
-            ChallengeListMapperDTO challengeListMapperDTO = challengeService.test(challenge);
-            if (challengeListMapperDTO.getChangeStatus()
-                && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
-                notificationService.achieveChallengeNotification(challenge.getContractUser(),
-                    challenge.getChallengeUser());
-            }
-        });
+        if (!Objects.equals(status, "walking")) {
+            challengeList.forEach(challenge -> {
+                ChallengeListMapperDTO challengeListMapperDTO = challengeService.readWalkingChallenge(
+                    challenge);
+                if (challengeListMapperDTO.getChangeStatus()
+                    && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
+                    notificationService.challengeAchievedNotification(challenge.getContractUser(),
+                        challenge.getChallengeUser());
+                    kidService.userLevelUp(challenge.getContractUser(),
+                        authUser);
+                } else if (challengeListMapperDTO.getChangeStatus()
+                    && challenge.getChallengeStatus() == ChallengeStatus.FAILED) {
+                    notificationService.challengeFailedNotification(challenge.getContractUser(),
+                        challenge.getChallengeUser());
+                }
+            });
+        } else if (!Objects.equals(status, "pending")) {
+            challengeList.forEach(challenge -> {
+                ChallengeListMapperDTO challengeListMapperDTO = challengeService.readPendingChallenge(
+                    challenge);
+
+            });
+        }
+
         List<ChallengeDTO> challengeDTOList = challengeService.readChallengeList(authUser,
             challengeList, status);
 
