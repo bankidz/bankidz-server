@@ -10,11 +10,9 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
-import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import java.io.IOException;
-import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,10 +26,10 @@ public interface ChallengeService {
 
     public ChallengeDTO deletePendingChallenge(User user, ChallengeUser challengeUser);
 
-    public List<ChallengeDTO> readChallengeList(User user, List<Challenge> challengeList,
-        String status);
+//    public List<ChallengeDTO> readChallengeList(User user, List<Challenge> challengeList,
+//        String status);
 
-    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
+//    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
 
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest) throws IOException;

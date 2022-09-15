@@ -22,7 +22,6 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
-import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
@@ -193,26 +192,26 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     // 자녀의 돈길 리스트 가져오기 API
-    @Transactional
-    @Override
-    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
-
-        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
-        Family family = familyUser.getFamily();
-        User kid = familyUserRepository.findByFamily(family).stream()
-            .filter(f -> f.getUser().getIsKid() && Objects.equals(
-                f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
-            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
-        List<ChallengeDTO> challengeDTOList = readChallengeList(kid, status, );
-        if (Objects.equals(status, "pending")) {
-            List<ChallengeDTO> resultList = challengeDTOList.stream()
-                .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
-                    Collectors.toList());
-            return new KidChallengeListDTO(kid, resultList);
-        }
-        return new KidChallengeListDTO(kid, challengeDTOList);
-    }
+//    @Transactional
+//    @Override
+//    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
+//
+//        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+//            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
+//        Family family = familyUser.getFamily();
+//        User kid = familyUserRepository.findByFamily(family).stream()
+//            .filter(f -> f.getUser().getIsKid() && Objects.equals(
+//                f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
+//            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
+//        List<ChallengeDTO> challengeDTOList = readChallengeList(kid, status, );
+//        if (Objects.equals(status, "pending")) {
+//            List<ChallengeDTO> resultList = challengeDTOList.stream()
+//                .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
+//                    Collectors.toList());
+//            return new KidChallengeListDTO(kid, resultList);
+//        }
+//        return new KidChallengeListDTO(kid, challengeDTOList);
+//    }
 
     // 돈길 수락 / 거절 API
     @Transactional

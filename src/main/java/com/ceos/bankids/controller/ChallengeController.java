@@ -29,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -138,9 +139,10 @@ public class ChallengeController {
         if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
             throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
         }
+        List<ChallengeDTO> challengeDTOList = new ArrayList<>();
         List<Challenge> challengeList = challengeUserService.getChallengeUserList(authUser,
             status);
-        if (!Objects.equals(status, "walking")) {
+        if (Objects.equals(status, "walking")) {
             challengeList.forEach(challenge -> {
                 ChallengeListMapperDTO challengeListMapperDTO = challengeService.readWalkingChallenge(
                     challenge);
@@ -155,17 +157,22 @@ public class ChallengeController {
                     notificationService.challengeFailedNotification(challenge.getContractUser(),
                         challenge.getChallengeUser());
                 }
+                if (challenge.getChallengeStatus() != ChallengeStatus.ACHIEVED) {
+                    ChallengeDTO challengeDTO = new ChallengeDTO(
+                        challengeListMapperDTO.getChallenge(),
+                        challengeListMapperDTO.getProgressDTOList(), null);
+                    challengeDTOList.add(challengeDTO);
+                }
             });
-        } else if (!Objects.equals(status, "pending")) {
+        } else if (Objects.equals(status, "pending")) {
             challengeList.forEach(challenge -> {
                 ChallengeListMapperDTO challengeListMapperDTO = challengeService.readPendingChallenge(
                     challenge);
-
+                ChallengeDTO challengeDTO = new ChallengeDTO(challengeListMapperDTO.getChallenge(),
+                    null, challenge.getComment());
+                challengeDTOList.add(challengeDTO);
             });
         }
-
-        List<ChallengeDTO> challengeDTOList = challengeService.readChallengeList(authUser,
-            challengeList, status);
 
         return CommonResponse.onSuccess(challengeDTOList);
     }
