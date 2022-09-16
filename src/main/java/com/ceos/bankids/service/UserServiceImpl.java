@@ -1,7 +1,6 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
@@ -11,7 +10,6 @@ import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.UserDTO;
-import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.UserRepository;
 import java.text.ParseException;
@@ -29,54 +27,25 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
-    public User loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO) {
-
-        Optional<User> user = userRepository.findByAuthenticationCode(
-            kakaoUserDTO.getAuthenticationCode());
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            String username = kakaoUserDTO.getKakaoAccount().getProfile().getNickname();
-            if (username.getBytes().length > 6) {
-                username = username.substring(0, 3);
-            }
-            User newUser = User.builder()
-                .username(username)
-                .authenticationCode(kakaoUserDTO.getAuthenticationCode())
-                .provider("kakao").refreshToken("")
-                .noticeOptIn(false).serviceOptIn(false)
-                .build();
-            userRepository.save(newUser);
-
-            return newUser;
-        }
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByAuthenticationCodeNullable(String code) {
+        return userRepository.findByAuthenticationCode(code);
     }
-
 
     @Override
     @Transactional
-    public User loginWithAppleAuthenticationCode(String authenticationCode,
-        AppleRequest appleRequest) {
-
-        Optional<User> user = userRepository.findByAuthenticationCode(authenticationCode);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            String username = appleRequest.getUsername();
-            if (username.getBytes().length > 6) {
-                username = username.substring(0, 3);
-            }
-            User newUser = User.builder()
-                .username(username)
-                .authenticationCode(authenticationCode)
-                .provider("apple").refreshToken("")
-                .noticeOptIn(false).serviceOptIn(false)
-                .build();
-            userRepository.save(newUser);
-
-            return newUser;
+    public User postNewUser(String username, String code, String provider) {
+        if (username.getBytes().length > 6) {
+            username = username.substring(0, 3);
         }
+        User user = User.builder()
+            .username(username)
+            .authenticationCode(code)
+            .provider(provider).refreshToken("")
+            .noticeOptIn(false).serviceOptIn(false)
+            .build();
+        userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -139,7 +108,6 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    @Transactional
     public MyPageDTO getUserInformation(User user) {
         MyPageDTO myPageDTO;
         UserDTO userDTO = new UserDTO(user);
@@ -197,7 +165,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public OptInDTO getOptIn(User user) {
         return new OptInDTO(user);
     }

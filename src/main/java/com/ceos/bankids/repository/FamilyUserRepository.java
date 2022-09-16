@@ -11,6 +11,8 @@ public interface FamilyUserRepository extends JpaRepository<FamilyUser, Long> {
 
     public Optional<FamilyUser> findByUserId(Long id);
 
+    public Optional<FamilyUser> findByUser(User user);
+    
     public List<FamilyUser> findByFamily(Family family);
 
     public List<FamilyUser> findByFamilyAndUserNot(Family family, User user);
