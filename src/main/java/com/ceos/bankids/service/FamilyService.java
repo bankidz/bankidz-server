@@ -20,4 +20,6 @@ public interface FamilyService {
     public FamilyDTO deleteFamilyUser(User user, String code);
 
     public User getContractUser(User user, Boolean isMom);
+
+    public void checkSameFamily(User firstUser, User secondUser);
 }

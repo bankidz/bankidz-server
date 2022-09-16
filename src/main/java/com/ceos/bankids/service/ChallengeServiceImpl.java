@@ -22,7 +22,6 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
-import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -218,48 +217,24 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 주차 정보 가져오기 API
     @Transactional
     @Override
-    public WeekDTO readWeekInfo(User user) {
+    public WeekDTO readWeekInfo(List<Challenge> challengeList) {
 
         Long[] currentPrice = {0L};
         Long[] totalPrice = {0L};
-        List<ChallengeUser> challengeUserList = cuRepo.findByUserId(
-            user.getId());
-        challengeUserList.forEach(challengeUser -> {
-            Challenge challenge = challengeUser.getChallenge();
-            if (challenge.getChallengeStatus() == walking) {
-                List<Progress> progressList = challenge.getProgressList();
-                int diffWeeks = timeLogic(progressList);
-                progressList.forEach(progress -> {
-                    if (progress.getWeeks() == diffWeeks) {
-                        totalPrice[0] += challenge.getWeekPrice();
-                        if (progress.getIsAchieved()) {
-                            currentPrice[0] += challenge.getWeekPrice();
-                        }
+        challengeList.forEach(challenge -> {
+            List<Progress> progressList = challenge.getProgressList();
+            int diffWeeks = timeLogic(progressList);
+            progressList.forEach(progress -> {
+                if (progress.getWeeks() == diffWeeks) {
+                    totalPrice[0] += challenge.getWeekPrice();
+                    if (progress.getIsAchieved()) {
+                        currentPrice[0] += challenge.getWeekPrice();
                     }
-                });
-            }
+                }
+            });
         });
 
         return new WeekDTO(currentPrice[0], totalPrice[0]);
-    }
-
-    // 자녀의 주차 정보 가져오기 API
-    @Transactional
-    @Override
-    public KidWeekDTO readKidWeekInfo(User user, Long kidId) {
-
-        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
-        Family family = familyUser.getFamily();
-        User kid = familyUserRepository.findByFamily(family).stream()
-            .map(FamilyUser::getUser)
-            .filter(fUser -> fUser.getIsKid() && Objects.equals(fUser.getKid().getId(), kidId))
-            .findFirst()
-            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
-
-        WeekDTO weekDTO = readWeekInfo(kid);
-
-        return new KidWeekDTO(kid.getKid(), weekDTO);
     }
 
     // 완주한 돈길만 가져오기 API

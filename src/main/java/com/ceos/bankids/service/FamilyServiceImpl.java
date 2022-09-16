@@ -209,6 +209,20 @@ public class FamilyServiceImpl implements FamilyService {
 
     }
 
+    @Override
+    public void checkSameFamily(User firstUser, User secondUser) {
+        FamilyUser firstFamilyUser = fuRepo.findByUserId(firstUser.getId())
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
+        FamilyUser secondFamilyUser = fuRepo.findByUserId(secondUser.getId())
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
+        if (firstFamilyUser.getFamily().getCode() != secondFamilyUser.getFamily().getCode()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_FAMILY.getErrorCode());
+        }
+
+    }
+
 
     class KidListDTOComparator implements Comparator<KidListDTO> {
 

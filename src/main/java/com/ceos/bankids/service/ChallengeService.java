@@ -10,8 +10,8 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
-import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,9 +30,7 @@ public interface ChallengeService {
     public ChallengeDTO updateChallengeStatusToRejected(Challenge challenge,
         KidChallengeRequest kidChallengeRequest, User contractUser);
 
-    public WeekDTO readWeekInfo(User user);
-
-    public KidWeekDTO readKidWeekInfo(User user, Long kidId);
+    public WeekDTO readWeekInfo(List<Challenge> challengeList);
 
     public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment);
 

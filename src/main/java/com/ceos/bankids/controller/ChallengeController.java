@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -268,7 +269,12 @@ public class ChallengeController {
     public CommonResponse<WeekDTO> getWeekInfo(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 주차 정보 가져오기, user = {}", authUser.getUsername());
-        WeekDTO weekDTO = challengeService.readWeekInfo(authUser);
+        List<Challenge> walkingChallengeList = challengeUserService.getChallengeUserList(authUser,
+                "walking")
+            .stream()
+            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
+                Collectors.toList());
+        WeekDTO weekDTO = challengeService.readWeekInfo(walkingChallengeList);
 
         return CommonResponse.onSuccess(weekDTO);
     }
@@ -279,7 +285,16 @@ public class ChallengeController {
         @PathVariable Long kidId) {
 
         log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
-        KidWeekDTO kidWeekDTO = challengeService.readKidWeekInfo(authUser, kidId);
+        Kid kid = kidService.getKid(kidId);
+        User kidUser = kid.getUser();
+        familyService.checkSameFamily(authUser, kidUser);
+        List<Challenge> kidWalkingChallengeList = challengeUserService.getChallengeUserList(kidUser,
+                "walking")
+            .stream()
+            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
+                Collectors.toList());
+        WeekDTO weekDTO = challengeService.readWeekInfo(kidWalkingChallengeList);
+        KidWeekDTO kidWeekDTO = new KidWeekDTO(kid, weekDTO);
 
         return CommonResponse.onSuccess(kidWeekDTO);
     }
