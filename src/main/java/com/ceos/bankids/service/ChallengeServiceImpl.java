@@ -240,31 +240,48 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 완주한 돈길만 가져오기 API
     @Transactional
     @Override
-    public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment) {
+    public AchievedChallengeListDTO readAchievedChallenge(List<Challenge> achievedChallengeList,
+        String interestPayment) {
 
-        List<Challenge> challengeList = cuRepo.findByUserId(user.getId()).stream()
-            .map(ChallengeUser::getChallenge).filter(challenge -> Objects.equals(
-                challenge.getChallengeStatus(), achieved))
-            .filter(challenge -> {
-                if (Objects.equals(interestPayment, "payed")) {
-                    return challenge.getIsInterestPayment();
-                } else if (Objects.equals(interestPayment, "notPayed")) {
-                    return !challenge.getIsInterestPayment();
-                } else {
-                    return challenge.getChallengeStatus() == achieved;
-                }
-            })
-            .collect(
-                Collectors.toList());
-        Long[] totalInterestPrice = {0L};
+        List<Challenge> challengeList = achievedChallengeList.stream().filter(challenge -> {
+            if (Objects.equals(interestPayment, "payed")) {
+                return challenge.getIsInterestPayment();
+            } else if (Objects.equals(interestPayment, "notPayed")) {
+                return !challenge.getIsInterestPayment();
+            } else {
+                return challenge.getChallengeStatus() == achieved;
+            }
+        }).collect(Collectors.toList());
         List<AchievedChallengeDTO> achievedChallengeDTOList = challengeList.stream()
-            .map(challenge -> {
-                totalInterestPrice[0] += (challenge.getInterestPrice() / challenge.getWeeks())
-                    * challenge.getSuccessWeeks();
-                return new AchievedChallengeDTO(challenge);
-            }).collect(Collectors.toList());
+            .map(AchievedChallengeDTO::new)
+            .collect(Collectors.toList());
         return new AchievedChallengeListDTO(
-            totalInterestPrice[0], achievedChallengeDTOList);
+            achievedChallengeDTOList);
+    }
+
+    //자녀의 완주한 돈길 리스트 가져오기 API
+    @Transactional
+    @Override
+    public KidAchievedChallengeListDTO readKidAchievedChallenge(User user,
+        List<Challenge> achievedChallengeList,
+        String interestPayment, Long kidId) {
+
+        if (!Objects.equals(interestPayment, "payed") && !Objects.equals(interestPayment,
+            "notPayed")) {
+            throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
+        }
+
+        AchievedChallengeListDTO achievedChallengeListDTO = readAchievedChallenge(
+            achievedChallengeList,
+            interestPayment);
+        List<AchievedChallengeDTO> challengeDTOList = achievedChallengeListDTO.getChallengeDTOList();
+        List<AchievedChallengeDTO> contractUserChallengeDTOList = challengeDTOList.stream().filter(
+            achievedChallengeDTO -> achievedChallengeDTO.getChallenge().getIsMom()
+                == user.getIsFemale()).collect(
+            Collectors.toList());
+        achievedChallengeListDTO.setChallengeDTOList(contractUserChallengeDTOList);
+
+        return new KidAchievedChallengeListDTO(kidId, achievedChallengeListDTO);
     }
 
     // 완주한 돈길에 이자 지급 API
@@ -287,47 +304,6 @@ public class ChallengeServiceImpl implements ChallengeService {
         challengeRepository.save(challenge);
 
         return new AchievedChallengeDTO(challenge);
-    }
-
-    //자녀의 완주한 돈길 리스트 가져오기 API
-    @Transactional
-    @Override
-    public KidAchievedChallengeListDTO readKidAchievedChallenge(User user, Long kidId,
-        String interestPayment) {
-
-        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
-        Kid kid = kidRepository.findById(kidId)
-            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
-        User kidUser = kid.getUser();
-        FamilyUser kidFamilyUser = familyUserRepository.findByUserId(kidUser.getId())
-            .orElseThrow(() -> new BadRequestException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
-        if (familyUser.getFamily() != kidFamilyUser.getFamily()) {
-            throw new ForbiddenException(ErrorCode.NOT_MATCH_FAMILY.getErrorCode());
-        }
-
-        if (!Objects.equals(interestPayment, "payed") && !Objects.equals(interestPayment,
-            "notPayed")) {
-            throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
-        }
-
-        AchievedChallengeListDTO achievedChallengeListDTO = readAchievedChallenge(kidUser,
-            interestPayment);
-        List<AchievedChallengeDTO> challengeDTOList = achievedChallengeListDTO.getChallengeDTOList();
-        List<AchievedChallengeDTO> contractUserChallengeDTOList = challengeDTOList.stream().filter(
-            achievedChallengeDTO -> achievedChallengeDTO.getChallenge().getIsMom()
-                == user.getIsFemale()).collect(
-            Collectors.toList());
-        achievedChallengeListDTO.setChallengeDTOList(contractUserChallengeDTOList);
-        Long[] totalInterestPrice = {0L};
-        contractUserChallengeDTOList.forEach(challenge -> {
-            totalInterestPrice[0] +=
-                (challenge.getChallenge().getInterestPrice() / challenge.getChallenge().getWeeks())
-                    * challenge.getChallenge().getSuccessWeeks();
-        });
-        achievedChallengeListDTO.setTotalInterestPrice(totalInterestPrice[0]);
-
-        return new KidAchievedChallengeListDTO(kidId, achievedChallengeListDTO);
     }
 
     @Transactional(readOnly = true)

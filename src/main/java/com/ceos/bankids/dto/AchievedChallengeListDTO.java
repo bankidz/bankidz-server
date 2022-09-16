@@ -21,8 +21,12 @@ public class AchievedChallengeListDTO {
     @ApiModelProperty(example = "true")
     private List<AchievedChallengeDTO> challengeDTOList;
 
-    public AchievedChallengeListDTO(Long interestPrice, List<AchievedChallengeDTO> challengeList) {
-        this.totalInterestPrice = interestPrice;
+    public AchievedChallengeListDTO(List<AchievedChallengeDTO> challengeList) {
+        final Long[] i = {0L};
+        challengeList.stream().forEach(challenge -> {
+            i[0] = i[0] + challenge.getInterestPrice();
+        });
+        this.totalInterestPrice = i[0];
         this.challengeDTOList = challengeList;
     }
 }

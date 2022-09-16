@@ -32,12 +32,14 @@ public interface ChallengeService {
 
     public WeekDTO readWeekInfo(List<Challenge> challengeList);
 
-    public AchievedChallengeListDTO readAchievedChallenge(User user, String interestPayment);
+    public AchievedChallengeListDTO readAchievedChallenge(List<Challenge> achievedChallengeList,
+        String interestPayment);
 
     public AchievedChallengeDTO updateChallengeInterestPayment(User user, Long challengeId);
 
-    public KidAchievedChallengeListDTO readKidAchievedChallenge(User user, Long kidId,
-        String interestPayment);
+    public KidAchievedChallengeListDTO readKidAchievedChallenge(User user,
+        List<Challenge> achievedChallengeList,
+        String interestPayment, Long kidId);
 
     public Challenge readChallenge(Long challengeId);
 

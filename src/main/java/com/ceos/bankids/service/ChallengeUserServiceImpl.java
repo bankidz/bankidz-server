@@ -71,6 +71,14 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     }
 
+    @Override
+    public List<Challenge> getAchievedChallengeUserList(User authUser) {
+        return cuRepo.findByUserId(authUser.getId()).stream().map(ChallengeUser::getChallenge)
+            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED)
+            .collect(
+                Collectors.toList());
+    }
+
     public void checkMaxChallengeCount(User user) {
         List<Challenge> walkingChallengeList = cuRepo.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge)

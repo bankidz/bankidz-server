@@ -305,11 +305,31 @@ public class ChallengeController {
         @AuthenticationPrincipal User authUser, @RequestParam String interestPayment) {
 
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
+        List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
+            authUser);
         AchievedChallengeListDTO achievedChallengeListDTO = challengeService.readAchievedChallenge(
-            authUser,
+            achievedChallengeUserList,
             interestPayment);
 
         return CommonResponse.onSuccess(achievedChallengeListDTO);
+    }
+
+    @ApiOperation(value = "자녀의 완주한 돈길 리스트 가져오기")
+    @GetMapping(value = "kid/achieved/{kidId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<KidAchievedChallengeListDTO> getKidAchievedListChallenge(
+        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
+        @RequestParam String interestPayment) {
+
+        log.info("api = 완주한 돈길 리스트 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
+        Kid kid = kidService.getKid(kidId);
+        User kidUser = kid.getUser();
+        familyService.checkSameFamily(authUser, kidUser);
+        List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
+            kidUser);
+        KidAchievedChallengeListDTO kidAchievedChallengeListDTO = challengeService.readKidAchievedChallenge(
+            authUser, achievedChallengeUserList, interestPayment, kidId);
+
+        return CommonResponse.onSuccess(kidAchievedChallengeListDTO);
     }
 
     @ApiOperation(value = "완주한 돈길에 이자 지급하기")
@@ -325,19 +345,6 @@ public class ChallengeController {
             challengeId);
 
         return CommonResponse.onSuccess(achievedChallengeDTO);
-    }
-
-    @ApiOperation(value = "자녀의 완주한 돈길 리스트 가져오기")
-    @GetMapping(value = "kid/achieved/{kidId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<KidAchievedChallengeListDTO> getKidAchievedListChallenge(
-        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
-        @RequestParam String interestPayment) {
-
-        log.info("api = 완주한 돈길 리스트 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
-        KidAchievedChallengeListDTO kidAchievedChallengeListDTO = challengeService.readKidAchievedChallenge(
-            authUser, kidId, interestPayment);
-
-        return CommonResponse.onSuccess(kidAchievedChallengeListDTO);
     }
 
     // 일요일 처리 validation
