@@ -30,7 +30,7 @@ public class ProgressDTO {
     private ChallengeStatus challengeStatus;
 
     @ApiModelProperty(example = "2022/05/05 06:33:13")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd kk:mm:ss", timezone = "Asia/Seoul")
     private Timestamp approvedAt;
 
 
