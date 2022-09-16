@@ -169,17 +169,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             return new ChallengeListMapperDTO(challenge, progressDTOList, true);
         } else if (diffWeeks > challenge.getWeeks()) {
             challenge.setChallengeStatus(achieved);
-//                    Long userLevel = userLevelUp(kid.getAchievedChallenge() + 1);
-//                    kid.setAchievedChallenge(kid.getAchievedChallenge() + 1);
-//                    if (!Objects.equals(userLevel, kid.getLevel())) {
-//                        notificationController.kidLevelUpNotification(
-//                            challenge.getContractUser(), user, kid.getLevel(), userLevel);
-//                        kid.setLevel(userLevel);
-//                    }
             challengeRepository.save(challenge);
-//                    kidRepository.save(kid);
-//                    notificationController.achieveChallengeNotification(
-//                        challenge.getContractUser(), r);
             return new ChallengeListMapperDTO(challenge, progressDTOList, true);
         }
         return new ChallengeListMapperDTO(challenge, progressDTOList, false);

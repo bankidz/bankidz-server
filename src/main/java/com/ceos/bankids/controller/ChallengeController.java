@@ -7,6 +7,7 @@ import com.ceos.bankids.controller.request.ChallengeRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
@@ -14,6 +15,7 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
+import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
@@ -176,20 +178,58 @@ public class ChallengeController {
 
         return CommonResponse.onSuccess(challengeDTOList);
     }
-//
-//    @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
-//    @GetMapping(value = "/kid/{kidId}", produces = "application/json; charset=utf-8")
-//    public CommonResponse<KidChallengeListDTO> getListKidChallenge(
-//        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
-//        @RequestParam String status) {
-//
-//        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
-//            authUser.getUsername(), kidId, status);
-//        KidChallengeListDTO kidChallengeList = challengeService.readKidChallenge(authUser, kidId,
-//            status);
-//
-//        return CommonResponse.onSuccess(kidChallengeList);
-//    }
+
+    @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
+    @GetMapping(value = "/kid/{kidId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<KidChallengeListDTO> getListKidChallenge(
+        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
+        @RequestParam String status) {
+
+        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
+            authUser.getUsername(), kidId, status);
+        Kid kid = kidService.getKid(kidId);
+        User kidUser = kid.getUser();
+        List<ChallengeDTO> challengeDTOList = new ArrayList<>();
+        List<Challenge> challengeList = challengeUserService.getChallengeUserList(kidUser,
+            status);
+        if (Objects.equals(status, "walking")) {
+            challengeList.forEach(challenge -> {
+                ChallengeListMapperDTO challengeListMapperDTO = challengeService.readWalkingChallenge(
+                    challenge);
+                if (challengeListMapperDTO.getChangeStatus()
+                    && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
+                    notificationService.challengeAchievedNotification(challenge.getContractUser(),
+                        challenge.getChallengeUser());
+                    kidService.userLevelUp(challenge.getContractUser(),
+                        authUser);
+                } else if (challengeListMapperDTO.getChangeStatus()
+                    && challenge.getChallengeStatus() == ChallengeStatus.FAILED) {
+                    notificationService.challengeFailedNotification(challenge.getContractUser(),
+                        challenge.getChallengeUser());
+                }
+                if (challenge.getChallengeStatus() != ChallengeStatus.ACHIEVED) {
+                    ChallengeDTO challengeDTO = new ChallengeDTO(
+                        challengeListMapperDTO.getChallenge(),
+                        challengeListMapperDTO.getProgressDTOList(), null);
+                    challengeDTOList.add(challengeDTO);
+                }
+            });
+        } else if (Objects.equals(status, "pending")) {
+            challengeList.forEach(challenge -> {
+                if (challenge.getContractUser().getId() == authUser.getId()) {
+                    ChallengeListMapperDTO challengeListMapperDTO = challengeService.readPendingChallenge(
+                        challenge);
+                    ChallengeDTO challengeDTO = new ChallengeDTO(
+                        challengeListMapperDTO.getChallenge(),
+                        null, challenge.getComment());
+                    challengeDTOList.add(challengeDTO);
+                }
+            });
+        }
+        KidChallengeListDTO kidChallengeListDTO = new KidChallengeListDTO(kidUser,
+            challengeDTOList);
+        return CommonResponse.onSuccess(kidChallengeListDTO);
+    }
 
     @ApiOperation(value = "자녀의 돈길 수락 / 거절")
     @PatchMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")

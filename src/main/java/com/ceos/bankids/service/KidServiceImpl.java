@@ -117,4 +117,11 @@ public class KidServiceImpl implements KidService {
 
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Kid getKid(Long kidId) {
+        return kidRepository.findById(kidId)
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
+    }
+
 }

@@ -26,11 +26,6 @@ public interface ChallengeService {
 
     public ChallengeDTO deletePendingChallenge(User user, ChallengeUser challengeUser);
 
-//    public List<ChallengeDTO> readChallengeList(User user, List<Challenge> challengeList,
-//        String status);
-
-//    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status);
-
     public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
         KidChallengeRequest kidChallengeRequest) throws IOException;
 
