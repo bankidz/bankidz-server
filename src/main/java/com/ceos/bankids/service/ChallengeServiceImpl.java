@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -181,96 +180,39 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeListMapperDTO(challenge, null, false);
     }
 
-    // 자녀의 돈길 리스트 가져오기 API
-//    @Transactional
-//    @Override
-//    public KidChallengeListDTO readKidChallenge(User user, Long kidId, String status) {
-//
-//        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
-//            .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
-//        Family family = familyUser.getFamily();
-//        User kid = familyUserRepository.findByFamily(family).stream()
-//            .filter(f -> f.getUser().getIsKid() && Objects.equals(
-//                f.getUser().getKid().getId(), kidId)).map(FamilyUser::getUser).findFirst()
-//            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
-//        List<ChallengeDTO> challengeDTOList = readChallengeList(kid, status, );
-//        if (Objects.equals(status, "pending")) {
-//            List<ChallengeDTO> resultList = challengeDTOList.stream()
-//                .filter(challengeDTO -> challengeDTO.getIsMom() == user.getIsFemale()).collect(
-//                    Collectors.toList());
-//            return new KidChallengeListDTO(kid, resultList);
-//        }
-//        return new KidChallengeListDTO(kid, challengeDTOList);
-//    }
-
     // 돈길 수락 / 거절 API
     @Transactional
     @Override
-    public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
-        KidChallengeRequest kidChallengeRequest) {
-
-        ChallengeUser findChallengeUser = cuRepo.findByChallengeId(challengeId)
-            .orElseThrow(
-                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
-        User cUser = findChallengeUser.getUser();
-        Optional<FamilyUser> familyUser = familyUserRepository.findByUserId(cUser.getId());
-        Optional<FamilyUser> familyUser1 = familyUserRepository.findByUserId(user.getId());
-        Challenge challenge = findChallengeUser.getChallenge();
-
-        familyUser.ifPresent(f -> {
-            familyUser1.ifPresent(f1 -> {
-                if (f.getFamily() != f1.getFamily()
-                    || !Objects.equals(user.getId(), challenge.getContractUser().getId())) {
-                    throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
-                }
-            });
-        });
+    public ChallengeDTO updateChallengeStatusToWalking(Challenge challenge) {
 
         List<ProgressDTO> progressDTOList = new ArrayList<>();
         if (challenge.getChallengeStatus() != pending) {
             throw new BadRequestException(ErrorCode.ALREADY_APPROVED_CHALLENGE.getErrorCode());
         }
-        if (kidChallengeRequest.getAccept()) {
-            long count = cuRepo.findByUserId(cUser.getId()).stream()
-                .filter(
-                    challengeUser -> challengeUser.getChallenge().getChallengeStatus() == walking)
-                .count();
-            if (count >= 5) {
-                throw new ForbiddenException(
-                    ErrorCode.KID_CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
-            }
-            Kid kid = cUser.getKid();
-            challenge.setChallengeStatus(walking);
-            challengeRepository.save(challenge);
-
-            // 자녀의 총 돈길 + 1
-            kid.setTotalChallenge(kid.getTotalChallenge() + 1);
-            kidRepository.save(kid);
-
-            // 부모의 수락한 돈길 + 1
-            Parent parent = user.getParent();
-            parent.setAcceptedRequest(parent.getAcceptedRequest() + 1);
-            parentRepository.save(parent);
-
-            for (int i = 1; i <= challenge.getWeeks(); i++) {
-                Progress newProgress = Progress.builder().weeks((long) i)
-                    .challenge(challenge)
-                    .isAchieved(false).build();
-                progressDTOList.add(new ProgressDTO(newProgress, challenge));
-                progressRepository.save(newProgress);
-            }
-        } else {
-            Comment newComment = Comment.builder().challenge(challenge).content(
-                kidChallengeRequest.getComment()).user(user).build();
-            challenge.setChallengeStatus(rejected);
-            challenge.setComment(newComment);
-            commentRepository.save(newComment);
-            challengeRepository.save(challenge);
-            progressDTOList = null;
+        challenge.setChallengeStatus(walking);
+        challengeRepository.save(challenge);
+        for (int i = 1; i <= challenge.getWeeks(); i++) {
+            Progress newProgress = Progress.builder().weeks((long) i)
+                .challenge(challenge)
+                .isAchieved(false).build();
+            progressDTOList.add(new ProgressDTO(newProgress, challenge));
+            progressRepository.save(newProgress);
         }
-
-        notificationController.notification(challenge, cUser);
         return new ChallengeDTO(challenge, progressDTOList, challenge.getComment());
+    }
+
+    @Transactional
+    @Override
+    public ChallengeDTO updateChallengeStatusToRejected(Challenge challenge,
+        KidChallengeRequest kidChallengeRequest, User contractUser) {
+
+        Comment newComment = Comment.builder().challenge(challenge).content(
+            kidChallengeRequest.getComment()).user(contractUser).build();
+        challenge.setChallengeStatus(rejected);
+        challenge.setComment(newComment);
+        commentRepository.save(newComment);
+        challengeRepository.save(challenge);
+        return new ChallengeDTO(challenge, null, challenge.getComment());
     }
 
     // 주차 정보 가져오기 API

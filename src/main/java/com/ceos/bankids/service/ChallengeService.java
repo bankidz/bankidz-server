@@ -12,7 +12,6 @@ import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.WeekDTO;
-import java.io.IOException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,8 +25,10 @@ public interface ChallengeService {
 
     public ChallengeDTO deletePendingChallenge(User user, ChallengeUser challengeUser);
 
-    public ChallengeDTO updateChallengeStatus(User user, Long challengeId,
-        KidChallengeRequest kidChallengeRequest) throws IOException;
+    public ChallengeDTO updateChallengeStatusToWalking(Challenge challenge);
+
+    public ChallengeDTO updateChallengeStatusToRejected(Challenge challenge,
+        KidChallengeRequest kidChallengeRequest, User contractUser);
 
     public WeekDTO readWeekInfo(User user);
 

@@ -11,7 +11,7 @@ public interface ChallengeUserService {
 
     public ChallengeUser postChallengeUser(User authUser, Challenge challenge);
 
-    public ChallengeUser getChallengeUser(User authUser, Long challengeId);
+    public ChallengeUser getChallengeUser(Long challengeId);
 
     public void deleteChallengeUser(User authUser, Long challengeId);
 

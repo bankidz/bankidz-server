@@ -35,13 +35,10 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public ChallengeUser getChallengeUser(User authUser, Long challengeId) {
+    public ChallengeUser getChallengeUser(Long challengeId) {
         ChallengeUser challengeUser = cuRepo.findByChallengeId(challengeId)
             .orElseThrow(
                 () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
-        if (challengeUser.getUser().getId() != authUser.getId()) {
-            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
-        }
         return challengeUser;
     }
 

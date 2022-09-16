@@ -100,8 +100,11 @@ public class ChallengeController {
         log.info("api = 돈길 포기하기, user = {} challengeId = {}", authUser.getUsername(), challengeId);
 
         userRoleValidation(authUser, true);
-        ChallengeUser challengeUser = challengeUserService.getChallengeUser(authUser, challengeId);
+        ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
         Challenge deleteChallenge = challengeUser.getChallenge();
+        if (challengeUser.getUser().getId() != authUser.getId()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
+        }
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
             kidService.checkKidDeleteChallenge(authUser);
             challengeUserService.deleteChallengeUser(authUser, challengeId);
@@ -239,10 +242,25 @@ public class ChallengeController {
 
         log.info("api = 자녀의 돈길 수락 / 거절, user = {}, challengeId = {}, 수락여부 = {}",
             authUser.getUsername(), challengeId, kidChallengeRequest.getAccept());
-        ChallengeDTO challengeDTO = challengeService.updateChallengeStatus(authUser, challengeId,
-            kidChallengeRequest);
-
-        return CommonResponse.onSuccess(challengeDTO);
+        ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
+        User user = challengeUser.getUser();
+        Challenge challenge = challengeService.readChallenge(challengeId);
+        if (challenge.getContractUser().getId() != authUser.getId()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
+        }
+        if (kidChallengeRequest.getAccept()) {
+            challengeUserService.checkMaxChallengeCount(user);
+            ChallengeDTO challengeDTO = challengeService.updateChallengeStatusToWalking(challenge);
+            kidService.updateKidTotalChallenge(user);
+            parentService.updateParentAcceptedChallenge(authUser);
+            notificationService.notification(challenge, user);
+            return CommonResponse.onSuccess(challengeDTO);
+        } else {
+            ChallengeDTO challengeDTO = challengeService.updateChallengeStatusToRejected(challenge,
+                kidChallengeRequest, authUser);
+            notificationService.notification(challenge, user);
+            return CommonResponse.onSuccess(challengeDTO);
+        }
     }
 
     @ApiOperation(value = "주차 정보 가져오기")

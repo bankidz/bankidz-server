@@ -124,4 +124,13 @@ public class KidServiceImpl implements KidService {
             .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode()));
     }
 
+    @Transactional
+    @Override
+    public void updateKidTotalChallenge(User user) {
+        Kid kid = user.getKid();
+        Long totalChallenge = kid.getTotalChallenge();
+        kid.setTotalChallenge(totalChallenge + 1L);
+        kidRepository.save(kid);
+    }
+
 }

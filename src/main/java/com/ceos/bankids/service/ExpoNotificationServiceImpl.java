@@ -1,7 +1,9 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
+import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
@@ -302,6 +304,32 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                 notificationCategory, "/mypage");
         }
         log.info("유저 id = {}의 레벨업 절반 달성 알림", authUser.getId());
+    }
+
+    @Async
+    @ApiOperation(value = "돈길 상태 변경 알림")
+    public void notification(Challenge challenge, User authUser) {
+
+        String title = challenge.getChallengeStatus() == ChallengeStatus.WALKING ?
+            challenge.getContractUser().getUsername() + "님이 제안한 돈길을 수락했어요\uD83D\uDE46\u200D"
+            : challenge.getContractUser().getUsername() + "님이 제안한 돈길을 거절했어요\uD83D\uDE45\u200D";
+        String notificationBody =
+            challenge.getChallengeStatus() == ChallengeStatus.WALKING
+                ? "수락한 돈길 빨리 걸으러 가요\uD83E\uDD38"
+                : "그 이유가 무엇인지 알아보러 가요\uD83D\uDE25";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("challengeId", challenge.getId());
+        newMap.put("userId", authUser.getId());
+        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
+        String linkUrl = challenge.getChallengeStatus() == ChallengeStatus.WALKING ? "/walk" : "/";
+        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
+            notificationCategory, linkUrl);
+        if (checkServiceOptIn) {
+            this.sendMessage(authUser, title, notificationBody, newMap,
+                notificationCategory, linkUrl);
+        }
+        log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
+            challenge.getChallengeStatus());
     }
 
     private Boolean checkServiceOptIn(User user, String title, String body,
