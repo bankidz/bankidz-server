@@ -10,6 +10,7 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
+import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -46,5 +47,7 @@ public interface ChallengeService {
     public ChallengeListMapperDTO readWalkingChallenge(Challenge challenge);
 
     public ChallengeListMapperDTO readPendingChallenge(Challenge challenge);
+
+    public ProgressDTO updateProgress(Challenge challenge);
 
 }

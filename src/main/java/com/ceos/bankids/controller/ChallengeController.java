@@ -17,6 +17,7 @@ import com.ceos.bankids.dto.ChallengePostDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
+import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
@@ -345,6 +346,25 @@ public class ChallengeController {
             challengeId);
 
         return CommonResponse.onSuccess(achievedChallengeDTO);
+    }
+
+    @ApiOperation(value = "돈길 걷기")
+    @PatchMapping(value = "/{challengeId}/progress", produces = "application/json; charset=utf-8")
+    public CommonResponse<ProgressDTO> patchProgress(@AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        log.info("api = 돈길 걷기, user = {}, challengeId = {}", authUser, challengeId);
+        userRoleValidation(authUser, true);
+        Challenge challenge = challengeService.readChallenge(challengeId);
+        if (challenge.getChallengeStatus() != ChallengeStatus.WALKING) {
+            throw new BadRequestException(ErrorCode.NOT_WALKING_CHALLENGE.getErrorCode());
+        }
+        ProgressDTO progressDTO = challengeService.updateProgress(challenge);
+        if (progressDTO.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
+            kidService.userLevelUp(challenge.getContractUser(), authUser);
+        }
+
+        return CommonResponse.onSuccess(progressDTO);
     }
 
     // 일요일 처리 validation

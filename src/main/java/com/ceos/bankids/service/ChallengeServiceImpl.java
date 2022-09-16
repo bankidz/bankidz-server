@@ -306,6 +306,30 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new AchievedChallengeDTO(challenge);
     }
 
+    @Transactional
+    @Override
+    public ProgressDTO updateProgress(Challenge challenge) {
+        Long diffWeeks = (long) timeLogic(challenge.getProgressList());
+        Progress progress = progressRepository.findByChallengeIdAndWeeks(challenge.getId(),
+                diffWeeks)
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_PROGRESS.getErrorCode()));
+        if (progress.getIsAchieved()) {
+            throw new BadRequestException(ErrorCode.ALREADY_WALK_PROGRESS.getErrorCode());
+        }
+        if (diffWeeks > challenge.getWeeks()) {
+            throw new BadRequestException(ErrorCode.NOT_EXIST_PROGRESS.getErrorCode());
+        } else if (diffWeeks.equals(challenge.getWeeks())) {
+            challenge.setChallengeStatus(achieved);
+        }
+        progress.setIsAchieved(true);
+        challenge.setSuccessWeeks(challenge.getSuccessWeeks() + 1);
+        challengeRepository.save(challenge);
+        progressRepository.save(progress);
+
+        return new ProgressDTO(progress, challenge);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Challenge readChallenge(Long challengeId) {

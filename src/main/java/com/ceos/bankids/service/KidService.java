@@ -18,5 +18,4 @@ public interface KidService {
     public Kid getKid(Long kidId);
 
     public void updateKidTotalChallenge(User user);
-
 }
