@@ -31,4 +31,8 @@ public interface FamilyUserService {
 
     public List<KidListDTO> getKidListFromFamily(FamilyUser familyUser);
 
+    public User getContractUser(User user, Boolean isMom);
+
+    public void checkSameFamily(User firstUser, User secondUser);
+
 }

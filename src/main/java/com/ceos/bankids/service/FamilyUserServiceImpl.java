@@ -137,6 +137,35 @@ public class FamilyUserServiceImpl implements FamilyUserService {
         return kidListDTOList;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public User getContractUser(User user, Boolean isMom) {
+        FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
+//        Family family = fRepo.findByCode(familyUser.getFamily().getCode())
+//            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
+        return familyUserRepository.findByFamilyAndUserNot(familyUser.getFamily(), user).stream()
+            .map(FamilyUser::getUser)
+            .filter(user1 -> user1.getIsFemale() == isMom && !user1.getIsKid())
+            .collect(Collectors.toList()).stream().findFirst().orElseThrow(
+                () -> new BadRequestException(ErrorCode.NOT_EXIST_CONSTRUCT_USER.getErrorCode()));
+
+    }
+
+    @Override
+    public void checkSameFamily(User firstUser, User secondUser) {
+        FamilyUser firstFamilyUser = familyUserRepository.findByUserId(firstUser.getId())
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
+        FamilyUser secondFamilyUser = familyUserRepository.findByUserId(secondUser.getId())
+            .orElseThrow(
+                () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
+        if (firstFamilyUser.getFamily().getCode() != secondFamilyUser.getFamily().getCode()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_FAMILY.getErrorCode());
+        }
+
+    }
+
     class KidListDTOComparator implements Comparator<KidListDTO> {
 
         @Override

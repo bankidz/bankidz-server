@@ -2,14 +2,12 @@ package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Notice;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.sql.Timestamp;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "공지사항 리스트로 줄 때 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode

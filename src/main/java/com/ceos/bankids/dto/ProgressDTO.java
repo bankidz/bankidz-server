@@ -4,14 +4,12 @@ import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Progress;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.sql.Timestamp;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "progress 정보 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode

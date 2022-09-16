@@ -1,7 +1,6 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.User;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ApiModel(value = "자녀의 돈길 리스트 정보 DTO")
 @Getter
 @Setter
 @NoArgsConstructor

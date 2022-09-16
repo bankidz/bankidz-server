@@ -1,7 +1,6 @@
 package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Challenge;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "완주한 돈길 관련 API response DTO")
 @Getter
 @ToString
 @EqualsAndHashCode

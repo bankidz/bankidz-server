@@ -25,6 +25,7 @@ import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
@@ -60,6 +61,7 @@ public class ChallengeController {
     private final ChallengeServiceImpl challengeService;
     private final UserServiceImpl userService;
     private final FamilyServiceImpl familyService;
+    private final FamilyUserServiceImpl familyUserService;
     private final ChallengeUserServiceImpl challengeUserService;
     private final ExpoNotificationServiceImpl notificationService;
     private final ParentServiceImpl parentService;
@@ -78,7 +80,8 @@ public class ChallengeController {
         challengeUserService.checkMaxChallengeCount(authUser);
 
         // 계약 대상 부모 유저 가져오기
-        User contractUser = familyService.getContractUser(authUser, challengeRequest.getIsMom());
+        User contractUser = familyUserService.getContractUser(authUser,
+            challengeRequest.getIsMom());
 
         // 실제 돈길 저장로직
         ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
@@ -288,7 +291,7 @@ public class ChallengeController {
         log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
-        familyService.checkSameFamily(authUser, kidUser);
+        familyUserService.checkSameFamily(authUser, kidUser);
         List<Challenge> kidWalkingChallengeList = challengeUserService.getChallengeUserList(kidUser,
                 "walking")
             .stream()
@@ -324,7 +327,7 @@ public class ChallengeController {
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
-        familyService.checkSameFamily(authUser, kidUser);
+        familyUserService.checkSameFamily(authUser, kidUser);
         List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
             kidUser);
         KidAchievedChallengeListDTO kidAchievedChallengeListDTO = challengeService.readKidAchievedChallenge(
