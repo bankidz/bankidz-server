@@ -106,7 +106,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
     }
 
     public List<ChallengeUser> getChallengeUserListByContractUser(User user) {
-        return cuRepo.findByChallenge_ContractUser(user.getId());
+        return cuRepo.findByChallenge_ContractUserId(user.getId());
 
     }
 }

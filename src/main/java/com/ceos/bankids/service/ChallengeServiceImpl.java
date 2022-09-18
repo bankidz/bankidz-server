@@ -56,6 +56,15 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ProgressRepository progressRepository;
     private final CommentRepository commentRepository;
 
+    static int getCurrentWeek(Calendar nowCal, Calendar createdAtCal, int currentWeek) {
+        if (nowCal.get(Calendar.YEAR) != createdAtCal.get(Calendar.YEAR)) {
+            int diffYears = nowCal.get(Calendar.YEAR) - createdAtCal.get(Calendar.YEAR);
+            currentWeek =
+                diffYears * createdAtCal.getActualMaximum(Calendar.WEEK_OF_YEAR) + currentWeek;
+        }
+        return currentWeek;
+    }
+
     // 돈길 생성 API
     @Transactional
     @Override
@@ -334,7 +343,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         createdAtCal.setTime(createdAt1);
         int createdWeek = createdAtCal.get(Calendar.WEEK_OF_YEAR);
         int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
-        currentWeek = ProgressServiceImpl.getCurrentWeek(nowCal, createdAtCal, currentWeek);
+        currentWeek = getCurrentWeek(nowCal, createdAtCal, currentWeek);
         return dayOfWeek == 1 ? currentWeek - createdWeek
             : currentWeek - createdWeek + 1;
     }
