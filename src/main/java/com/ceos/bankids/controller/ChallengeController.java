@@ -158,8 +158,9 @@ public class ChallengeController {
                     challenge);
                 if (challengeListMapperDTO.getChangeStatus()
                     && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
-                    notificationService.challengeAchievedNotification(challenge.getContractUser(),
-                        challenge.getChallengeUser());
+                    notificationService.challengeAchievedNotification(authUser,
+                        challenge.getContractUser(),
+                        challenge);
                     kidService.userLevelUp(challenge.getContractUser(),
                         authUser);
                 } else if (challengeListMapperDTO.getChangeStatus()
@@ -206,8 +207,8 @@ public class ChallengeController {
                     challenge);
                 if (challengeListMapperDTO.getChangeStatus()
                     && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
-                    notificationService.challengeAchievedNotification(challenge.getContractUser(),
-                        challenge.getChallengeUser());
+                    notificationService.challengeAchievedNotification(authUser,
+                        challenge.getContractUser(), challenge);
                     kidService.userLevelUp(challenge.getContractUser(),
                         authUser);
                 } else if (challengeListMapperDTO.getChangeStatus()
@@ -363,8 +364,14 @@ public class ChallengeController {
             throw new BadRequestException(ErrorCode.NOT_WALKING_CHALLENGE.getErrorCode());
         }
         ProgressDTO progressDTO = challengeService.updateProgress(challenge);
+        kidService.updateKidByPatchProgress(authUser, challenge);
+        notificationService.runProgressNotification(authUser, challenge.getContractUser(),
+            challenge);
+
         if (progressDTO.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
             kidService.userLevelUp(challenge.getContractUser(), authUser);
+            notificationService.challengeAchievedNotification(authUser, challenge.getContractUser(),
+                challenge);
         }
 
         return CommonResponse.onSuccess(progressDTO);

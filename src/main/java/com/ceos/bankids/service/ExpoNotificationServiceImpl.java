@@ -210,15 +210,15 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     @Async
     @ApiOperation(value = "돈길을 완주했을 때 부모 알림")
-    public void challengeAchievedNotification(User contractUser, ChallengeUser challengeUser) {
+    public void challengeAchievedNotification(User user, User contractUser, Challenge challenge) {
 
         String title = "\uD83D\uDEA8자녀가 돈길을 완주했어요";
         String notificationBody =
-            "실제로 다 모았는지 확인하시고\n그동안 고생한" + challengeUser.getUser().getUsername()
+            "실제로 다 모았는지 확인하시고\n그동안 고생한" + user.getUsername()
                 + "님에게 이자\uD83D\uDCB0로 보상해주세요!";
         HashMap<String, Object> newMap = new HashMap<>();
-        newMap.put("user", challengeUser.getUser().getId());
-        newMap.put("challenge", challengeUser.getChallenge().getId());
+        newMap.put("user", user.getId());
+        newMap.put("challenge", challenge.getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
             notificationCategory, "/");
@@ -227,7 +227,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                 notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 완주 알림 전송", contractUser.getId(),
-            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
+            user.getId(), challenge.getId());
     }
 
     @Async
@@ -330,6 +330,27 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         }
         log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
             challenge.getChallengeStatus());
+    }
+
+    @Async
+    @ApiOperation(value = "자녀가 돈길을 걸었을 때 부모 알림")
+    public void runProgressNotification(User user, User contractUser, Challenge challenge) {
+
+        String title = user.getUsername() + "님이 돈길을 걸었어요! \uD83C\uDFC3\u200D";
+        String notificationBody =
+            user.getUsername() + "님이 어떤 돈길을 걸었을까요?\n확인하러가요❤️\u200D";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", user.getId());
+        newMap.put("challenge", challenge.getId());
+        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
+            notificationCategory, "/");
+        if (checkServiceOptIn) {
+            this.sendMessage(contractUser, title, notificationBody, newMap,
+                notificationCategory, "/");
+        }
+        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
+            user.getId(), challenge.getId());
     }
 
     private Boolean checkServiceOptIn(User user, String title, String body,

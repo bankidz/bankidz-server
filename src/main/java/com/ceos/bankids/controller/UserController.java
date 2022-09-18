@@ -5,9 +5,12 @@ import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.controller.request.WithdrawalRequest;
+import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
@@ -16,6 +19,7 @@ import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
@@ -59,6 +63,7 @@ public class UserController {
     private final SlackServiceImpl slackService;
     private final ExpoNotificationServiceImpl notificationService;
     private final JwtTokenServiceImpl jwtTokenService;
+    private final ChallengeUserServiceImpl challengeUserService;
 
     @ApiOperation(value = "유저 타입 선택")
     @PatchMapping(value = "", produces = "application/json; charset=utf-8")
@@ -133,9 +138,20 @@ public class UserController {
             FamilyRequest familyRequest = new FamilyRequest(family.getCode());
 
             if (authUser.getIsKid()) {
-                challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
+                List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
+                    authUser);
+                challengeUserService.deleteAllChallengeUser(authUser);
+                ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
+                    challengeList);
+                kidService.updateInitKid(authUser);
+                parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
+                    challengeCompleteDeleteByKidMapperDTO);
             } else {
-                challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
+                List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+                    authUser);
+                kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
+                parentService.updateInitParent(authUser);
+                challengeService.challengeCompleteDeleteByParent(challengeUserList);
             }
 
             familyUserService.deleteFamilyUser(familyUser.get());

@@ -2,15 +2,21 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
+import com.ceos.bankids.service.KidServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +41,9 @@ public class FamilyController {
     private final FamilyServiceImpl familyService;
     private final FamilyUserServiceImpl familyUserService;
     private final ChallengeServiceImpl challengeService;
+    private final ChallengeUserServiceImpl challengeUserService;
+    private final KidServiceImpl kidService;
+    private final ParentServiceImpl parentService;
     private final NotificationController notificationController;
 
     @ApiOperation(value = "가족 생성하기")
@@ -112,17 +121,28 @@ public class FamilyController {
 
         log.info("api = 가족 나가기, user = {}", authUser.getUsername());
 
-        if (authUser.getIsKid()) {
-            challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
-        } else {
-            challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
-        }
-
         FamilyUser familyUser = familyUserService.findByUserAndCheckCode(authUser,
             familyRequest.getCode());
         Family family = familyUser.getFamily();
         List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
             authUser);
+
+        if (authUser.getIsKid()) {
+            List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
+                authUser);
+            challengeUserService.deleteAllChallengeUser(authUser);
+            ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
+                challengeList);
+            kidService.updateInitKid(authUser);
+            parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
+                challengeCompleteDeleteByKidMapperDTO);
+        } else {
+            List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+                authUser);
+            kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
+            parentService.updateInitParent(authUser);
+            challengeService.challengeCompleteDeleteByParent(challengeUserList);
+        }
 
         familyUserService.deleteFamilyUser(familyUser);
         if (familyUserList.size() == 0) {

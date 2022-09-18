@@ -71,12 +71,28 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Challenge> getAchievedChallengeUserList(User authUser) {
         return cuRepo.findByUserId(authUser.getId()).stream().map(ChallengeUser::getChallenge)
             .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED)
             .collect(
                 Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Challenge> getAllChallengeUserList(User authUser) {
+        return cuRepo.findByUserId(authUser.getId()).stream().map(ChallengeUser::getChallenge)
+            .collect(
+                Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllChallengeUser(User authUser) {
+        List<ChallengeUser> challengeUserList = cuRepo.findByUserId(authUser.getId());
+        cuRepo.deleteAll(challengeUserList);
     }
 
     public void checkMaxChallengeCount(User user) {
@@ -87,5 +103,10 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         if (walkingChallengeList.size() >= 5) {
             throw new ForbiddenException(ErrorCode.CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
         }
+    }
+
+    public List<ChallengeUser> getChallengeUserListByContractUser(User user) {
+        return cuRepo.findByChallenge_ContractUserId(user.getId());
+
     }
 }
