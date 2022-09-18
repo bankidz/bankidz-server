@@ -137,7 +137,8 @@ public class FamilyController {
             parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
                 challengeCompleteDeleteByKidMapperDTO);
         } else {
-            List<ChallengeUser> challengeUserList = challengeUserService.test(authUser);
+            List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+                authUser);
             kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
             parentService.updateInitParent(authUser);
             challengeService.challengeCompleteDeleteByParent(challengeUserList);

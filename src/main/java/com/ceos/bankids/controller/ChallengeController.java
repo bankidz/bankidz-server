@@ -363,6 +363,7 @@ public class ChallengeController {
             throw new BadRequestException(ErrorCode.NOT_WALKING_CHALLENGE.getErrorCode());
         }
         ProgressDTO progressDTO = challengeService.updateProgress(challenge);
+
         if (progressDTO.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
             kidService.userLevelUp(challenge.getContractUser(), authUser);
         }
@@ -378,7 +379,7 @@ public class ChallengeController {
         nowCal.setTime(nowTimestamp);
         DayOfWeek dayOfWeek = now.getDayOfWeek();
         int value = dayOfWeek.getValue();
-        if (value == 7) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
+        if (value == 8) {       // test환경에선 접근이 안되는 8로 실환경에선 일요일인 7로 설정
             throw new ForbiddenException(ErrorCode.SUNDAY_ERROR.getErrorCode());
         }
     }

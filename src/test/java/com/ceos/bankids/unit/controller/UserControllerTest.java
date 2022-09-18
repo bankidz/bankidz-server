@@ -94,7 +94,8 @@ public class UserControllerTest {
             parentService,
             slackService,
             notificationService,
-            jwtTokenServiceImpl
+            jwtTokenServiceImpl,
+            challengeUserServiceImpl
         );
         CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
 

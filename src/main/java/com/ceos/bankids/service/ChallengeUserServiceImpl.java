@@ -105,22 +105,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         }
     }
 
-    public List<ChallengeUser> test(User user) {
-//        HashMap<Long, Long> kidIdMappingToKidTotalChallenge = new HashMap<>();
-//        HashMap<Long, Long> kidIdMappingToKidAchievedChallenge = new HashMap<>();
-//        HashMap<Long, Long> kidIdMappingToKidSavings = new HashMap<>();
-//        challengeList.forEach(challenge -> {
-//            ChallengeUser challengeUser = cuRepo.findByChallengeId(challenge.getId()).orElseThrow(
-//                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
-//            Long kidId = challengeUser.getUser().getKid().getId();
-//            if (challenge.getChallengeStatus() != ChallengeStatus.PENDING
-//                && challenge.getChallengeStatus() != ChallengeStatus.REJECTED) {
-//                kidTotalChallenge = kidTotalChallenge + 1L;
-//                kidSavings =
-//                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
-//                progressRepository.deleteAll(challenge.getProgressList());
-//            }
-//        });
+    public List<ChallengeUser> getChallengeUserListByContractUser(User user) {
         return cuRepo.findByChallenge_ContractUser(user.getId());
 
     }

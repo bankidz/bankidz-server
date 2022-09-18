@@ -159,11 +159,11 @@ public class KidServiceImpl implements KidService {
             if (challenge.getChallengeStatus() != ChallengeStatus.PENDING
                 && challenge.getChallengeStatus() != ChallengeStatus.REJECTED) {
                 kidTotalChallenge = kidTotalChallenge + 1L;
-                kidSavings =
-                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
             }
             if (challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
                 kidAchievedChallenge = kidAchievedChallenge + 1L;
+                kidSavings =
+                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
             }
             kid.setTotalChallenge(kid.getTotalChallenge() - kidTotalChallenge);
             kid.setSavings(kid.getSavings() - kidSavings);
