@@ -2,22 +2,17 @@ package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.NotificationController;
-import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeCategory;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Comment;
-import com.ceos.bankids.domain.Family;
-import com.ceos.bankids.domain.FamilyUser;
-import com.ceos.bankids.domain.Kid;
-import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.Progress;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
@@ -28,12 +23,7 @@ import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
-import com.ceos.bankids.repository.ChallengeUserRepository;
 import com.ceos.bankids.repository.CommentRepository;
-import com.ceos.bankids.repository.FamilyRepository;
-import com.ceos.bankids.repository.FamilyUserRepository;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import java.sql.Timestamp;
@@ -63,14 +53,8 @@ public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeCategoryRepository challengeCategoryRepository;
     private final TargetItemRepository targetItemRepository;
-    private final ChallengeUserRepository cuRepo;
     private final ProgressRepository progressRepository;
-    private final FamilyUserRepository familyUserRepository;
     private final CommentRepository commentRepository;
-    private final KidRepository kidRepository;
-    private final ParentRepository parentRepository;
-    private final NotificationController notificationController;
-    private final FamilyRepository familyRepository;
 
     // 돈길 생성 API
     @Transactional
@@ -356,17 +340,13 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Transactional
-    public void challengeCompleteDeleteByKid(User user, FamilyRequest familyRequest) {
-        //ToDo: 부모는 가족나가면 어케되냐?
-        List<ChallengeUser> challengeUserList = cuRepo.findByUserId(user.getId());
-        List<Challenge> challengeList = challengeUserList.stream().map(ChallengeUser::getChallenge)
-            .collect(
-                Collectors.toList());
+    public ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKid(
+        List<Challenge> challengeList) {
+
         long[] momRequest = new long[]{0L, 0L};
         long[] dadRequest = new long[]{0L, 0L};
 
         //challenge / progress / comment 한번에 삭제
-        cuRepo.deleteAll(challengeUserList);
         challengeList.forEach(challenge -> {
             boolean isMom = challenge.getContractUser().getIsFemale();
             if (isMom) {
@@ -388,66 +368,25 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
             challengeRepository.delete(challenge);
         });
-        Kid kid = user.getKid();
-        kid.setSavings(0L);
-        kid.setTotalChallenge(0L);
-        kid.setAchievedChallenge(0L);
-        kid.setLevel(1L);
-        kidRepository.save(kid);
-        Family family = familyRepository.findByCode(familyRequest.getCode())
-            .orElseThrow(() -> new ForbiddenException(ErrorCode.FAMILY_NOT_EXISTS.getErrorCode()));
-        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family);
-        List<Parent> parentList = familyUserList.stream()
-            .filter(familyUser -> !familyUser.getUser().getIsKid())
-            .map(familyUser -> familyUser.getUser().getParent())
-            .collect(Collectors.toList());
-        parentList.forEach(parent -> {
-            if (parent.getUser().getIsFemale()) {
-                parent.setTotalRequest(parent.getTotalRequest() - momRequest[0]);
-                parent.setAcceptedRequest(parent.getAcceptedRequest() - momRequest[1]);
-            } else {
-                parent.setTotalRequest(parent.getTotalRequest() - dadRequest[0]);
-                parent.setAcceptedRequest(parent.getAcceptedRequest() - dadRequest[1]);
-            }
-            parentRepository.save(parent);
-        });
+        return new ChallengeCompleteDeleteByKidMapperDTO(momRequest[0], momRequest[1],
+            dadRequest[0], dadRequest[1]);
     }
 
     @Transactional
-    public void challengeCompleteDeleteByParent(User user, FamilyRequest familyRequest) {
-        //ToDo: 부모는 가족나가면 어케되냐?
-        List<Challenge> challengeList = challengeRepository.findByContractUserId(user.getId());
-        challengeList.forEach(challenge -> {
-            long kidSavings = 0L;
-            long kidAchievedChallenge = 0L;
-            long kidTotalChallenge = 0L;
+    public void challengeCompleteDeleteByParent(List<ChallengeUser> challengeUserList) {
+
+        challengeUserList.forEach(challengeUser -> {
+            Challenge challenge = challengeUser.getChallenge();
             if (challenge.getChallengeStatus() != pending
                 && challenge.getChallengeStatus() != rejected) {
-                kidTotalChallenge = kidTotalChallenge + 1L;
-                kidSavings =
-                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
                 progressRepository.deleteAll(challenge.getProgressList());
             }
-            if (challenge.getChallengeStatus() == achieved) {
-                kidAchievedChallenge = kidAchievedChallenge + 1L;
-            } else if (challenge.getChallengeStatus() == rejected) {
+
+            if (challenge.getChallengeStatus() == rejected) {
                 commentRepository.delete(challenge.getComment());
             }
-            ChallengeUser challengeUser = cuRepo.findByChallengeId(
-                challenge.getId()).orElseThrow(
-                () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
-            Kid kid = challengeUser.getUser().getKid();
-            kid.setTotalChallenge(kid.getTotalChallenge() - kidTotalChallenge);
-            kid.setSavings(kid.getSavings() - kidSavings);
-            kid.setAchievedChallenge(kid.getAchievedChallenge() - kidAchievedChallenge);
-            kidRepository.save(kid);
-            cuRepo.delete(challengeUser);
             challengeRepository.delete(challenge);
         });
-        Parent parent = user.getParent();
-        parent.setTotalRequest(0L);
-        parent.setAcceptedRequest(0L);
-        parentRepository.save(parent);
     }
 }
 

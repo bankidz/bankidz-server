@@ -135,7 +135,7 @@ public class UserController {
             if (authUser.getIsKid()) {
                 challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
             } else {
-                challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
+                challengeService.challengeCompleteDeleteByParent(authUser, , familyRequest);
             }
 
             familyUserService.deleteFamilyUser(familyUser.get());

@@ -18,4 +18,8 @@ public interface ChallengeUserService {
     public List<Challenge> getChallengeUserList(User authUser, String status);
 
     public List<Challenge> getAchievedChallengeUserList(User authUser);
+
+    public List<Challenge> getAllChallengeUserList(User authUser);
+
+    public void deleteAllChallengeUser(User authUser);
 }

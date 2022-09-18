@@ -1,6 +1,9 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.exception.BadRequestException;
@@ -9,6 +12,7 @@ import com.ceos.bankids.repository.KidRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,4 +137,38 @@ public class KidServiceImpl implements KidService {
         kidRepository.save(kid);
     }
 
+    @Transactional
+    @Override
+    public void updateInitKid(User user) {
+        Kid kid = user.getKid();
+        kid.setSavings(0L);
+        kid.setTotalChallenge(0L);
+        kid.setAchievedChallenge(0L);
+        kid.setLevel(1L);
+        kidRepository.save(kid);
+    }
+
+    @Transactional
+    public void updateKidForDeleteFamilyUserByParent(List<ChallengeUser> challengeUserList) {
+        challengeUserList.forEach(challengeUser -> {
+            long kidSavings = 0L;
+            long kidAchievedChallenge = 0L;
+            long kidTotalChallenge = 0L;
+            Challenge challenge = challengeUser.getChallenge();
+            Kid kid = challengeUser.getUser().getKid();
+            if (challenge.getChallengeStatus() != ChallengeStatus.PENDING
+                && challenge.getChallengeStatus() != ChallengeStatus.REJECTED) {
+                kidTotalChallenge = kidTotalChallenge + 1L;
+                kidSavings =
+                    kidSavings + challenge.getSuccessWeeks() * challenge.getWeekPrice();
+            }
+            if (challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
+                kidAchievedChallenge = kidAchievedChallenge + 1L;
+            }
+            kid.setTotalChallenge(kid.getTotalChallenge() - kidTotalChallenge);
+            kid.setSavings(kid.getSavings() - kidSavings);
+            kid.setAchievedChallenge(kid.getAchievedChallenge() - kidAchievedChallenge);
+            kidRepository.save(kid);
+        });
+    }
 }

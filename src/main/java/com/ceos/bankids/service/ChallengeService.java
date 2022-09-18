@@ -6,6 +6,7 @@ import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
@@ -49,5 +50,8 @@ public interface ChallengeService {
     public ChallengeListMapperDTO readPendingChallenge(Challenge challenge);
 
     public ProgressDTO updateProgress(Challenge challenge);
+
+    public ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKid(
+        List<Challenge> challengeList);
 
 }
