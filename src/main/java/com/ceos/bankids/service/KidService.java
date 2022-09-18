@@ -1,5 +1,6 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import org.springframework.stereotype.Service;
@@ -20,4 +21,6 @@ public interface KidService {
     public void updateKidTotalChallenge(User user);
 
     public void updateInitKid(User user);
+
+    public void updateKidByPatchProgress(User user, Challenge challenge);
 }

@@ -1,11 +1,8 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
-import com.ceos.bankids.domain.Challenge;
-import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
@@ -110,53 +107,6 @@ public class NotificationController {
         NotificationDTO notificationDTO = expoNotificationService.updateNotification(authUser,
             notificationId);
         return CommonResponse.onSuccess(notificationDTO);
-    }
-
-    @Async
-    @ApiOperation(value = "돈길 상태 변경 알림")
-    public void notification(Challenge challenge, User authUser) {
-
-        String title = challenge.getChallengeStatus() == ChallengeStatus.WALKING ?
-            challenge.getContractUser().getUsername() + "님이 제안한 돈길을 수락했어요\uD83D\uDE46\u200D"
-            : challenge.getContractUser().getUsername() + "님이 제안한 돈길을 거절했어요\uD83D\uDE45\u200D";
-        String notificationBody =
-            challenge.getChallengeStatus() == ChallengeStatus.WALKING
-                ? "수락한 돈길 빨리 걸으러 가요\uD83E\uDD38"
-                : "그 이유가 무엇인지 알아보러 가요\uD83D\uDE25";
-        HashMap<String, Object> newMap = new HashMap<>();
-        newMap.put("challengeId", challenge.getId());
-        newMap.put("userId", authUser.getId());
-        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
-        String linkUrl = challenge.getChallengeStatus() == ChallengeStatus.WALKING ? "/walk" : "/";
-        Boolean checkServiceOptIn = checkServiceOptIn(authUser, title, notificationBody,
-            notificationCategory, linkUrl);
-        if (checkServiceOptIn) {
-            expoNotificationService.sendMessage(authUser, title, notificationBody, newMap,
-                notificationCategory, linkUrl);
-        }
-        log.info("유저 {}의 돈길 {}의 {} 상태변경 알림", authUser.getId(), challenge.getId(),
-            challenge.getChallengeStatus());
-    }
-
-    @Async
-    @ApiOperation(value = "자녀가 돈길을 걸었을 때 부모 알림")
-    public void runProgressNotification(User contractUser, ChallengeUser challengeUser) {
-
-        String title = challengeUser.getUser().getUsername() + "님이 돈길을 걸었어요! \uD83C\uDFC3\u200D";
-        String notificationBody =
-            challengeUser.getUser().getUsername() + "님이 어떤 돈길을 걸었을까요?\n확인하러가요❤️\u200D";
-        HashMap<String, Object> newMap = new HashMap<>();
-        newMap.put("user", challengeUser.getUser().getId());
-        newMap.put("challenge", challengeUser.getChallenge().getId());
-        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
-        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory, "/");
-        if (checkServiceOptIn) {
-            expoNotificationService.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory, "/");
-        }
-        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
-            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 
     @Async
