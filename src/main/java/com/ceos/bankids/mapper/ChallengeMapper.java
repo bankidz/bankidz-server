@@ -82,6 +82,7 @@ public class ChallengeMapper {
     // 돈길 삭제 API Mapper
     public ChallengeDTO deleteChallenge(User authUser, Long challengeId) {
 
+        sundayValidation();
         userRoleValidation(authUser, true);
         ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
         Challenge deleteChallenge = challengeUser.getChallenge();
@@ -117,7 +118,7 @@ public class ChallengeMapper {
     // 돈길 리스트 가져오기 API Mapper
     public List<ChallengeDTO> getListChallenge(User authUser, String status) {
 
-        log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
+        userRoleValidation(authUser, true);
         if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
             throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
         }
@@ -163,6 +164,7 @@ public class ChallengeMapper {
     // 자녀의 돈길 리스트 가져오기 API Mapper
     public KidChallengeListDTO getListKidChallenge(User authUser, Long kidId, String status) {
 
+        userRoleValidation(authUser, false);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -210,6 +212,8 @@ public class ChallengeMapper {
     public ChallengeDTO patchChallengeStatus(User authUser, Long challengeId,
         KidChallengeRequest kidChallengeRequest) {
 
+        sundayValidation();
+        userRoleValidation(authUser, false);
         ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
         User user = challengeUser.getUser();
         Challenge challenge = challengeService.readChallenge(challengeId);
@@ -234,6 +238,7 @@ public class ChallengeMapper {
     // 주차 정보 가져오기 API Mapper
     public WeekDTO getWeekInfo(User authUser) {
 
+        userRoleValidation(authUser, true);
         List<Challenge> walkingChallengeList = challengeUserService.getChallengeUserList(authUser,
                 "walking")
             .stream()
@@ -246,6 +251,7 @@ public class ChallengeMapper {
     // 자녀의 주차 정보 가져오기 API Mapper
     public KidWeekDTO getKidWeekInfo(User authUser, Long kidId) {
 
+        userRoleValidation(authUser, false);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
@@ -263,6 +269,7 @@ public class ChallengeMapper {
     public AchievedChallengeListDTO getAchievedListChallenge(User authUser,
         String interestPayment) {
 
+        userRoleValidation(authUser, true);
         List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
             authUser);
 
@@ -275,6 +282,7 @@ public class ChallengeMapper {
     public KidAchievedChallengeListDTO getKidAchievedListChallenge(User authUser, Long kidId,
         String interestPayment) {
 
+        userRoleValidation(authUser, false);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
@@ -288,6 +296,8 @@ public class ChallengeMapper {
     // 이자 지급 API Mapper
     public AchievedChallengeDTO patchInterestPayment(User authUser, Long challengeId) {
 
+        sundayValidation();
+        userRoleValidation(authUser, false);
         return challengeService.updateChallengeInterestPayment(
             authUser,
             challengeId);
@@ -296,6 +306,7 @@ public class ChallengeMapper {
     // 돈길 걷기 API Mapper
     public ProgressDTO patchProgress(User authUser, Long challengeId) {
 
+        sundayValidation();
         userRoleValidation(authUser, true);
         Challenge challenge = challengeService.readChallenge(challengeId);
         if (challenge.getChallengeStatus() != ChallengeStatus.WALKING) {
