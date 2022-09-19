@@ -38,7 +38,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,7 +45,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
@@ -88,6 +86,7 @@ public class ChallengeMapper {
         return challengeDTO;
     }
 
+    // 돈길 삭제 API Mapper
     public ChallengeDTO deleteChallenge(User authUser, Long challengeId) {
 
         userRoleValidation(authUser, true);
@@ -122,6 +121,7 @@ public class ChallengeMapper {
         throw new BadRequestException(ErrorCode.CANT_DELETE_CHALLENGE_STATUS.getErrorCode());
     }
 
+    // 돈길 리스트 가져오기 API Mapper
     public List<ChallengeDTO> getListChallenge(User authUser, String status) {
 
         log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
@@ -167,6 +167,7 @@ public class ChallengeMapper {
         return challengeDTOList;
     }
 
+    // 자녀의 돈길 리스트 가져오기 API Mapper
     public KidChallengeListDTO getListKidChallenge(User authUser, Long kidId, String status) {
 
         Kid kid = kidService.getKid(kidId);
@@ -208,19 +209,14 @@ public class ChallengeMapper {
                 }
             });
         }
-        KidChallengeListDTO kidChallengeListDTO = new KidChallengeListDTO(kidUser,
+        return new KidChallengeListDTO(kidUser,
             challengeDTOList);
-        return kidChallengeListDTO;
     }
 
-    @ApiOperation(value = "자녀의 돈길 수락 / 거절")
-    @PatchMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<ChallengeDTO> patchChallengeStatus(@AuthenticationPrincipal User authUser,
-        @PathVariable Long challengeId,
-        @Valid @RequestBody KidChallengeRequest kidChallengeRequest) {
+    // 돈길 수락 / 거절 API Mapper
+    public ChallengeDTO patchChallengeStatus(User authUser, Long challengeId,
+        KidChallengeRequest kidChallengeRequest) {
 
-        log.info("api = 자녀의 돈길 수락 / 거절, user = {}, challengeId = {}, 수락여부 = {}",
-            authUser.getUsername(), challengeId, kidChallengeRequest.getAccept());
         ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
         User user = challengeUser.getUser();
         Challenge challenge = challengeService.readChallenge(challengeId);
@@ -233,36 +229,30 @@ public class ChallengeMapper {
             kidService.updateKidTotalChallenge(user);
             parentService.updateParentAcceptedChallenge(authUser);
             notificationService.notification(challenge, user);
-            return CommonResponse.onSuccess(challengeDTO);
+            return challengeDTO;
         } else {
             ChallengeDTO challengeDTO = challengeService.updateChallengeStatusToRejected(challenge,
                 kidChallengeRequest, authUser);
             notificationService.notification(challenge, user);
-            return CommonResponse.onSuccess(challengeDTO);
+            return challengeDTO;
         }
     }
 
-    @ApiOperation(value = "주차 정보 가져오기")
-    @GetMapping(value = "/progress", produces = "application/json; charset=utf-8")
-    public CommonResponse<WeekDTO> getWeekInfo(@AuthenticationPrincipal User authUser) {
+    // 주차 정보 가져오기 API Mapper
+    public WeekDTO getWeekInfo(User authUser) {
 
-        log.info("api = 주차 정보 가져오기, user = {}", authUser.getUsername());
         List<Challenge> walkingChallengeList = challengeUserService.getChallengeUserList(authUser,
                 "walking")
             .stream()
             .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
                 Collectors.toList());
-        WeekDTO weekDTO = challengeService.readWeekInfo(walkingChallengeList);
 
-        return CommonResponse.onSuccess(weekDTO);
+        return challengeService.readWeekInfo(walkingChallengeList);
     }
 
-    @ApiOperation(value = "자녀의 주차 정보 가져오기")
-    @GetMapping(value = "/kid/progress/{kidId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<KidWeekDTO> getKidWeekInfo(@AuthenticationPrincipal User authUser,
-        @PathVariable Long kidId) {
+    // 자녀의 주차 정보 가져오기 API Mapper
+    public KidWeekDTO getKidWeekInfo(User authUser, Long kidId) {
 
-        log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
@@ -272,9 +262,8 @@ public class ChallengeMapper {
             .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
                 Collectors.toList());
         WeekDTO weekDTO = challengeService.readWeekInfo(kidWalkingChallengeList);
-        KidWeekDTO kidWeekDTO = new KidWeekDTO(kid, weekDTO);
 
-        return CommonResponse.onSuccess(kidWeekDTO);
+        return new KidWeekDTO(kid, weekDTO);
     }
 
     @ApiOperation(value = "완주한 돈길 리스트 가져오기")

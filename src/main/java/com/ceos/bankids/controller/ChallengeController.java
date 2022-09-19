@@ -4,15 +4,20 @@ import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
+import com.ceos.bankids.dto.KidWeekDTO;
+import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.mapper.ChallengeMapper;
 import com.ceos.bankids.mapper.request.ChallengeRequest;
+import com.ceos.bankids.mapper.request.KidChallengeRequest;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,4 +86,41 @@ public class ChallengeController {
         return CommonResponse.onSuccess(kidChallengeListDTO);
     }
 
+    @ApiOperation(value = "자녀의 돈길 수락 / 거절")
+    @PatchMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<ChallengeDTO> patchChallengeStatus(@AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId,
+        @Valid @RequestBody KidChallengeRequest kidChallengeRequest) {
+
+        log.info("api = 자녀의 돈길 수락 / 거절, user = {}, challengeId = {}, 수락여부 = {}",
+            authUser.getUsername(), challengeId, kidChallengeRequest.getAccept());
+
+        ChallengeDTO challengeDTO = challengeMapper.patchChallengeStatus(authUser, challengeId,
+            kidChallengeRequest);
+
+        return CommonResponse.onSuccess(challengeDTO);
+    }
+
+    @ApiOperation(value = "주차 정보 가져오기")
+    @GetMapping(value = "/progress", produces = "application/json; charset=utf-8")
+    public CommonResponse<WeekDTO> getWeekInfo(@AuthenticationPrincipal User authUser) {
+
+        log.info("api = 주차 정보 가져오기, user = {}", authUser.getUsername());
+
+        WeekDTO weekInfo = challengeMapper.getWeekInfo(authUser);
+
+        return CommonResponse.onSuccess(weekInfo);
+    }
+
+    @ApiOperation(value = "자녀의 주차 정보 가져오기")
+    @GetMapping(value = "/kid/progress/{kidId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<KidWeekDTO> getKidWeekInfo(@AuthenticationPrincipal User authUser,
+        @PathVariable Long kidId) {
+
+        log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
+
+        KidWeekDTO kidWeekInfo = challengeMapper.getKidWeekInfo(authUser, kidId);
+
+        return CommonResponse.onSuccess(kidWeekInfo);
+    }
 }
