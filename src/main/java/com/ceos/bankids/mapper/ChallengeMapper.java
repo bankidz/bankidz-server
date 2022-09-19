@@ -3,8 +3,6 @@ package com.ceos.bankids.mapper;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.mapper.request.ChallengeRequest;
-import com.ceos.bankids.mapper.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
@@ -21,6 +19,8 @@ import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
+import com.ceos.bankids.mapper.request.ChallengeRequest;
+import com.ceos.bankids.mapper.request.KidChallengeRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/challenge")
 @RequiredArgsConstructor
-public class ChallengeController {
+public class ChallengeMapper {
 
     private final ChallengeServiceImpl challengeService;
     private final UserServiceImpl userService;
