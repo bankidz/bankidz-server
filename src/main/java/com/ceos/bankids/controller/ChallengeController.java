@@ -8,6 +8,7 @@ import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
 import com.ceos.bankids.dto.KidChallengeListDTO;
 import com.ceos.bankids.dto.KidWeekDTO;
+import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.mapper.ChallengeMapper;
 import com.ceos.bankids.mapper.request.ChallengeRequest;
@@ -167,5 +168,17 @@ public class ChallengeController {
             challengeId);
 
         return CommonResponse.onSuccess(achievedChallengeDTO);
+    }
+
+    @ApiOperation(value = "돈길 걷기")
+    @PatchMapping(value = "/{challengeId}/progress", produces = "application/json; charset=utf-8")
+    public CommonResponse<ProgressDTO> patchProgress(@AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        log.info("api = 돈길 걷기, user = {}, challengeId = {}", authUser, challengeId);
+
+        ProgressDTO progressDTO = challengeMapper.patchProgress(authUser, challengeId);
+
+        return CommonResponse.onSuccess(progressDTO);
     }
 }

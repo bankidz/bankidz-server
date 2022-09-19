@@ -1,6 +1,5 @@
 package com.ceos.bankids.mapper;
 
-import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Challenge;
@@ -29,7 +28,6 @@ import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
-import io.swagger.annotations.ApiOperation;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -40,10 +38,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Slf4j
 @Service
@@ -298,12 +293,9 @@ public class ChallengeMapper {
             challengeId);
     }
 
-    @ApiOperation(value = "돈길 걷기")
-    @PatchMapping(value = "/{challengeId}/progress", produces = "application/json; charset=utf-8")
-    public CommonResponse<ProgressDTO> patchProgress(@AuthenticationPrincipal User authUser,
-        @PathVariable Long challengeId) {
+    // 돈길 걷기 API Mapper
+    public ProgressDTO patchProgress(User authUser, Long challengeId) {
 
-        log.info("api = 돈길 걷기, user = {}, challengeId = {}", authUser, challengeId);
         userRoleValidation(authUser, true);
         Challenge challenge = challengeService.readChallenge(challengeId);
         if (challenge.getChallengeStatus() != ChallengeStatus.WALKING) {
@@ -320,7 +312,7 @@ public class ChallengeMapper {
                 challenge);
         }
 
-        return CommonResponse.onSuccess(progressDTO);
+        return progressDTO;
     }
 
     // 일요일 처리 validation
