@@ -42,19 +42,16 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController
-@RequestMapping("/challenge")
+@Service
 @RequiredArgsConstructor
 public class ChallengeMapper {
 
@@ -67,12 +64,9 @@ public class ChallengeMapper {
     private final ParentServiceImpl parentService;
     private final KidServiceImpl kidService;
 
-    @ApiOperation(value = "돈길 생성")
-    @PostMapping(produces = "application/json; charset=utf-8")
-    public CommonResponse<ChallengeDTO> postChallenge(@AuthenticationPrincipal User authUser,
+    // 돈길 생성 API Mapper
+    public ChallengeDTO postChallenge(@AuthenticationPrincipal User authUser,
         @Valid @RequestBody ChallengeRequest challengeRequest) {
-
-        log.info("api = 돈길 생성, req = {}", challengeRequest);
 
         // validation
         sundayValidation();
@@ -93,7 +87,7 @@ public class ChallengeMapper {
         // 저장로직 성공시 알림 로직
         notificationService.createPendingChallengeNotification(contractUser, challengeUser);
 
-        return CommonResponse.onSuccess(challengeDTO);
+        return challengeDTO;
     }
 
     @ApiOperation(value = "돈길 포기하기")
