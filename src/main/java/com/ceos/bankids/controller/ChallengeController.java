@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,18 @@ public class ChallengeController {
         log.info("api = 돈길 생성, req = {}", challengeRequest);
 
         ChallengeDTO challengeDTO = challengeMapper.postChallenge(authUser, challengeRequest);
+
+        return CommonResponse.onSuccess(challengeDTO);
+    }
+
+    @ApiOperation(value = "돈길 포기하기")
+    @DeleteMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<ChallengeDTO> deleteChallenge(@AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        log.info("api = 돈길 포기하기, user = {} challengeId = {}", authUser.getUsername(), challengeId);
+
+        ChallengeDTO challengeDTO = challengeMapper.deleteChallenge(authUser, challengeId);
 
         return CommonResponse.onSuccess(challengeDTO);
     }

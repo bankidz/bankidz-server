@@ -43,7 +43,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,8 +64,7 @@ public class ChallengeMapper {
     private final KidServiceImpl kidService;
 
     // 돈길 생성 API Mapper
-    public ChallengeDTO postChallenge(@AuthenticationPrincipal User authUser,
-        @Valid @RequestBody ChallengeRequest challengeRequest) {
+    public ChallengeDTO postChallenge(User authUser, ChallengeRequest challengeRequest) {
 
         // validation
         sundayValidation();
@@ -90,13 +88,7 @@ public class ChallengeMapper {
         return challengeDTO;
     }
 
-    @ApiOperation(value = "돈길 포기하기")
-    @DeleteMapping(value = "/{challengeId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<ChallengeDTO> deleteChallenge(
-        @AuthenticationPrincipal User authUser,
-        @PathVariable Long challengeId) {
-
-        log.info("api = 돈길 포기하기, user = {} challengeId = {}", authUser.getUsername(), challengeId);
+    public ChallengeDTO deleteChallenge(User authUser, Long challengeId) {
 
         userRoleValidation(authUser, true);
         ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
@@ -107,28 +99,24 @@ public class ChallengeMapper {
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
             kidService.checkKidDeleteChallenge(authUser);
             challengeUserService.deleteChallengeUser(authUser, challengeId);
-            ChallengeDTO deleteWalkingChallengeDTO = challengeService.deleteWalkingChallenge(
+            return challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
-            return CommonResponse.onSuccess(deleteWalkingChallengeDTO);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.FAILED) {
             challengeUserService.deleteChallengeUser(authUser, challengeId);
-            ChallengeDTO deleteFailedChallengeDTO = challengeService.deleteWalkingChallenge(
+            return challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
-            return CommonResponse.onSuccess(deleteFailedChallengeDTO);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.REJECTED) {
             challengeUserService.deleteChallengeUser(authUser, challengeId);
-            ChallengeDTO deleteRejectedChallengeDTO = challengeService.deleteRejectedChallenge(
+            return challengeService.deleteRejectedChallenge(
                 authUser,
                 challengeUser);
-            return CommonResponse.onSuccess(deleteRejectedChallengeDTO);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.PENDING) {
             challengeUserService.deleteChallengeUser(authUser, challengeId);
-            ChallengeDTO deletePendingChallengeDTO = challengeService.deletePendingChallenge(
+            return challengeService.deletePendingChallenge(
                 authUser,
                 challengeUser);
-            return CommonResponse.onSuccess(deletePendingChallengeDTO);
         }
 
         throw new BadRequestException(ErrorCode.CANT_DELETE_CHALLENGE_STATUS.getErrorCode());
