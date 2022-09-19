@@ -2,6 +2,7 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.KidAchievedChallengeListDTO;
@@ -151,5 +152,20 @@ public class ChallengeController {
             authUser, kidId, interestPayment);
 
         return CommonResponse.onSuccess(kidAchievedListChallenge);
+    }
+
+    @ApiOperation(value = "완주한 돈길에 이자 지급하기")
+    @PatchMapping(value = "/interest-payment/{challengeId}", produces = "application/json; charset=utf-8")
+    public CommonResponse<AchievedChallengeDTO> patchInterestPayment(
+        @AuthenticationPrincipal User authUser,
+        @PathVariable Long challengeId) {
+
+        log.info("api = 완주한 돈길에 이자 지급, user = {}, challengeId = {}", authUser.getUsername(),
+            challengeId);
+
+        AchievedChallengeDTO achievedChallengeDTO = challengeMapper.patchInterestPayment(authUser,
+            challengeId);
+
+        return CommonResponse.onSuccess(achievedChallengeDTO);
     }
 }

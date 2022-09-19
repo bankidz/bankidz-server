@@ -276,6 +276,7 @@ public class ChallengeMapper {
             interestPayment);
     }
 
+    // 자녀의 완주한 돈길 리스트 가져오기 API Mapper
     public KidAchievedChallengeListDTO getKidAchievedListChallenge(User authUser, Long kidId,
         String interestPayment) {
 
@@ -289,19 +290,12 @@ public class ChallengeMapper {
             authUser, achievedChallengeUserList, interestPayment, kidId);
     }
 
-    @ApiOperation(value = "완주한 돈길에 이자 지급하기")
-    @PatchMapping(value = "/interest-payment/{challengeId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<AchievedChallengeDTO> patchInterestPayment(
-        @AuthenticationPrincipal User authUser,
-        @PathVariable Long challengeId) {
+    // 이자 지급 API Mapper
+    public AchievedChallengeDTO patchInterestPayment(User authUser, Long challengeId) {
 
-        log.info("api = 완주한 돈길에 이자 지급, user = {}, challengeId = {}", authUser.getUsername(),
-            challengeId);
-        AchievedChallengeDTO achievedChallengeDTO = challengeService.updateChallengeInterestPayment(
+        return challengeService.updateChallengeInterestPayment(
             authUser,
             challengeId);
-
-        return CommonResponse.onSuccess(achievedChallengeDTO);
     }
 
     @ApiOperation(value = "돈길 걷기")
