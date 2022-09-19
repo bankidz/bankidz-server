@@ -42,10 +42,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Service
@@ -266,37 +264,29 @@ public class ChallengeMapper {
         return new KidWeekDTO(kid, weekDTO);
     }
 
-    @ApiOperation(value = "완주한 돈길 리스트 가져오기")
-    @GetMapping(value = "/achieved", produces = "application/json; charset=utf-8")
-    public CommonResponse<AchievedChallengeListDTO> getAchievedListChallenge(
-        @AuthenticationPrincipal User authUser, @RequestParam String interestPayment) {
+    // 완주한 돈길 리스트 가져오기 API Mapper
+    public AchievedChallengeListDTO getAchievedListChallenge(User authUser,
+        String interestPayment) {
 
-        log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
         List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
             authUser);
-        AchievedChallengeListDTO achievedChallengeListDTO = challengeService.readAchievedChallenge(
+
+        return challengeService.readAchievedChallenge(
             achievedChallengeUserList,
             interestPayment);
-
-        return CommonResponse.onSuccess(achievedChallengeListDTO);
     }
 
-    @ApiOperation(value = "자녀의 완주한 돈길 리스트 가져오기")
-    @GetMapping(value = "kid/achieved/{kidId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<KidAchievedChallengeListDTO> getKidAchievedListChallenge(
-        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
-        @RequestParam String interestPayment) {
+    public KidAchievedChallengeListDTO getKidAchievedListChallenge(User authUser, Long kidId,
+        String interestPayment) {
 
-        log.info("api = 완주한 돈길 리스트 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
         List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
             kidUser);
-        KidAchievedChallengeListDTO kidAchievedChallengeListDTO = challengeService.readKidAchievedChallenge(
-            authUser, achievedChallengeUserList, interestPayment, kidId);
 
-        return CommonResponse.onSuccess(kidAchievedChallengeListDTO);
+        return challengeService.readKidAchievedChallenge(
+            authUser, achievedChallengeUserList, interestPayment, kidId);
     }
 
     @ApiOperation(value = "완주한 돈길에 이자 지급하기")
