@@ -1,10 +1,10 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.request.ChallengeRequest;
-import com.ceos.bankids.controller.request.KidChallengeRequest;
+import com.ceos.bankids.mapper.request.ChallengeRequest;
+import com.ceos.bankids.mapper.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;

@@ -1,7 +1,7 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.UserTypeRequest;
+import com.ceos.bankids.mapper.request.ExpoRequest;
+import com.ceos.bankids.mapper.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;

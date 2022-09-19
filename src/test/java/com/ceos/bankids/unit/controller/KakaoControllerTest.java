@@ -1,8 +1,8 @@
 package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.controller.KakaoController;
-import com.ceos.bankids.controller.request.KakaoRequest;
+import com.ceos.bankids.mapper.KakaoController;
+import com.ceos.bankids.mapper.request.KakaoRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;

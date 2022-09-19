@@ -1,6 +1,6 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
-import com.ceos.bankids.controller.request.AppleRequest;
+import com.ceos.bankids.mapper.request.AppleRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.TokenDTO;

@@ -1,9 +1,9 @@
 package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.controller.FamilyController;
-import com.ceos.bankids.controller.NotificationController;
-import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.mapper.FamilyController;
+import com.ceos.bankids.mapper.NotificationController;
+import com.ceos.bankids.mapper.request.FamilyRequest;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;

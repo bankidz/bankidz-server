@@ -1,4 +1,4 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.domain.User;

@@ -1,6 +1,6 @@
 package com.ceos.bankids.unit.controller;
 
-import com.ceos.bankids.controller.HealthCheckController;
+import com.ceos.bankids.mapper.HealthCheckController;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

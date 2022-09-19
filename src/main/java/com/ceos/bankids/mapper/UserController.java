@@ -1,10 +1,10 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.FamilyRequest;
-import com.ceos.bankids.controller.request.UserTypeRequest;
-import com.ceos.bankids.controller.request.WithdrawalRequest;
+import com.ceos.bankids.mapper.request.ExpoRequest;
+import com.ceos.bankids.mapper.request.FamilyRequest;
+import com.ceos.bankids.mapper.request.UserTypeRequest;
+import com.ceos.bankids.mapper.request.WithdrawalRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;

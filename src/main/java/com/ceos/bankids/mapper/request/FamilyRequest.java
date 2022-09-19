@@ -1,4 +1,4 @@
-package com.ceos.bankids.controller.request;
+package com.ceos.bankids.mapper.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KakaoRequest {
+public class FamilyRequest {
 
-    @ApiModelProperty(example = "erYw3skzA27NEcbri4hIu18MZ7PRKzhsvQB31JU-iyq1BWgzYv1xve8KpjV_24CwGx3PiwopyNgAAAGBxHM1jQ")
+    @ApiModelProperty(example = "863035e8-b067-4dae-8961-b52e6839a81b")
     @NotNull(message = "code may not be null")
     private String code;
 }

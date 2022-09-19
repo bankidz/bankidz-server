@@ -1,8 +1,8 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.request.NoticeRequest;
+import com.ceos.bankids.mapper.request.NoticeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NoticeDTO;

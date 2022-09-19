@@ -1,6 +1,6 @@
 package com.ceos.bankids.dto;
 
-import com.ceos.bankids.controller.request.ChallengeRequest;
+import com.ceos.bankids.mapper.request.ChallengeRequest;
 import com.ceos.bankids.domain.User;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;

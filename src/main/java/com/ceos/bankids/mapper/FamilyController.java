@@ -1,7 +1,7 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.mapper.request.FamilyRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;

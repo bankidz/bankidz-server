@@ -1,8 +1,8 @@
 package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.controller.AppleController;
-import com.ceos.bankids.controller.request.AppleRequest;
+import com.ceos.bankids.mapper.AppleController;
+import com.ceos.bankids.mapper.request.AppleRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;

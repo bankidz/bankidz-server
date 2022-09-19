@@ -1,7 +1,7 @@
-package com.ceos.bankids.controller;
+package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.controller.request.KakaoRequest;
+import com.ceos.bankids.mapper.request.KakaoRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.TokenDTO;
