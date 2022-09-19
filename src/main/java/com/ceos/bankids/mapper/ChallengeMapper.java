@@ -122,10 +122,7 @@ public class ChallengeMapper {
         throw new BadRequestException(ErrorCode.CANT_DELETE_CHALLENGE_STATUS.getErrorCode());
     }
 
-    @ApiOperation(value = "돈길 리스트 가져오기")
-    @GetMapping(produces = "application/json; charset=utf-8")
-    public CommonResponse<List<ChallengeDTO>> getListChallenge(
-        @AuthenticationPrincipal User authUser, @RequestParam String status) {
+    public List<ChallengeDTO> getListChallenge(User authUser, String status) {
 
         log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
         if (!Objects.equals(status, "walking") && !Objects.equals(status, "pending")) {
@@ -167,17 +164,11 @@ public class ChallengeMapper {
             });
         }
 
-        return CommonResponse.onSuccess(challengeDTOList);
+        return challengeDTOList;
     }
 
-    @ApiOperation(value = "자녀의 돈길 리스트 가져오기")
-    @GetMapping(value = "/kid/{kidId}", produces = "application/json; charset=utf-8")
-    public CommonResponse<KidChallengeListDTO> getListKidChallenge(
-        @AuthenticationPrincipal User authUser, @PathVariable Long kidId,
-        @RequestParam String status) {
+    public KidChallengeListDTO getListKidChallenge(User authUser, Long kidId, String status) {
 
-        log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
-            authUser.getUsername(), kidId, status);
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
@@ -219,7 +210,7 @@ public class ChallengeMapper {
         }
         KidChallengeListDTO kidChallengeListDTO = new KidChallengeListDTO(kidUser,
             challengeDTOList);
-        return CommonResponse.onSuccess(kidChallengeListDTO);
+        return kidChallengeListDTO;
     }
 
     @ApiOperation(value = "자녀의 돈길 수락 / 거절")
