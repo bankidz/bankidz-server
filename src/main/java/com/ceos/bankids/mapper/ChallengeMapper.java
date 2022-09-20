@@ -90,8 +90,8 @@ public class ChallengeMapper {
             throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
         }
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
-            kidService.checkKidDeleteChallenge(authUser);
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
+            kidService.checkKidDeleteChallenge(authUser, deleteChallenge);
+//            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);

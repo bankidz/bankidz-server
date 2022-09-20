@@ -45,17 +45,27 @@ public class KidServiceImpl implements KidService {
 
     @Transactional(readOnly = true)
     @Override
-    public void checkKidDeleteChallenge(User user) {
+    public void checkKidDeleteChallenge(User user, Challenge challenge) {
 
         if (user.getKid() == null) {
             throw new BadRequestException(ErrorCode.NOT_EXIST_KID.getErrorCode());
         }
+        // Todo: 돈길 만든지 1주일 안지났으면 그냥 통과
 
         // 현재 시간 가져오기
         LocalDateTime now = LocalDateTime.now();
         Timestamp nowTimestamp = Timestamp.valueOf(now);
         Calendar nowCal = Calendar.getInstance();
         nowCal.setTime(nowTimestamp);
+
+        Timestamp challengeCreatedAt = challenge.getCreatedAt();
+        Calendar challengeCal = Calendar.getInstance();
+        challengeCal.setTime(challengeCreatedAt);
+        int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
+
+        if (nowCal.get(Calendar.DAY_OF_YEAR) - challengeCal.get(Calendar.DAY_OF_YEAR) < 7) {
+            return;
+        }
 
         Kid kid = user.getKid();
         if (kid.getDeleteChallenge() != null) {
@@ -66,7 +76,6 @@ public class KidServiceImpl implements KidService {
             deleteCal.setTime(deleteChallenge);
 
             int lastDeleteWeek = deleteCal.get(Calendar.WEEK_OF_YEAR);
-            int currentWeek = nowCal.get(Calendar.WEEK_OF_YEAR);
             int diffYears = nowCal.get(Calendar.YEAR) - deleteCal.get(Calendar.YEAR);
             int l = deleteCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY ? lastDeleteWeek - 1
                 : lastDeleteWeek;
