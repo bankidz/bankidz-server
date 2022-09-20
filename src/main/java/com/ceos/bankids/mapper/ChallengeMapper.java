@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -55,6 +56,7 @@ public class ChallengeMapper {
     private final KidServiceImpl kidService;
 
     // 돈길 생성 API Mapper
+    @Transactional
     public ChallengeDTO postChallenge(User authUser, ChallengeRequest challengeRequest) {
 
         // validation
@@ -80,6 +82,7 @@ public class ChallengeMapper {
     }
 
     // 돈길 삭제 API Mapper
+    @Transactional
     public ChallengeDTO deleteChallenge(User authUser, Long challengeId) {
 
         sundayValidation();
@@ -112,6 +115,7 @@ public class ChallengeMapper {
     }
 
     // 돈길 리스트 가져오기 API Mapper
+    @Transactional
     public List<ChallengeDTO> getListChallenge(User authUser, String status) {
 
         userRoleValidation(authUser, true);
@@ -158,6 +162,7 @@ public class ChallengeMapper {
     }
 
     // 자녀의 돈길 리스트 가져오기 API Mapper
+    @Transactional
     public KidChallengeListDTO getListKidChallenge(User authUser, Long kidId, String status) {
 
         userRoleValidation(authUser, false);
@@ -205,6 +210,7 @@ public class ChallengeMapper {
     }
 
     // 돈길 수락 / 거절 API Mapper
+    @Transactional
     public ChallengeDTO patchChallengeStatus(User authUser, Long challengeId,
         KidChallengeRequest kidChallengeRequest) {
 
@@ -232,6 +238,7 @@ public class ChallengeMapper {
     }
 
     // 주차 정보 가져오기 API Mapper
+    @Transactional(readOnly = true)
     public WeekDTO getWeekInfo(User authUser) {
 
         userRoleValidation(authUser, true);
@@ -245,6 +252,7 @@ public class ChallengeMapper {
     }
 
     // 자녀의 주차 정보 가져오기 API Mapper
+    @Transactional(readOnly = true)
     public KidWeekDTO getKidWeekInfo(User authUser, Long kidId) {
 
         userRoleValidation(authUser, false);
@@ -262,6 +270,7 @@ public class ChallengeMapper {
     }
 
     // 완주한 돈길 리스트 가져오기 API Mapper
+    @Transactional(readOnly = true)
     public AchievedChallengeListDTO getAchievedListChallenge(User authUser,
         String interestPayment) {
 
@@ -275,6 +284,7 @@ public class ChallengeMapper {
     }
 
     // 자녀의 완주한 돈길 리스트 가져오기 API Mapper
+    @Transactional(readOnly = true)
     public KidAchievedChallengeListDTO getKidAchievedListChallenge(User authUser, Long kidId,
         String interestPayment) {
 
@@ -290,6 +300,7 @@ public class ChallengeMapper {
     }
 
     // 이자 지급 API Mapper
+    @Transactional
     public AchievedChallengeDTO patchInterestPayment(User authUser, Long challengeId) {
 
         sundayValidation();
@@ -300,6 +311,7 @@ public class ChallengeMapper {
     }
 
     // 돈길 걷기 API Mapper
+    @Transactional
     public ProgressDTO patchProgress(User authUser, Long challengeId) {
 
         sundayValidation();

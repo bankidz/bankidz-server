@@ -85,6 +85,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         cuRepo.deleteAll(challengeUserList);
     }
 
+    @Transactional(readOnly = true)
     public void checkMaxChallengeCount(User user) {
         List<Challenge> walkingChallengeList = cuRepo.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge)
@@ -95,6 +96,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ChallengeUser> getChallengeUserListByContractUser(User user) {
         return cuRepo.findByChallenge_ContractUserId(user.getId());
 
