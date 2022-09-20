@@ -42,17 +42,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         return challengeUser;
     }
 
-    @Override
-    public void deleteChallengeUser(User authUser, Long challengeId) {
-        ChallengeUser deleteChallengeUser = cuRepo.findByChallengeId(challengeId).orElseThrow(
-            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
-        if (deleteChallengeUser.getUser().getId() != authUser.getId()) {
-            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
-        }
-
-        cuRepo.delete(deleteChallengeUser);
-    }
-
+    @Transactional
     @Override
     public List<Challenge> getChallengeUserList(User authUser, String status) {
         if (Objects.equals(status, "pending")) {
@@ -95,6 +85,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         cuRepo.deleteAll(challengeUserList);
     }
 
+    @Transactional(readOnly = true)
     public void checkMaxChallengeCount(User user) {
         List<Challenge> walkingChallengeList = cuRepo.findByUserId(user.getId()).stream()
             .map(ChallengeUser::getChallenge)
@@ -105,6 +96,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ChallengeUser> getChallengeUserListByContractUser(User user) {
         return cuRepo.findByChallenge_ContractUserId(user.getId());
 

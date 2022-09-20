@@ -13,8 +13,6 @@ public interface ChallengeUserService {
 
     public ChallengeUser getChallengeUser(Long challengeId);
 
-    public void deleteChallengeUser(User authUser, Long challengeId);
-
     public List<Challenge> getChallengeUserList(User authUser, String status);
 
     public List<Challenge> getAchievedChallengeUserList(User authUser);
