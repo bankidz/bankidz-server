@@ -91,22 +91,18 @@ public class ChallengeMapper {
         }
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
             kidService.checkKidDeleteChallenge(authUser, deleteChallenge);
-//            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.FAILED) {
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.REJECTED) {
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return challengeService.deleteRejectedChallenge(
                 authUser,
                 challengeUser);
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.PENDING) {
-            challengeUserService.deleteChallengeUser(authUser, challengeId);
             return challengeService.deletePendingChallenge(
                 authUser,
                 challengeUser);

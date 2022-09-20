@@ -42,17 +42,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
         return challengeUser;
     }
 
-    @Override
-    public void deleteChallengeUser(User authUser, Long challengeId) {
-        ChallengeUser deleteChallengeUser = cuRepo.findByChallengeId(challengeId).orElseThrow(
-            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
-        if (deleteChallengeUser.getUser().getId() != authUser.getId()) {
-            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
-        }
-
-        cuRepo.delete(deleteChallengeUser);
-    }
-
+    @Transactional
     @Override
     public List<Challenge> getChallengeUserList(User authUser, String status) {
         if (Objects.equals(status, "pending")) {
