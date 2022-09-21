@@ -5,7 +5,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
 import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
-import com.ceos.bankids.service.ExpoNotificationServiceImpl;
+import com.ceos.bankids.mapper.NotificationMapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final ExpoNotificationServiceImpl notificationService;
+    private final NotificationMapper notificationMapper;
 
     @ApiOperation(value = "유저 알림 리스트 가져오기")
     @GetMapping(produces = "application/json; charset=utf-8")
@@ -31,7 +31,7 @@ public class NotificationController {
         @AuthenticationPrincipal User authUser, @RequestParam(required = false) Long lastId) {
 
         log.info("api = 유저 알림 리스트 가져오기 user = {}", authUser.getUsername());
-        NotificationListDTO notificationListDTOS = notificationService.readNotificationList(
+        NotificationListDTO notificationListDTOS = notificationMapper.readNotificationListMapper(
             authUser, lastId);
         return CommonResponse.onSuccess(notificationListDTOS);
     }
@@ -42,7 +42,7 @@ public class NotificationController {
         @AuthenticationPrincipal User authUser) {
 
         log.info("api = 안읽은 알림 있는지 확인 user = {}", authUser.getId());
-        NotificationIsReadDTO notificationIsReadDTO = notificationService.readNotificationIsAllRead(
+        NotificationIsReadDTO notificationIsReadDTO = notificationMapper.readNotificationIsAllReadMapper(
             authUser);
         return CommonResponse.onSuccess(notificationIsReadDTO);
     }
@@ -55,7 +55,7 @@ public class NotificationController {
 
         log.info("api = 유저 알림 읽음 처리 user = {} notification = {}", authUser.getUsername(),
             notificationId);
-        NotificationDTO notificationDTO = notificationService.updateNotification(authUser,
+        NotificationDTO notificationDTO = notificationMapper.updateNotificationMapper(authUser,
             notificationId);
         return CommonResponse.onSuccess(notificationDTO);
     }
