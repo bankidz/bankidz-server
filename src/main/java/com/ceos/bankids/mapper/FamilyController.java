@@ -129,9 +129,9 @@ public class FamilyController {
             authUser);
 
         if (authUser.getIsKid()) {
-            List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
+            List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
                 authUser);
-            challengeUserService.deleteAllChallengeUser(authUser);
+            challengeUserService.deleteAllChallengeUserOfUser(authUser);
             ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
                 challengeList);
             kidService.updateInitKid(authUser);

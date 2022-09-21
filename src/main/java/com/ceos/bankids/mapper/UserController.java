@@ -1,10 +1,6 @@
 package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.mapper.request.ExpoRequest;
-import com.ceos.bankids.mapper.request.FamilyRequest;
-import com.ceos.bankids.mapper.request.UserTypeRequest;
-import com.ceos.bankids.mapper.request.WithdrawalRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
@@ -18,6 +14,10 @@ import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
+import com.ceos.bankids.mapper.request.ExpoRequest;
+import com.ceos.bankids.mapper.request.FamilyRequest;
+import com.ceos.bankids.mapper.request.UserTypeRequest;
+import com.ceos.bankids.mapper.request.WithdrawalRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
@@ -138,9 +138,9 @@ public class UserController {
             FamilyRequest familyRequest = new FamilyRequest(family.getCode());
 
             if (authUser.getIsKid()) {
-                List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
+                List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
                     authUser);
-                challengeUserService.deleteAllChallengeUser(authUser);
+                challengeUserService.deleteAllChallengeUserOfUser(authUser);
                 ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
                     challengeList);
                 kidService.updateInitKid(authUser);

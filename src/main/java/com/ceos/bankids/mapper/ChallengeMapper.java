@@ -68,7 +68,8 @@ public class ChallengeMapper {
         ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
         ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengePostDTO);
         Challenge challenge = challengeService.readChallenge(challengeDTO.getId());
-        ChallengeUser challengeUser = challengeUserService.postChallengeUser(authUser, challenge);
+        ChallengeUser challengeUser = challengeUserService.createdChallengeUser(authUser,
+            challenge);
         parentService.updateParentForCreateChallenge(contractUser);
 
         // 저장로직 성공시 알림 로직
@@ -83,7 +84,7 @@ public class ChallengeMapper {
 
         sundayValidation();
         userRoleValidation(authUser, true);
-        ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
+        ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
         Challenge deleteChallenge = challengeUser.getChallenge();
         if (challengeUser.getUser().getId() != authUser.getId()) {
             throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
@@ -119,7 +120,7 @@ public class ChallengeMapper {
             throw new BadRequestException(ErrorCode.INVALID_QUERYPARAM.getErrorCode());
         }
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
-        List<Challenge> challengeList = challengeUserService.getChallengeUserList(authUser,
+        List<Challenge> challengeList = challengeUserService.readChallengeUserList(authUser,
             status);
         if (Objects.equals(status, "walking")) {
             challengeList.forEach(challenge -> {
@@ -166,7 +167,7 @@ public class ChallengeMapper {
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         List<ChallengeDTO> challengeDTOList = new ArrayList<>();
-        List<Challenge> challengeList = challengeUserService.getChallengeUserList(kidUser,
+        List<Challenge> challengeList = challengeUserService.readChallengeUserList(kidUser,
             status);
         if (Objects.equals(status, "walking")) {
             challengeList.forEach(challenge -> {
@@ -213,7 +214,7 @@ public class ChallengeMapper {
 
         sundayValidation();
         userRoleValidation(authUser, false);
-        ChallengeUser challengeUser = challengeUserService.getChallengeUser(challengeId);
+        ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
         User user = challengeUser.getUser();
         Challenge challenge = challengeService.readChallenge(challengeId);
         if (challenge.getContractUser().getId() != authUser.getId()) {
@@ -239,7 +240,7 @@ public class ChallengeMapper {
     public WeekDTO readWeekInfoMapper(User authUser) {
 
         userRoleValidation(authUser, true);
-        List<Challenge> walkingChallengeList = challengeUserService.getChallengeUserList(authUser,
+        List<Challenge> walkingChallengeList = challengeUserService.readChallengeUserList(authUser,
                 "walking")
             .stream()
             .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
@@ -256,7 +257,8 @@ public class ChallengeMapper {
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
-        List<Challenge> kidWalkingChallengeList = challengeUserService.getChallengeUserList(kidUser,
+        List<Challenge> kidWalkingChallengeList = challengeUserService.readChallengeUserList(
+                kidUser,
                 "walking")
             .stream()
             .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
@@ -272,7 +274,7 @@ public class ChallengeMapper {
         String interestPayment) {
 
         userRoleValidation(authUser, true);
-        List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
+        List<Challenge> achievedChallengeUserList = challengeUserService.readAchievedChallengeUserList(
             authUser);
 
         return challengeService.readAchievedChallenge(
@@ -289,7 +291,7 @@ public class ChallengeMapper {
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
-        List<Challenge> achievedChallengeUserList = challengeUserService.getAchievedChallengeUserList(
+        List<Challenge> achievedChallengeUserList = challengeUserService.readAchievedChallengeUserList(
             kidUser);
 
         return challengeService.readKidAchievedChallenge(
