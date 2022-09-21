@@ -45,7 +45,8 @@ public class ChallengeController {
 
         log.info("api = 돈길 생성, req = {}", challengeRequest);
 
-        ChallengeDTO challengeDTO = challengeMapper.postChallenge(authUser, challengeRequest);
+        ChallengeDTO challengeDTO = challengeMapper.createChallengeMapper(authUser,
+            challengeRequest);
 
         return CommonResponse.onSuccess(challengeDTO);
     }
@@ -57,7 +58,7 @@ public class ChallengeController {
 
         log.info("api = 돈길 포기하기, user = {} challengeId = {}", authUser.getUsername(), challengeId);
 
-        ChallengeDTO challengeDTO = challengeMapper.deleteChallenge(authUser, challengeId);
+        ChallengeDTO challengeDTO = challengeMapper.deleteChallengeMapper(authUser, challengeId);
 
         return CommonResponse.onSuccess(challengeDTO);
     }
@@ -69,7 +70,8 @@ public class ChallengeController {
 
         log.info("api = 돈길 리스트 가져오기, user = {}, status = {}", authUser.getUsername(), status);
 
-        List<ChallengeDTO> challengeDTOList = challengeMapper.getListChallenge(authUser, status);
+        List<ChallengeDTO> challengeDTOList = challengeMapper.readChallengeListMapper(authUser,
+            status);
 
         return CommonResponse.onSuccess(challengeDTOList);
     }
@@ -83,7 +85,8 @@ public class ChallengeController {
         log.info("api = 자녀의 돈길 리스트 가져오기, user = {}, kidId = {}, status = {}",
             authUser.getUsername(), kidId, status);
 
-        KidChallengeListDTO kidChallengeListDTO = challengeMapper.getListKidChallenge(authUser,
+        KidChallengeListDTO kidChallengeListDTO = challengeMapper.readKidChallengeListMapper(
+            authUser,
             kidId,
             status);
 
@@ -99,7 +102,8 @@ public class ChallengeController {
         log.info("api = 자녀의 돈길 수락 / 거절, user = {}, challengeId = {}, 수락여부 = {}",
             authUser.getUsername(), challengeId, kidChallengeRequest.getAccept());
 
-        ChallengeDTO challengeDTO = challengeMapper.patchChallengeStatus(authUser, challengeId,
+        ChallengeDTO challengeDTO = challengeMapper.updateChallengeStatusMapper(authUser,
+            challengeId,
             kidChallengeRequest);
 
         return CommonResponse.onSuccess(challengeDTO);
@@ -111,7 +115,7 @@ public class ChallengeController {
 
         log.info("api = 주차 정보 가져오기, user = {}", authUser.getUsername());
 
-        WeekDTO weekInfo = challengeMapper.getWeekInfo(authUser);
+        WeekDTO weekInfo = challengeMapper.readWeekInfoMapper(authUser);
 
         return CommonResponse.onSuccess(weekInfo);
     }
@@ -123,7 +127,7 @@ public class ChallengeController {
 
         log.info("api = 자녀의 주차 정보 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
 
-        KidWeekDTO kidWeekInfo = challengeMapper.getKidWeekInfo(authUser, kidId);
+        KidWeekDTO kidWeekInfo = challengeMapper.readKidWeekInfoMapper(authUser, kidId);
 
         return CommonResponse.onSuccess(kidWeekInfo);
     }
@@ -135,7 +139,7 @@ public class ChallengeController {
 
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}", authUser.getUsername());
 
-        AchievedChallengeListDTO achievedListChallenge = challengeMapper.getAchievedListChallenge(
+        AchievedChallengeListDTO achievedListChallenge = challengeMapper.readAchievedChallengeListMapper(
             authUser, interestPayment);
 
         return CommonResponse.onSuccess(achievedListChallenge);
@@ -149,7 +153,7 @@ public class ChallengeController {
 
         log.info("api = 완주한 돈길 리스트 가져오기, user = {}, kid = {}", authUser.getUsername(), kidId);
 
-        KidAchievedChallengeListDTO kidAchievedListChallenge = challengeMapper.getKidAchievedListChallenge(
+        KidAchievedChallengeListDTO kidAchievedListChallenge = challengeMapper.readKidAchievedChallengeListMapper(
             authUser, kidId, interestPayment);
 
         return CommonResponse.onSuccess(kidAchievedListChallenge);
@@ -164,7 +168,8 @@ public class ChallengeController {
         log.info("api = 완주한 돈길에 이자 지급, user = {}, challengeId = {}", authUser.getUsername(),
             challengeId);
 
-        AchievedChallengeDTO achievedChallengeDTO = challengeMapper.patchInterestPayment(authUser,
+        AchievedChallengeDTO achievedChallengeDTO = challengeMapper.updateChallengeInterestPaymentMapper(
+            authUser,
             challengeId);
 
         return CommonResponse.onSuccess(achievedChallengeDTO);
@@ -177,7 +182,7 @@ public class ChallengeController {
 
         log.info("api = 돈길 걷기, user = {}, challengeId = {}", authUser, challengeId);
 
-        ProgressDTO progressDTO = challengeMapper.patchProgress(authUser, challengeId);
+        ProgressDTO progressDTO = challengeMapper.updateProgressMapper(authUser, challengeId);
 
         return CommonResponse.onSuccess(progressDTO);
     }
