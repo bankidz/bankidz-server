@@ -8,6 +8,7 @@ import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NotificationDTO;
 import com.ceos.bankids.dto.NotificationIsReadDTO;
 import com.ceos.bankids.dto.NotificationListDTO;
@@ -110,6 +111,30 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         } else {
             return new NotificationIsReadDTO(false);
         }
+    }
+
+    @Transactional
+    @Override
+    public void createAllNotification(List<User> userList, String title, String message,
+        AllSendNotificationDTO allSendNotificationDTO) {
+        userList.stream()
+            .filter(user -> user.getExpoToken() != null)
+            .forEach(user -> {
+                if (user.getNoticeOptIn() && user.getExpoToken()
+                    .startsWith("ExponentPushToken")) {
+                    this.sendMessage(user, title, message,
+                        allSendNotificationDTO.getNewMap(), NotificationCategory.NOTICE,
+                        "/manage/notices/" + allSendNotificationDTO.getNewMap()
+                            .get("noticeId"));
+                } else {
+                    Notification notification = Notification.builder().user(user).title(title)
+                        .message(message).notificationCategory(NotificationCategory.NOTICE)
+                        .linkUrl("/manage/notices/" + allSendNotificationDTO.getNewMap()
+                            .get("noticeId"))
+                        .build();
+                    notificationRepository.save(notification);
+                }
+            });
     }
 
     @Transactional
