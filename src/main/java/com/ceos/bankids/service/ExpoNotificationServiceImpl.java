@@ -5,6 +5,7 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.NotificationDTO;
@@ -351,6 +352,27 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 걷기 알림 전송", contractUser.getId(),
             user.getId(), challenge.getId());
+    }
+
+    @Async
+    public void newFamilyUserNotification(User newFamilyUser, List<FamilyUser> familyUserList) {
+
+        String title = "가족그룹\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66에 새로 참여했어요";
+        String notificationBody = "누가 가족그룹에 참여했는지 확인해요!\uD83D\uDCAB";
+        HashMap<String, Object> newMap = new HashMap<>();
+        NotificationCategory notificationCategory = NotificationCategory.FAMILY;
+//        newMap.put("user", newFamilyUser.getId());
+        familyUserList.forEach(familyUser -> {
+            User user = familyUser.getUser();
+            Boolean checkServiceOptIn = checkServiceOptIn(user, title, notificationBody,
+                notificationCategory, "");
+            if (checkServiceOptIn) {
+                this.sendMessage(user, title, notificationBody, newMap,
+                    notificationCategory, "");
+            }
+            log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
+                newFamilyUser.getId());
+        });
     }
 
     private Boolean checkServiceOptIn(User user, String title, String body,

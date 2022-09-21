@@ -3,7 +3,6 @@ package com.ceos.bankids.mapper;
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.constant.NotificationCategory;
-import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Notification;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
@@ -15,11 +14,8 @@ import com.ceos.bankids.repository.NotificationRepository;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import io.swagger.annotations.ApiOperation;
-import java.util.HashMap;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -107,38 +103,5 @@ public class NotificationController {
         NotificationDTO notificationDTO = expoNotificationService.updateNotification(authUser,
             notificationId);
         return CommonResponse.onSuccess(notificationDTO);
-    }
-
-    @Async
-    public void newFamilyUserNotification(User newFamilyUser, List<FamilyUser> familyUserList) {
-
-        String title = "가족그룹\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66에 새로 참여했어요";
-        String notificationBody = "누가 가족그룹에 참여했는지 확인해요!\uD83D\uDCAB";
-        HashMap<String, Object> newMap = new HashMap<>();
-        NotificationCategory notificationCategory = NotificationCategory.FAMILY;
-//        newMap.put("user", newFamilyUser.getId());
-        familyUserList.forEach(familyUser -> {
-            User user = familyUser.getUser();
-            Boolean checkServiceOptIn = checkServiceOptIn(user, title, notificationBody,
-                notificationCategory, "");
-            if (checkServiceOptIn) {
-                expoNotificationService.sendMessage(user, title, notificationBody, newMap,
-                    notificationCategory, "");
-            }
-            log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
-                newFamilyUser.getId());
-        });
-    }
-
-    private Boolean checkServiceOptIn(User user, String title, String body,
-        NotificationCategory notificationCategory, String linkUrl) {
-        if (!user.getServiceOptIn() || !user.getExpoToken().startsWith("ExponentPushToken")) {
-            Notification notification = Notification.builder().user(user).title(title).message(body)
-                .notificationCategory(notificationCategory).linkUrl(linkUrl)
-                .build();
-            notificationRepository.save(notification);
-            return false;
-        }
-        return true;
     }
 }
