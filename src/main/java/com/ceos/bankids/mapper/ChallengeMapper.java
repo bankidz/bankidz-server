@@ -192,16 +192,18 @@ public class ChallengeMapper {
                 }
             });
         } else if (Objects.equals(status, "pending")) {
-            challengeList.forEach(challenge -> {
-                if (challenge.getContractUser().getId() == authUser.getId()) {
-                    ChallengeListMapperDTO challengeListMapperDTO = challengeService.readPendingChallenge(
-                        challenge);
-                    ChallengeDTO challengeDTO = new ChallengeDTO(
-                        challengeListMapperDTO.getChallenge(),
-                        null, challenge.getComment());
-                    challengeDTOList.add(challengeDTO);
-                }
-            });
+            challengeList.stream()
+                .filter(challenge -> challenge.getChallengeStatus() != ChallengeStatus.REJECTED)
+                .forEach(challenge -> {
+                    if (challenge.getContractUser().getId() == authUser.getId()) {
+                        ChallengeListMapperDTO challengeListMapperDTO = challengeService.readPendingChallenge(
+                            challenge);
+                        ChallengeDTO challengeDTO = new ChallengeDTO(
+                            challengeListMapperDTO.getChallenge(),
+                            null, challenge.getComment());
+                        challengeDTOList.add(challengeDTO);
+                    }
+                });
         }
         return new KidChallengeListDTO(kidUser,
             challengeDTOList);
