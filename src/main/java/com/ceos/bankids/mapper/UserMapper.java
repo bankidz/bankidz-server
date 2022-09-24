@@ -1,12 +1,9 @@
 package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.domain.Challenge;
-import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
@@ -146,27 +143,27 @@ public class UserMapper {
                 user);
             FamilyRequest familyRequest = new FamilyRequest(family.getCode());
 
-            if (user.getIsKid()) {
-                List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
-                    user);
-                challengeUserService.deleteAllChallengeUser(user);
-                ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
-                    challengeList);
-                kidService.updateInitKid(user);
-                parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
-                    challengeCompleteDeleteByKidMapperDTO);
-            } else {
-                List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
-                    user);
-                kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
-                parentService.updateInitParent(user);
-                challengeService.challengeCompleteDeleteByParent(challengeUserList);
-            }
-
-            familyUserService.deleteFamilyUser(familyUser.get());
-            if (familyUserList.size() == 0) {
-                familyService.deleteFamily(family);
-            }
+//            if (user.getIsKid()) {
+//                List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
+//                    user);
+//                challengeUserService.deleteAllChallengeUser(user);
+//                ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
+//                    challengeList);
+//                kidService.updateInitKid(user);
+//                parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
+//                    challengeCompleteDeleteByKidMapperDTO);
+//            } else {
+//                List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+//                    user);
+//                kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
+//                parentService.updateInitParent(user);
+//                challengeService.challengeCompleteDeleteByParent(challengeUserList);
+//            }
+//
+//            familyUserService.deleteFamilyUser(familyUser.get());
+//            if (familyUserList.size() == 0) {
+//                familyService.deleteFamily(family);
+//            }
         }
 
         if (user.getIsKid()) {

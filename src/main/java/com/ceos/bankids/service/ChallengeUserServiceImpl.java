@@ -25,7 +25,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Transactional
     @Override
-    public ChallengeUser postChallengeUser(User user, Challenge challenge) {
+    public ChallengeUser createdChallengeUser(User user, Challenge challenge) {
         ChallengeUser challengeUser = ChallengeUser.builder().user(user).challenge(challenge)
             .member("parent")
             .build();
@@ -35,7 +35,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public ChallengeUser getChallengeUser(Long challengeId) {
+    public ChallengeUser readChallengeUser(Long challengeId) {
         ChallengeUser challengeUser = cuRepo.findByChallengeId(challengeId)
             .orElseThrow(
                 () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE_USER.getErrorCode()));
@@ -44,7 +44,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Transactional
     @Override
-    public List<Challenge> getChallengeUserList(User authUser, String status) {
+    public List<Challenge> readChallengeUserList(User authUser, String status) {
         if (Objects.equals(status, "pending")) {
             return cuRepo.findByUserId(authUser.getId()).stream()
                 .map(ChallengeUser::getChallenge)
@@ -63,7 +63,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Challenge> getAchievedChallengeUserList(User authUser) {
+    public List<Challenge> readAchievedChallengeUserList(User authUser) {
         return cuRepo.findByUserId(authUser.getId()).stream().map(ChallengeUser::getChallenge)
             .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED)
             .collect(
@@ -72,7 +72,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Challenge> getAllChallengeUserList(User authUser) {
+    public List<Challenge> readAllChallengeUserListToChallengeList(User authUser) {
         return cuRepo.findByUserId(authUser.getId()).stream().map(ChallengeUser::getChallenge)
             .collect(
                 Collectors.toList());
@@ -80,7 +80,7 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Override
     @Transactional
-    public void deleteAllChallengeUser(User authUser) {
+    public void deleteAllChallengeUserOfUser(User authUser) {
         List<ChallengeUser> challengeUserList = cuRepo.findByUserId(authUser.getId());
         cuRepo.deleteAll(challengeUserList);
     }

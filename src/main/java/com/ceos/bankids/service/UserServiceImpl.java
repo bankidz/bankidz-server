@@ -6,6 +6,7 @@ import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.mapper.request.ExpoRequest;
 import com.ceos.bankids.mapper.request.UserTypeRequest;
 import com.ceos.bankids.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -105,5 +106,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public OptInDTO readOptIn(User user) {
         return new OptInDTO(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> readAllUserList() {
+        return userRepository.findAll();
     }
 }

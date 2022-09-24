@@ -2,13 +2,15 @@ package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.mapper.request.NoticeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NoticeDTO;
 import com.ceos.bankids.dto.NoticeListDTO;
 import com.ceos.bankids.exception.ForbiddenException;
+import com.ceos.bankids.mapper.request.NoticeRequest;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
+import com.ceos.bankids.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class NoticeController {
 
     private final NoticeServiceImpl noticeService;
-    private final NotificationController notificationController;
+    private final UserServiceImpl userService;
+    private final ExpoNotificationServiceImpl notificationService;
 
     @ApiOperation(value = "공지사항 작성")
     @PostMapping(produces = "application/json; charset=utf-8")
@@ -49,7 +52,8 @@ public class NoticeController {
         newMap.put("noticeId", noticeDTO.getId());
         AllSendNotificationDTO allSendNotificationDTO = new AllSendNotificationDTO(title, message,
             newMap);
-        notificationController.allSendNotification(allSendNotificationDTO, authUser);
+        List<User> userList = userService.readAllUserList();
+        notificationService.createAllNotification(userList, title, message, allSendNotificationDTO);
 
         return CommonResponse.onSuccess(noticeDTO);
     }
