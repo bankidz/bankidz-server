@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/apple")
 @RequiredArgsConstructor
 public class AppleController {
 
