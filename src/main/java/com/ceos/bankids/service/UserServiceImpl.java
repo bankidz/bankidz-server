@@ -1,20 +1,11 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.OptInDTO;
+import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.mapper.request.ExpoRequest;
 import com.ceos.bankids.mapper.request.UserTypeRequest;
-import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.KidDTO;
-import com.ceos.bankids.dto.LoginDTO;
-import com.ceos.bankids.dto.MyPageDTO;
-import com.ceos.bankids.dto.OptInDTO;
-import com.ceos.bankids.dto.ParentDTO;
-import com.ceos.bankids.dto.UserDTO;
-import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.repository.UserRepository;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,13 +19,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getUserByAuthenticationCodeNullable(String code) {
+    public Optional<User> readUserByAuthenticationCodeNullable(String code) {
         return userRepository.findByAuthenticationCode(code);
     }
 
     @Override
     @Transactional
-    public User postNewUser(String username, String code, String provider) {
+    public User createNewUser(String username, String code, String provider) {
         if (username.getBytes().length > 6) {
             username = username.substring(0, 3);
         }
@@ -45,32 +36,13 @@ public class UserServiceImpl implements UserService {
             .noticeOptIn(false).serviceOptIn(false)
             .build();
         userRepository.save(user);
+
         return user;
     }
 
     @Override
     @Transactional
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
-
-        if (user.getIsFemale() != null) {
-            throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        dateFormat.setLenient(false);
-        try {
-            dateFormat.parse(userTypeRequest.getBirthday());
-        } catch (ParseException e) {
-            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
-        }
-
-        Calendar cal = Calendar.getInstance();
-        Integer currYear = cal.get(Calendar.YEAR);
-        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
-        if (birthYear >= currYear || birthYear <= currYear - 100) {
-            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
-        }
-
         user.setBirthday(userTypeRequest.getBirthday());
         user.setIsFemale(userTypeRequest.getIsFemale());
         user.setIsKid(userTypeRequest.getIsKid());
@@ -81,46 +53,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginDTO issueNewTokens(User user, String newAccessToken, String newRefreshToken) {
+    public User updateRefreshToken(User user, String newRefreshToken) {
         user.setRefreshToken(newRefreshToken);
         userRepository.save(user);
 
-        LoginDTO loginDTO;
-        if (user.getIsKid() == null || user.getIsKid() == false) {
-            loginDTO = new LoginDTO(user.getIsKid(), newAccessToken, user.getProvider());
-        } else {
-            loginDTO = new LoginDTO(user.getIsKid(), newAccessToken, user.getKid().getLevel(),
-                user.getProvider());
-        }
-        return loginDTO;
-    }
-
-//    @Override
-//    @Transactional
-//    public void setNewCookie(User user, HttpServletResponse response) {
-//        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
-//        cookie.setMaxAge(14 * 24 * 60 * 60);
-//        cookie.setSecure(true);
-//        cookie.setHttpOnly(true);
-//        cookie.setPath("/");
-//
-//        response.addCookie(cookie);
-//    }
-
-    @Override
-    public MyPageDTO getUserInformation(User user) {
-        MyPageDTO myPageDTO;
-        UserDTO userDTO = new UserDTO(user);
-        if (user.getIsKid() == null) {
-            throw new BadRequestException(ErrorCode.USER_TYPE_NOT_CHOSEN.getErrorCode());
-        } else if (user.getIsKid() == true) {
-            KidDTO kidDTO = new KidDTO(user.getKid());
-            myPageDTO = new MyPageDTO(userDTO, kidDTO);
-        } else {
-            ParentDTO parentDTO = new ParentDTO(user.getParent());
-            myPageDTO = new MyPageDTO(userDTO, parentDTO);
-        }
-        return myPageDTO;
+        return user;
     }
 
     @Override
@@ -136,6 +73,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO deleteUser(User user) {
         UserDTO userDTO = new UserDTO(user);
         userRepository.delete(user);
+
         return userDTO;
     }
 
@@ -165,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OptInDTO getOptIn(User user) {
+    public OptInDTO readOptIn(User user) {
         return new OptInDTO(user);
     }
 }

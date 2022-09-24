@@ -1,4 +1,4 @@
-package com.ceos.bankids.mapper;
+package com.ceos.bankids.controller;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
