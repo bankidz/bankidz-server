@@ -1,21 +1,17 @@
 package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
-import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.mapper.request.ExpoRequest;
-import com.ceos.bankids.mapper.request.FamilyRequest;
 import com.ceos.bankids.mapper.request.UserTypeRequest;
 import com.ceos.bankids.mapper.request.WithdrawalRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
@@ -33,7 +29,6 @@ import com.ceos.bankids.service.UserServiceImpl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
 import kotlin.jvm.internal.SerializedIr;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +106,7 @@ public class UserMapper {
         return loginDTO;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public MyPageDTO readUserInformation(User user) {
         MyPageDTO myPageDTO;
         UserDTO userDTO = new UserDTO(user);
@@ -137,11 +132,11 @@ public class UserMapper {
     @Transactional
     public UserDTO deleteUserAccount(User user, WithdrawalRequest withdrawalRequest) {
         Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(user);
-        if (familyUser.isPresent()) {
-            Family family = familyUser.get().getFamily();
-            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
-                user);
-            FamilyRequest familyRequest = new FamilyRequest(family.getCode());
+//        if (familyUser.isPresent()) {
+//            Family family = familyUser.get().getFamily();
+//            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+//                user);
+//            FamilyRequest familyRequest = new FamilyRequest(family.getCode());
 
 //            if (user.getIsKid()) {
 //                List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
@@ -164,23 +159,24 @@ public class UserMapper {
 //            if (familyUserList.size() == 0) {
 //                familyService.deleteFamily(family);
 //            }
-        }
+//        }
+//
+//        if (user.getIsKid()) {
+//            KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(user);
+//            slackService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
+//                withdrawalRequest.getMessage());
+//            kidService.deleteKid(user);
+//        } else {
+//            ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(user);
+//            slackService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
+//                withdrawalRequest.getMessage());
+//            parentService.deleteParent(user);
+//        }
+//        notificationService.deleteAllNotification(user);
+//        UserDTO userDTO = userService.deleteUser(user);
 
-        if (user.getIsKid()) {
-            KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(user);
-            slackService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
-                withdrawalRequest.getMessage());
-            kidService.deleteKid(user);
-        } else {
-            ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(user);
-            slackService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
-                withdrawalRequest.getMessage());
-            parentService.deleteParent(user);
-        }
-        notificationService.deleteAllNotification(user);
-        UserDTO userDTO = userService.deleteUser(user);
-
-        return userDTO;
+//        return userDTO;
+        return null;
     }
 
     @Transactional
@@ -204,10 +200,8 @@ public class UserMapper {
         return optInDTO;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public OptInDTO readOptIn(User user) {
-        OptInDTO optInDTO = userService.readOptIn(user);
-
-        return optInDTO;
+        return new OptInDTO(user);
     }
 }

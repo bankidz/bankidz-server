@@ -104,11 +104,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OptInDTO readOptIn(User user) {
-        return new OptInDTO(user);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<User> readAllUserList() {
         return userRepository.findAll();
