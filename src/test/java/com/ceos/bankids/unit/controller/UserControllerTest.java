@@ -1,12 +1,6 @@
 package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.mapper.NotificationController;
-import com.ceos.bankids.mapper.UserController;
-import com.ceos.bankids.mapper.request.ExpoRequest;
-import com.ceos.bankids.mapper.request.FamilyRequest;
-import com.ceos.bankids.mapper.request.UserTypeRequest;
-import com.ceos.bankids.mapper.request.WithdrawalRequest;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
@@ -22,6 +16,11 @@ import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.mapper.UserController;
+import com.ceos.bankids.mapper.request.ExpoRequest;
+import com.ceos.bankids.mapper.request.FamilyRequest;
+import com.ceos.bankids.mapper.request.UserTypeRequest;
+import com.ceos.bankids.mapper.request.WithdrawalRequest;
 import com.ceos.bankids.repository.FamilyRepository;
 import com.ceos.bankids.repository.FamilyUserRepository;
 import com.ceos.bankids.repository.KidBackupRepository;
@@ -969,8 +968,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        NotificationController mockNotificationController = Mockito.mock(
-            NotificationController.class);
+        NotificationMapper mockNotificationMapper = Mockito.mock(
+            NotificationMapper.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
@@ -1074,8 +1073,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        NotificationController mockNotificationController = Mockito.mock(
-            NotificationController.class);
+        NotificationMapper mockNotificationMapper = Mockito.mock(
+            NotificationMapper.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
@@ -1190,8 +1189,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        NotificationController mockNotificationController = Mockito.mock(
-            NotificationController.class);
+        NotificationMapper mockNotificationMapper = Mockito.mock(
+            NotificationMapper.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
@@ -1322,8 +1321,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        NotificationController mockNotificationController = Mockito.mock(
-            NotificationController.class);
+        NotificationMapper mockNotificationMapper = Mockito.mock(
+            NotificationMapper.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
@@ -1441,8 +1440,8 @@ public class UserControllerTest {
         KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
         ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        NotificationController mockNotificationController = Mockito.mock(
-            NotificationController.class);
+        NotificationMapper mockNotificationMapper = Mockito.mock(
+            NotificationMapper.class);
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);

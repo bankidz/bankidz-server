@@ -1,8 +1,6 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.mapper.request.ExpoRequest;
-import com.ceos.bankids.mapper.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
@@ -11,10 +9,13 @@ import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.mapper.request.ExpoRequest;
+import com.ceos.bankids.mapper.request.UserTypeRequest;
 import com.ceos.bankids.repository.UserRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -167,5 +168,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public OptInDTO getOptIn(User user) {
         return new OptInDTO(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> readAllUserList() {
+        return userRepository.findAll();
     }
 }

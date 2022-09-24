@@ -1,7 +1,6 @@
 package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
-import com.ceos.bankids.mapper.request.FamilyRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
@@ -11,8 +10,10 @@ import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
+import com.ceos.bankids.mapper.request.FamilyRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
@@ -44,7 +45,7 @@ public class FamilyController {
     private final ChallengeUserServiceImpl challengeUserService;
     private final KidServiceImpl kidService;
     private final ParentServiceImpl parentService;
-    private final NotificationController notificationController;
+    private final ExpoNotificationServiceImpl notificationService;
 
     @ApiOperation(value = "가족 생성하기")
     @PostMapping(value = "", produces = "application/json; charset=utf-8")
@@ -106,7 +107,7 @@ public class FamilyController {
         familyUserService.leavePreviousFamily(authUser);
         familyUserService.postNewFamilyUser(family, authUser);
 
-        notificationController.newFamilyUserNotification(authUser, familyUserList);
+        notificationService.newFamilyUserNotification(authUser, familyUserList);
 
         return CommonResponse.onSuccess(new FamilyDTO(family, familyUserList.stream()
             .map(FamilyUserDTO::new)
@@ -128,9 +129,9 @@ public class FamilyController {
             authUser);
 
         if (authUser.getIsKid()) {
-            List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
+            List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
                 authUser);
-            challengeUserService.deleteAllChallengeUser(authUser);
+            challengeUserService.deleteAllChallengeUserOfUser(authUser);
             ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
                 challengeList);
             kidService.updateInitKid(authUser);
