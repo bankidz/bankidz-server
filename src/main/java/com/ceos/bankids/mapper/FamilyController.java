@@ -10,7 +10,7 @@ import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
-import com.ceos.bankids.mapper.request.FamilyRequest;
+import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;

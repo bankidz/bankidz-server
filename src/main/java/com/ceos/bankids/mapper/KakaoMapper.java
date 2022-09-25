@@ -3,7 +3,7 @@ package com.ceos.bankids.mapper;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
-import com.ceos.bankids.mapper.request.KakaoRequest;
+import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.service.KakaoServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.util.Optional;

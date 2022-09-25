@@ -13,7 +13,7 @@ import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.mapper.KakaoMapper;
 import com.ceos.bankids.mapper.UserMapper;
-import com.ceos.bankids.mapper.request.KakaoRequest;
+import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;

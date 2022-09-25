@@ -1,6 +1,6 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.mapper.request.AppleRequest;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;

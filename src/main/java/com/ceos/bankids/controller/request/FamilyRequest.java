@@ -1,4 +1,4 @@
-package com.ceos.bankids.mapper.request;
+package com.ceos.bankids.controller.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WithdrawalRequest {
+public class FamilyRequest {
 
-    @ApiModelProperty(example = "나 탈퇴하겠어!")
-    @NotNull(message = "message may not be null")
-    private String message;
-
+    @ApiModelProperty(example = "863035e8-b067-4dae-8961-b52e6839a81b")
+    @NotNull(message = "code may not be null")
+    private String code;
 }

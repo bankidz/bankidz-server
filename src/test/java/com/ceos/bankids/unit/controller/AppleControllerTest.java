@@ -13,7 +13,7 @@ import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.mapper.AppleMapper;
 import com.ceos.bankids.mapper.UserMapper;
-import com.ceos.bankids.mapper.request.AppleRequest;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.AppleServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;

@@ -7,7 +7,7 @@ import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NoticeDTO;
 import com.ceos.bankids.dto.NoticeListDTO;
 import com.ceos.bankids.exception.ForbiddenException;
-import com.ceos.bankids.mapper.request.NoticeRequest;
+import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;

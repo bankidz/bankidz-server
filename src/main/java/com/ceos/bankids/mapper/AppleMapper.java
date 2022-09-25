@@ -4,7 +4,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
-import com.ceos.bankids.mapper.request.AppleRequest;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.service.AppleServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.io.IOException;

@@ -5,7 +5,7 @@ import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.mapper.KakaoMapper;
 import com.ceos.bankids.mapper.UserMapper;
-import com.ceos.bankids.mapper.request.KakaoRequest;
+import com.ceos.bankids.controller.request.KakaoRequest;
 import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
