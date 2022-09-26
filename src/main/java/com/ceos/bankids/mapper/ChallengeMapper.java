@@ -2,12 +2,18 @@ package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.ChallengeRequest;
+import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.Family;
+import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.ChallengeDTO;
 import com.ceos.bankids.dto.ChallengeListMapperDTO;
 import com.ceos.bankids.dto.ChallengePostDTO;
@@ -18,8 +24,6 @@ import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
-import com.ceos.bankids.controller.request.ChallengeRequest;
-import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
@@ -334,6 +338,32 @@ public class ChallengeMapper {
         }
 
         return progressDTO;
+    }
+
+    @Transactional
+    public void deleteChallengeInFamily(User user, FamilyRequest familyRequest) {
+        FamilyUser familyUser = familyUserService.findByUserAndCheckCode(user,
+            familyRequest.getCode());
+        Family family = familyUser.getFamily();
+        List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+            user);
+
+        if (user.getIsKid()) {
+            List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
+                user);
+            challengeUserService.deleteAllChallengeUserOfUser(user);
+            ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
+                challengeList);
+            kidService.updateInitKid(user);
+            parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
+                challengeCompleteDeleteByKidMapperDTO);
+        } else {
+            List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+                user);
+            kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
+            parentService.updateInitParent(user);
+            challengeService.challengeCompleteDeleteByParent(challengeUserList);
+        }
     }
 
     // 일요일 처리 validation

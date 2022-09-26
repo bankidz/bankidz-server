@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface FamilyService {
 
-    public Family postNewFamily(User user);
+    public Family createFamily(User user);
 
-    public Family getFamilyByCode(String code);
+    public Family findByCode(String code);
 
     public void deleteFamily(Family family);
 }

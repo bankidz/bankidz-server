@@ -4,12 +4,9 @@ import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.repository.FamilyUserRepository;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,7 +30,7 @@ public class FamilyUserServiceImpl implements FamilyUserService {
 
     @Override
     @Transactional
-    public void postNewFamilyUser(Family family, User user) {
+    public void createFamilyUser(Family family, User user) {
         FamilyUser familyUser = FamilyUser.builder()
             .user(user)
             .family(family)
@@ -43,7 +40,7 @@ public class FamilyUserServiceImpl implements FamilyUserService {
 
     @Override
     @Transactional
-    public void leavePreviousFamily(User user) {
+    public void leavePreviousFamilyIfExists(User user) {
         Optional<FamilyUser> familyUser = familyUserRepository.findByUser(user);
         if (familyUser.isPresent()) {
             familyUserRepository.delete(familyUser.get());
@@ -78,34 +75,8 @@ public class FamilyUserServiceImpl implements FamilyUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FamilyUser> checkFamilyUserList(Family family, User user) {
-        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family);
-
-        if (familyUserList.stream().filter(fu -> fu.getUser().equals(user))
-            .collect(Collectors.toList()).size() > 0) {
-            throw new ForbiddenException(ErrorCode.USER_ALREADY_IN_THIS_FAMILY.getErrorCode());
-        }
-
-        if (!user.getIsKid()) {
-            if (user.getIsFemale() == null) {
-                throw new BadRequestException(ErrorCode.INVALID_USER_TYPE.getErrorCode());
-            } else if (user.getIsFemale()) {
-                List<FamilyUser> checkMomList = familyUserList.stream()
-                    .filter(fu -> !fu.getUser().getIsKid() && fu.getUser().getIsFemale())
-                    .collect(Collectors.toList());
-                if (!checkMomList.isEmpty()) {
-                    throw new ForbiddenException(ErrorCode.MOM_ALREADY_EXISTS.getErrorCode());
-                }
-            } else {
-                List<FamilyUser> checkDadList = familyUserList.stream()
-                    .filter(fu -> !fu.getUser().getIsKid() && !fu.getUser().getIsFemale())
-                    .collect(Collectors.toList());
-                if (!checkDadList.isEmpty()) {
-                    throw new ForbiddenException(ErrorCode.DAD_ALREADY_EXISTS.getErrorCode());
-                }
-            }
-        }
-        return familyUserList;
+    public List<FamilyUser> getFamilyUserList(Family family, User user) {
+        return familyUserRepository.findByFamily(family);
     }
 
     @Override
@@ -118,23 +89,6 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     @Transactional(readOnly = true)
     public List<FamilyUser> getFamilyUserListExclude(Family family, User user) {
         return familyUserRepository.findByFamilyAndUserNot(family, user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<KidListDTO> getKidListFromFamily(FamilyUser familyUser) {
-        User user = familyUser.getUser();
-        Family family = familyUser.getFamily();
-        if (user.getIsKid()) {
-            throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
-        }
-
-        List<FamilyUser> familyUserList = familyUserRepository.findByFamily(family);
-        List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .filter(User::getIsKid).map(KidListDTO::new).collect(
-                Collectors.toList());
-        Collections.sort(kidListDTOList, new KidListDTOComparator());
-        return kidListDTOList;
     }
 
     @Override
@@ -166,11 +120,5 @@ public class FamilyUserServiceImpl implements FamilyUserService {
 
     }
 
-    class KidListDTOComparator implements Comparator<KidListDTO> {
 
-        @Override
-        public int compare(KidListDTO k1, KidListDTO k2) {
-            return k1.getUsername().compareTo(k2.getUsername());
-        }
-    }
 }
