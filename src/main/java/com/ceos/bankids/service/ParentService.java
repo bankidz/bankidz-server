@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ParentService {
 
-    public void createNewParent(User user);
+    public void createParent(User user);
 
     public void deleteParent(User user);
 

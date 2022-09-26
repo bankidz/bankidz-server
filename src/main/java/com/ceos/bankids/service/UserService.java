@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
 
-    public Optional<User> readUserByAuthenticationCodeNullable(String code);
+    public Optional<User> findUserByAuthenticationCodeNullable(String code);
 
     public User createNewUser(String username, String code, String provider);
 
@@ -30,6 +30,6 @@ public interface UserService {
 
     public OptInDTO updateServiceOptIn(User user);
 
-    public List<User> readAllUserList();
+    public List<User> getAllUserList();
 
 }

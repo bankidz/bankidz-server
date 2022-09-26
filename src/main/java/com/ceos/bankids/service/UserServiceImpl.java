@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> readUserByAuthenticationCodeNullable(String code) {
+    public Optional<User> findUserByAuthenticationCodeNullable(String code) {
         return userRepository.findByAuthenticationCode(code);
     }
 
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> readAllUserList() {
+    public List<User> getAllUserList() {
         return userRepository.findAll();
     }
 }

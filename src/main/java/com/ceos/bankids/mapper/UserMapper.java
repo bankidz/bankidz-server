@@ -86,9 +86,9 @@ public class UserMapper {
 
         UserDTO userDTO = userService.updateUserType(user, userTypeRequest);
         if (userDTO.getIsKid() == true) {
-            kidService.createNewKid(user);
+            kidService.createKid(user);
         } else {
-            parentService.createNewParent(user);
+            parentService.createParent(user);
         }
 
         return userDTO;

@@ -2,12 +2,12 @@ package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AllSendNotificationDTO;
 import com.ceos.bankids.dto.NoticeDTO;
 import com.ceos.bankids.dto.NoticeListDTO;
 import com.ceos.bankids.exception.ForbiddenException;
-import com.ceos.bankids.controller.request.NoticeRequest;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.NoticeServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
@@ -52,7 +52,7 @@ public class NoticeController {
         newMap.put("noticeId", noticeDTO.getId());
         AllSendNotificationDTO allSendNotificationDTO = new AllSendNotificationDTO(title, message,
             newMap);
-        List<User> userList = userService.readAllUserList();
+        List<User> userList = userService.getAllUserList();
         notificationService.createAllNotification(userList, title, message, allSendNotificationDTO);
 
         return CommonResponse.onSuccess(noticeDTO);

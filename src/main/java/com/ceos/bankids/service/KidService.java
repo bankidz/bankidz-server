@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface KidService {
 
-    public void createNewKid(User user);
+    public void createKid(User user);
 
     public void deleteKid(User user);
 
