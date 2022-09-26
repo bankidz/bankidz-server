@@ -95,7 +95,7 @@ public class UserMapper {
     }
 
     @Transactional
-    public LoginDTO refreshUserToken(User user) {
+    public LoginDTO updateUserToken(User user) {
         String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
         String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
 

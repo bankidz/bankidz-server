@@ -52,7 +52,7 @@ public class UserController {
 
         log.info("api = 토큰 리프레시, user = {}", authUser.getUsername());
 
-        LoginDTO loginDTO = userMapper.refreshUserToken(authUser);
+        LoginDTO loginDTO = userMapper.updateUserToken(authUser);
 
         return CommonResponse.onSuccess(loginDTO);
     }
