@@ -2,17 +2,24 @@ package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.FamilyRequest;
+import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.FamilyUserDTO;
 import com.ceos.bankids.dto.KidListDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
+import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
 import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
+import com.ceos.bankids.service.KidServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +37,10 @@ public class FamilyMapper {
     private final FamilyServiceImpl familyService;
     private final FamilyUserServiceImpl familyUserService;
     private final ExpoNotificationServiceImpl notificationService;
+    private final ChallengeServiceImpl challengeService;
+    private final ChallengeUserServiceImpl challengeUserService;
+    private final KidServiceImpl kidService;
+    private final ParentServiceImpl parentService;
 
     @Transactional
     public FamilyDTO createFamily(User user) {
@@ -119,6 +130,23 @@ public class FamilyMapper {
         Family family = familyUser.getFamily();
         List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
             user);
+
+        if (user.getIsKid()) {
+            List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
+                user);
+            challengeUserService.deleteAllChallengeUserOfUser(user);
+            ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
+                challengeList);
+            kidService.updateInitKid(user);
+            parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
+                challengeCompleteDeleteByKidMapperDTO);
+        } else {
+            List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+                user);
+            kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
+            parentService.updateInitParent(user);
+            challengeService.challengeCompleteDeleteByParent(challengeUserList);
+        }
 
         familyUserService.deleteFamilyUser(familyUser);
         if (familyUserList.size() == 0) {
