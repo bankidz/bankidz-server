@@ -19,7 +19,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     @Transactional
-    public void createNewParent(User user) {
+    public void createParent(User user) {
         Parent newParent = Parent.builder()
             .acceptedRequest(0L)
             .totalRequest(0L)

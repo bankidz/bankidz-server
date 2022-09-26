@@ -1,10 +1,10 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.controller.request.ExpoRequest;
+import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.UserDTO;
-import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> readUserByAuthenticationCodeNullable(String code) {
+    public Optional<User> findUserByAuthenticationCodeNullable(String code) {
         return userRepository.findByAuthenticationCode(code);
     }
 
@@ -71,11 +71,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDTO deleteUser(User user) {
-        UserDTO userDTO = new UserDTO(user);
+    public void deleteUser(User user) {
         userRepository.delete(user);
-
-        return userDTO;
     }
 
     @Override
@@ -105,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> readAllUserList() {
+    public List<User> getAllUserList() {
         return userRepository.findAll();
     }
 }

@@ -1,11 +1,11 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.mapper.KakaoMapper;
 import com.ceos.bankids.mapper.UserMapper;
-import com.ceos.bankids.controller.request.KakaoRequest;
 import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class KakaoController {
 
         User user = kakaoMapper.postKakaoLogin(kakaoRequest);
 
-        LoginDTO loginDTO = userMapper.refreshUserToken(user);
+        LoginDTO loginDTO = userMapper.updateUserToken(user);
 
         return CommonResponse.onSuccess(loginDTO);
     }

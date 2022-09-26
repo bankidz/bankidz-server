@@ -1,19 +1,25 @@
 package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.ExpoRequest;
+import com.ceos.bankids.controller.request.UserTypeRequest;
+import com.ceos.bankids.controller.request.WithdrawalRequest;
+import com.ceos.bankids.domain.Challenge;
+import com.ceos.bankids.domain.ChallengeUser;
+import com.ceos.bankids.domain.Family;
 import com.ceos.bankids.domain.FamilyUser;
 import com.ceos.bankids.domain.User;
+import com.ceos.bankids.dto.ChallengeCompleteDeleteByKidMapperDTO;
+import com.ceos.bankids.dto.KidBackupDTO;
 import com.ceos.bankids.dto.KidDTO;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
+import com.ceos.bankids.dto.ParentBackupDTO;
 import com.ceos.bankids.dto.ParentDTO;
 import com.ceos.bankids.dto.TokenDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.UserTypeRequest;
-import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;
@@ -29,6 +35,7 @@ import com.ceos.bankids.service.UserServiceImpl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import kotlin.jvm.internal.SerializedIr;
 import lombok.RequiredArgsConstructor;
@@ -79,16 +86,16 @@ public class UserMapper {
 
         UserDTO userDTO = userService.updateUserType(user, userTypeRequest);
         if (userDTO.getIsKid() == true) {
-            kidService.createNewKid(user);
+            kidService.createKid(user);
         } else {
-            parentService.createNewParent(user);
+            parentService.createParent(user);
         }
 
         return userDTO;
     }
 
     @Transactional
-    public LoginDTO refreshUserToken(User user) {
+    public LoginDTO updateUserToken(User user) {
         String newRefreshToken = jwtTokenService.encodeJwtRefreshToken(user.getId());
         String newAccessToken = jwtTokenService.encodeJwtToken(new TokenDTO(user));
 
@@ -130,53 +137,55 @@ public class UserMapper {
     }
 
     @Transactional
-    public UserDTO deleteUserAccount(User user, WithdrawalRequest withdrawalRequest) {
+    public void deleteFamilyUserIfExists(User user) {
         Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(user);
-//        if (familyUser.isPresent()) {
-//            Family family = familyUser.get().getFamily();
-//            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
-//                user);
-//            FamilyRequest familyRequest = new FamilyRequest(family.getCode());
+        if (familyUser.isPresent()) {
+            Family family = familyUser.get().getFamily();
+            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+                user);
 
-//            if (user.getIsKid()) {
-//                List<Challenge> challengeList = challengeUserService.getAllChallengeUserList(
-//                    user);
-//                challengeUserService.deleteAllChallengeUser(user);
-//                ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
-//                    challengeList);
-//                kidService.updateInitKid(user);
-//                parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
-//                    challengeCompleteDeleteByKidMapperDTO);
-//            } else {
-//                List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
-//                    user);
-//                kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
-//                parentService.updateInitParent(user);
-//                challengeService.challengeCompleteDeleteByParent(challengeUserList);
-//            }
-//
-//            familyUserService.deleteFamilyUser(familyUser.get());
-//            if (familyUserList.size() == 0) {
-//                familyService.deleteFamily(family);
-//            }
-//        }
-//
-//        if (user.getIsKid()) {
-//            KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(user);
-//            slackService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
-//                withdrawalRequest.getMessage());
-//            kidService.deleteKid(user);
-//        } else {
-//            ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(user);
-//            slackService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
-//                withdrawalRequest.getMessage());
-//            parentService.deleteParent(user);
-//        }
-//        notificationService.deleteAllNotification(user);
-//        UserDTO userDTO = userService.deleteUser(user);
+            if (user.getIsKid()) {
+                List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
+                    user);
+                challengeUserService.deleteAllChallengeUserOfUser(user);
+                ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
+                    challengeList);
+                kidService.updateInitKid(user);
+                parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
+                    challengeCompleteDeleteByKidMapperDTO);
+            } else {
+                List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
+                    user);
+                kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
+                parentService.updateInitParent(user);
+                challengeService.challengeCompleteDeleteByParent(challengeUserList);
+            }
 
-//        return userDTO;
-        return null;
+            familyUserService.deleteFamilyUser(familyUser.get());
+            if (familyUserList.size() == 0) {
+                familyService.deleteFamily(family);
+            }
+        }
+    }
+
+    @Transactional
+    public UserDTO deleteUserAccount(User user, WithdrawalRequest withdrawalRequest) {
+        if (user.getIsKid()) {
+            KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(user);
+            slackService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
+                withdrawalRequest.getMessage());
+            kidService.deleteKid(user);
+        } else {
+            ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(user);
+            slackService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
+                withdrawalRequest.getMessage());
+            parentService.deleteParent(user);
+        }
+
+        notificationService.deleteAllNotification(user);
+        userService.deleteUser(user);
+
+        return new UserDTO(user);
     }
 
     @Transactional

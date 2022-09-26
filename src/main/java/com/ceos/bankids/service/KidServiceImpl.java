@@ -26,7 +26,7 @@ public class KidServiceImpl implements KidService {
 
     @Override
     @Transactional
-    public void createNewKid(User user) {
+    public void createKid(User user) {
         Kid newKid = Kid.builder()
             .savings(0L)
             .achievedChallenge(0L)

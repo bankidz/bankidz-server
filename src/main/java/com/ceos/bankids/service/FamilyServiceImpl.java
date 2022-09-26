@@ -18,17 +18,18 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional
-    public Family postNewFamily(User user) {
+    public Family createFamily(User user) {
         Family family = Family.builder()
             .code(UUID.randomUUID().toString())
             .build();
         familyRepository.save(family);
+
         return family;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Family getFamilyByCode(String code) {
+    public Family findByCode(String code) {
         return familyRepository.findByCode(code).orElseThrow(
             () -> new BadRequestException(ErrorCode.FAMILY_TO_JOIN_NOT_EXISTS.getErrorCode()));
     }

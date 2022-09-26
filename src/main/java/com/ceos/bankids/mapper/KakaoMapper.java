@@ -1,9 +1,9 @@
 package com.ceos.bankids.mapper;
 
+import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
-import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.service.KakaoServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class KakaoMapper {
         KakaoTokenDTO kakaoTokenDTO = kakaoService.getKakaoAccessToken(kakaoRequest);
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
 
-        Optional<User> registeredUser = userService.readUserByAuthenticationCodeNullable(
+        Optional<User> registeredUser = userService.findUserByAuthenticationCodeNullable(
             kakaoUserDTO.getAuthenticationCode());
 
         User user;

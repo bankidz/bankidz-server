@@ -2,6 +2,8 @@ package com.ceos.bankids.mapper;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.constant.ErrorCode;
+import com.ceos.bankids.controller.request.ChallengeRequest;
+import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.Kid;
@@ -18,8 +20,6 @@ import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
-import com.ceos.bankids.controller.request.ChallengeRequest;
-import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.service.ChallengeServiceImpl;
 import com.ceos.bankids.service.ChallengeUserServiceImpl;
 import com.ceos.bankids.service.ExpoNotificationServiceImpl;

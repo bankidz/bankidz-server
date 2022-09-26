@@ -1,10 +1,10 @@
 package com.ceos.bankids.mapper;
 
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
-import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.service.AppleServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class AppleMapper {
             appleKeyListDTO);
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
 
-        Optional<User> registeredUser = userService.readUserByAuthenticationCodeNullable(
+        Optional<User> registeredUser = userService.findUserByAuthenticationCodeNullable(
             appleSubjectDTO.getAuthenticationCode());
 
         User user;

@@ -37,7 +37,7 @@ public class AppleController {
 
         User user = appleMapper.postAppleLogin(formData);
 
-        LoginDTO loginDTO = userMapper.refreshUserToken(user);
+        LoginDTO loginDTO = userMapper.updateUserToken(user);
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
