@@ -1,15 +1,15 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.request.ExpoRequest;
+import com.ceos.bankids.controller.request.UserTypeRequest;
+import com.ceos.bankids.controller.request.WithdrawalRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
 import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.UserDTO;
 import com.ceos.bankids.mapper.UserMapper;
-import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.UserTypeRequest;
-import com.ceos.bankids.controller.request.WithdrawalRequest;
 import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -89,6 +89,7 @@ public class UserController {
 
         log.info("api = 유저 탈퇴, user = {}", authUser.getUsername());
 
+        userMapper.deleteFamilyUserIfExists(authUser);
         UserDTO userDTO = userMapper.deleteUserAccount(authUser, withdrawalRequest);
 
         return CommonResponse.onSuccess(userDTO);

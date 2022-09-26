@@ -1,10 +1,10 @@
 package com.ceos.bankids.service;
 
+import com.ceos.bankids.controller.request.ExpoRequest;
+import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.UserDTO;
-import com.ceos.bankids.controller.request.ExpoRequest;
-import com.ceos.bankids.controller.request.UserTypeRequest;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public interface UserService {
 
     public void updateUserLogout(User user);
 
-    public UserDTO deleteUser(User user);
+    public void deleteUser(User user);
 
     public void updateUserExpoToken(User user, ExpoRequest expoRequest);
 
