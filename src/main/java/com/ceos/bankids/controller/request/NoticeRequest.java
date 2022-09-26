@@ -1,4 +1,4 @@
-package com.ceos.bankids.mapper.request;
+package com.ceos.bankids.controller.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;

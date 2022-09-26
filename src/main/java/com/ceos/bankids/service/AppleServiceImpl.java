@@ -1,7 +1,7 @@
 package com.ceos.bankids.service;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.mapper.request.AppleRequest;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.dto.oauth.AppleHeaderDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyDTO;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;

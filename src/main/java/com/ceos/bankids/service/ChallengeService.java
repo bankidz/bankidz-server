@@ -1,6 +1,6 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.mapper.request.KidChallengeRequest;
+import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.ChallengeUser;
 import com.ceos.bankids.domain.User;

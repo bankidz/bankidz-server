@@ -1,8 +1,7 @@
 package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.constant.ErrorCode;
-import com.ceos.bankids.mapper.AppleController;
-import com.ceos.bankids.mapper.request.AppleRequest;
+import com.ceos.bankids.controller.AppleController;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
@@ -12,9 +11,20 @@ import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.exception.BadRequestException;
+import com.ceos.bankids.mapper.AppleMapper;
+import com.ceos.bankids.mapper.UserMapper;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.AppleServiceImpl;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
+import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import com.ceos.bankids.service.KidBackupServiceImpl;
+import com.ceos.bankids.service.ParentBackupServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
+import com.ceos.bankids.service.SlackServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,12 +100,25 @@ public class AppleControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        AppleController appleController = new AppleController(
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
-            userService,
-            jwtTokenServiceImpl
+            userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
@@ -149,12 +172,25 @@ public class AppleControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        AppleController appleController = new AppleController(
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
-            userService,
-            jwtTokenServiceImpl
+            userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
@@ -214,12 +250,25 @@ public class AppleControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        AppleController appleController = new AppleController(
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
-            userService,
-            jwtTokenServiceImpl
+            userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
@@ -276,16 +325,29 @@ public class AppleControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        AppleController appleController = new AppleController(
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
-            userService,
-            jwtTokenServiceImpl
+            userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
-            appleController.deleteAppleLogin(formData, response);
+            appleController.postAppleRevoke(formData, response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -332,16 +394,29 @@ public class AppleControllerTest {
 
         // when
         UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
-
-        AppleController appleController = new AppleController(
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
-            userService,
-            jwtTokenServiceImpl
+            userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
-            appleController.deleteAppleLogin(formData, response);
+            appleController.postAppleRevoke(formData, response);
         } catch (IOException e) {
             e.printStackTrace();
         }
