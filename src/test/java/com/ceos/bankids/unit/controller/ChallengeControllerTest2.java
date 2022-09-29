@@ -10,7 +10,11 @@ import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
 import com.ceos.bankids.repository.ChallengeRepository;
+import com.ceos.bankids.repository.CommentRepository;
+import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
+import com.ceos.bankids.service.ChallengeServiceImpl;
+import com.ceos.bankids.service.FamilyServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +37,8 @@ public class ChallengeControllerTest2 {
             ChallengeCategoryRepository.class);
         TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
         ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
         //given
 
         // kid
@@ -89,10 +95,25 @@ public class ChallengeControllerTest2 {
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem)
             .filename(challengeRequest.getFileName()).build();
 
-        //when
         Mockito.when(mockChallengeRepository.save(newChallenge)).thenReturn(newChallenge);
         Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
             .thenReturn(Optional.of(newChallenge));
+
+        Mockito.when(mockChallengeCategoryRepository.findByCategory(
+            challengeRequest.getChallengeCategory())).thenReturn(newChallengeCategory);
+        Mockito.when(mockTargetItemRepository.findByName(challengeRequest.getItemName()))
+            .thenReturn(newTargetItem);
+
+        //when
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(
+            mockChallengeRepository,
+            mockChallengeCategoryRepository,
+            mockTargetItemRepository,
+            mockProgressRepository,
+            mockCommentRepository
+        );
+        FamilyServiceImpl familyService = new FamilyServiceImpl()
+
 
 
     }
