@@ -14,7 +14,6 @@ import com.ceos.bankids.repository.CommentRepository;
 import com.ceos.bankids.repository.ProgressRepository;
 import com.ceos.bankids.repository.TargetItemRepository;
 import com.ceos.bankids.service.ChallengeServiceImpl;
-import com.ceos.bankids.service.FamilyServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,9 +111,7 @@ public class ChallengeControllerTest2 {
             mockProgressRepository,
             mockCommentRepository
         );
-        FamilyServiceImpl familyService = new FamilyServiceImpl()
-
-
+//        FamilyServiceImpl familyService = new FamilyServiceImpl()
 
     }
 }
