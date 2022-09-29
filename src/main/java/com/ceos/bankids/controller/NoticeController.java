@@ -1,4 +1,4 @@
-package com.ceos.bankids.mapper;
+package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.constant.ErrorCode;
