@@ -237,9 +237,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         String interestPayment) {
 
         List<Challenge> challengeList = achievedChallengeList.stream().filter(challenge -> {
-            if (Objects.equals(interestPayment, "payed")) {
+            if (Objects.equals(interestPayment, "paid")) {
                 return challenge.getIsInterestPayment();
-            } else if (Objects.equals(interestPayment, "notPayed")) {
+            } else if (Objects.equals(interestPayment, "unPaid")) {
                 return !challenge.getIsInterestPayment();
             } else {
                 return challenge.getChallengeStatus() == achieved;
@@ -259,8 +259,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         List<Challenge> achievedChallengeList,
         String interestPayment, Long kidId) {
 
-        if (!Objects.equals(interestPayment, "payed") && !Objects.equals(interestPayment,
-            "notPayed")) {
+        if (!Objects.equals(interestPayment, "paid") && !Objects.equals(interestPayment,
+            "unPaid")) {
             throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
         }
 
