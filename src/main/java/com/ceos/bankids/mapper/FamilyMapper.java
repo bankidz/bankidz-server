@@ -23,6 +23,7 @@ import com.ceos.bankids.service.ParentServiceImpl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,14 +55,19 @@ public class FamilyMapper {
 
     @Transactional(readOnly = true)
     public FamilyDTO readFamily(User user) {
-        FamilyUser familyUser = familyUserService.findByUser(user);
-        Family family = familyUser.getFamily();
-        List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
-            user);
+        Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(user);
 
-        return new FamilyDTO(family, familyUserList.stream()
-            .map(FamilyUserDTO::new)
-            .collect(Collectors.toList()));
+        if (familyUser.isEmpty()) {
+            return new FamilyDTO(new Family(), List.of());
+        } else {
+            Family family = familyUser.get().getFamily();
+            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+                user);
+
+            return new FamilyDTO(family, familyUserList.stream()
+                .map(FamilyUserDTO::new)
+                .collect(Collectors.toList()));
+        }
     }
 
     @Transactional(readOnly = true)
