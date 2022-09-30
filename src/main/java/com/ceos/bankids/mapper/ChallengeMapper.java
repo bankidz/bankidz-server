@@ -66,17 +66,15 @@ public class ChallengeMapper {
 
         // 실제 돈길 저장로직
         ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
-        ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengePostDTO);
-        System.out.println("challengeDTO = " + challengeDTO);
-        Challenge challenge = challengeService.readChallenge(challengeDTO.getId());
+        Challenge newChallenge = challengeService.createChallenge(authUser, challengePostDTO);
         ChallengeUser challengeUser = challengeUserService.createdChallengeUser(authUser,
-            challenge);
+            newChallenge);
         parentService.updateParentForCreateChallenge(contractUser);
 
         // 저장로직 성공시 알림 로직
         notificationService.createPendingChallengeNotification(contractUser, challengeUser);
 
-        return challengeDTO;
+        return new ChallengeDTO(newChallenge, null, null);
     }
 
     // 돈길 삭제 API Mapper

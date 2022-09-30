@@ -68,7 +68,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 생성 API
     @Transactional
     @Override
-    public ChallengeDTO createChallenge(User user, ChallengePostDTO challengeRequest) {
+    public Challenge createChallenge(User user, ChallengePostDTO challengeRequest) {
 
         String category = challengeRequest.getChallengeCategory();
         String name = challengeRequest.getItemName();
@@ -93,7 +93,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filename(challengeRequest.getFileName()).build();
         challengeRepository.save(newChallenge);
 
-        return new ChallengeDTO(newChallenge, null, null);
+        return newChallenge;
     }
 
     // 돈길 삭제 API (2주에 한번)
@@ -326,7 +326,6 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Transactional(readOnly = true)
     @Override
     public Challenge readChallenge(Long challengeId) {
-        System.out.println("challengeId = " + challengeId);
         return challengeRepository.findById(challengeId).orElseThrow(
             () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
     }

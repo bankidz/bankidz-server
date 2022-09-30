@@ -122,12 +122,13 @@ public class ChallengeControllerTest2 {
             .category("이자율 받기").build();
         TargetItem newTargetItem = TargetItem.builder().id(1L).name("전자제품").build();
 
-        Challenge newChallenge = Challenge.builder().id(1L).title(challengeRequest.getTitle())
+        Challenge newChallenge = Challenge.builder().title(challengeRequest.getTitle())
             .contractUser(parentUser)
             .totalPrice(challengeRequest.getTotalPrice())
             .weekPrice(challengeRequest.getWeekPrice()).weeks(challengeRequest.getWeeks())
             .challengeStatus(pending)
             .interestRate(challengeRequest.getInterestRate())
+            .interestPrice(challengeRequest.getInterestPrice())
             .challengeCategory(newChallengeCategory).targetItem(newTargetItem)
             .filename(challengeRequest.getFileName()).build();
 
@@ -142,7 +143,6 @@ public class ChallengeControllerTest2 {
             .thenReturn(Optional.of(familyUser));
         Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, kidUser))
             .thenReturn(familyUserList);
-        System.out.println("newChallenge.getId() = " + newChallenge.getId());
         Mockito.when(mockChallengeRepository.findById(newChallenge.getId()))
             .thenReturn(Optional.of(newChallenge));
 
@@ -170,7 +170,7 @@ public class ChallengeControllerTest2 {
         ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge, null, null);
         CommonResponse<ChallengeDTO> challengeDTOCommonResponse = challengeController.postChallenge(
             kidUser, challengeRequest);
-        Assertions.assertEquals(challengeDTOCommonResponse.getData().getId(), newChallenge.getId());
+        Assertions.assertEquals(challengeDTOCommonResponse.getData(), challengeDTO);
         Assertions.assertEquals(challengeDTOCommonResponse.getData().getChallengeStatus(), pending);
 
     }
