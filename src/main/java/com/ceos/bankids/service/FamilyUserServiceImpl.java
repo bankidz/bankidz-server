@@ -96,8 +96,6 @@ public class FamilyUserServiceImpl implements FamilyUserService {
     public User getContractUser(User user, Boolean isMom) {
         FamilyUser familyUser = familyUserRepository.findByUserId(user.getId())
             .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
-//        Family family = fRepo.findByCode(familyUser.getFamily().getCode())
-//            .orElseThrow(() -> new BadRequestException(ErrorCode.NOT_EXIST_FAMILY.getErrorCode()));
         return familyUserRepository.findByFamilyAndUserNot(familyUser.getFamily(), user).stream()
             .map(FamilyUser::getUser)
             .filter(user1 -> user1.getIsFemale() == isMom && !user1.getIsKid())

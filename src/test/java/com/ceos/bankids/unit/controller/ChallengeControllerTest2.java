@@ -14,6 +14,7 @@ import com.ceos.bankids.domain.Parent;
 import com.ceos.bankids.domain.TargetItem;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.ChallengeDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.exception.ForbiddenException;
 import com.ceos.bankids.mapper.ChallengeMapper;
 import com.ceos.bankids.repository.ChallengeCategoryRepository;
@@ -303,9 +304,7 @@ public class ChallengeControllerTest2 {
         ChallengeController challengeController = new ChallengeController(challengeMapper);
 
         // then
-        ChallengeDTO challengeDTO = new ChallengeDTO(newChallenge, null, null);
-        CommonResponse<ChallengeDTO> challengeDTOCommonResponse = challengeController.postChallenge(
-            kidUser, challengeRequest);
+        challengeController.postChallenge(kidUser, challengeRequest);
         ArgumentCaptor<ChallengeUser> cuCaptor = ArgumentCaptor.forClass(ChallengeUser.class);
         Mockito.verify(mockChallengeUserRepository, Mockito.times(1)).save(cuCaptor.capture());
 
@@ -472,6 +471,106 @@ public class ChallengeControllerTest2 {
 
         //then
         Assertions.assertThrows(ForbiddenException.class,
+            () -> challengeController.postChallenge(kidUser, challengeRequest));
+    }
+
+    @Test
+    @DisplayName("돈길 생성 요청 시, 해당 계약 부모가 없으면 400에러")
+    public void testPostChallengeIfNotExistContractUserBadRequestError() {
+        ChallengeCategoryRepository mockChallengeCategoryRepository = Mockito.mock(
+            ChallengeCategoryRepository.class);
+        TargetItemRepository mockTargetItemRepository = Mockito.mock(TargetItemRepository.class);
+        ChallengeRepository mockChallengeRepository = Mockito.mock(ChallengeRepository.class);
+        ProgressRepository mockProgressRepository = Mockito.mock(ProgressRepository.class);
+        CommentRepository mockCommentRepository = Mockito.mock(CommentRepository.class);
+        ChallengeUserRepository mockChallengeUserRepository = Mockito.mock(
+            ChallengeUserRepository.class);
+        FamilyUserRepository mockFamilyUserRepository = Mockito.mock(FamilyUserRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        NotificationRepository mockNotificationRepository = Mockito.mock(
+            NotificationRepository.class);
+
+        //given
+        User kidUser = User.builder().id(1L)
+            .username("user1")
+            .isKid(true)
+            .isFemale(true)
+            .birthday("19990623")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .expoToken("expotoken")
+            .serviceOptIn(true)
+            .noticeOptIn(true)
+            .build();
+        Kid kid = Kid.builder().id(1L)
+            .achievedChallenge(0L)
+            .level(1L)
+            .savings(0L)
+            .user(kidUser)
+            .build();
+
+        kidUser.setKid(kid);
+
+        // parent
+        User parentUser = User.builder().id(2L)
+            .username("user2")
+            .isKid(false)
+            .isFemale(true)
+            .birthday("19660101")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .expoToken("expotoken")
+            .serviceOptIn(true)
+            .noticeOptIn(true)
+            .build();
+
+        Parent parent = Parent.builder().id(1L)
+            .acceptedRequest(0L)
+            .totalRequest(0L)
+            .user(parentUser)
+            .build();
+
+        parentUser.setParent(parent);
+
+        ChallengeRequest challengeRequest = new ChallengeRequest(true, "이자율 받기", "전자제품", "에어팟 사기",
+            30L, 3000L, 18000L, 3000L, 5L, "test");
+
+        Family family = Family.builder().code("asdfasfd").build();
+
+        FamilyUser familyUser = FamilyUser.builder().user(kidUser).family(family).build();
+        FamilyUser familyUser1 = FamilyUser.builder().user(parentUser).family(family).build();
+
+        List<FamilyUser> familyUserList = List.of(familyUser1);
+
+        //when
+        Mockito.when(mockFamilyUserRepository.findByUserId(kidUser.getId()))
+            .thenReturn(Optional.of(familyUser));
+        Mockito.when(mockFamilyUserRepository.findByFamilyAndUserNot(family, kidUser))
+            .thenReturn(familyUserList);
+
+        ChallengeServiceImpl challengeService = new ChallengeServiceImpl(
+            mockChallengeRepository,
+            mockChallengeCategoryRepository,
+            mockTargetItemRepository,
+            mockProgressRepository,
+            mockCommentRepository
+        );
+        ChallengeUserServiceImpl challengeUserService = new ChallengeUserServiceImpl(
+            mockChallengeUserRepository);
+        FamilyUserServiceImpl familyUserService = new FamilyUserServiceImpl(
+            mockFamilyUserRepository);
+        ParentServiceImpl parentService = new ParentServiceImpl(mockParentRepository);
+        ExpoNotificationServiceImpl notificationService = new ExpoNotificationServiceImpl(
+            mockNotificationRepository);
+        KidServiceImpl kidService = null;
+        ChallengeMapper challengeMapper = new ChallengeMapper(challengeService, familyUserService,
+            challengeUserService, notificationService, parentService, kidService);
+        ChallengeController challengeController = new ChallengeController(challengeMapper);
+
+        //then
+        Assertions.assertThrows(BadRequestException.class,
             () -> challengeController.postChallenge(kidUser, challengeRequest));
     }
 }
