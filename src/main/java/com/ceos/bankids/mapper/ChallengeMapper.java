@@ -67,6 +67,7 @@ public class ChallengeMapper {
         // 실제 돈길 저장로직
         ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
         ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengePostDTO);
+        System.out.println("challengeDTO = " + challengeDTO);
         Challenge challenge = challengeService.readChallenge(challengeDTO.getId());
         ChallengeUser challengeUser = challengeUserService.createdChallengeUser(authUser,
             challenge);

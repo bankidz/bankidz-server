@@ -326,6 +326,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Transactional(readOnly = true)
     @Override
     public Challenge readChallenge(Long challengeId) {
+        System.out.println("challengeId = " + challengeId);
         return challengeRepository.findById(challengeId).orElseThrow(
             () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
     }
