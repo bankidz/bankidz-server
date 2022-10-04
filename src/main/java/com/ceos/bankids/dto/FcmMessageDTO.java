@@ -1,14 +1,12 @@
 package com.ceos.bankids.dto;
 
 import com.google.firebase.messaging.Message;
-import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "푸시 알림 메시지 DTO")
 @Getter
 @ToString
 @Builder

@@ -2,7 +2,6 @@ package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.AppleController;
-import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
@@ -12,11 +11,20 @@ import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
+import com.ceos.bankids.mapper.AppleMapper;
+import com.ceos.bankids.mapper.UserMapper;
+import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.repository.UserRepository;
 import com.ceos.bankids.service.AppleServiceImpl;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
+import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
+import com.ceos.bankids.service.KidBackupServiceImpl;
+import com.ceos.bankids.service.ParentBackupServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
+import com.ceos.bankids.service.SlackServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,8 +74,6 @@ public class AppleControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(user));
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -93,16 +99,26 @@ public class AppleControllerTest {
             .getAppleAccessToken(appleRequest, "login");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        AppleController appleController = new AppleController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
@@ -130,8 +146,6 @@ public class AppleControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -157,16 +171,26 @@ public class AppleControllerTest {
             .getAppleAccessToken(appleRequest, "login");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        AppleController appleController = new AppleController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
@@ -199,8 +223,6 @@ public class AppleControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         MultiValueMap<String, String> formData = null;
 
         AppleRequest appleRequest = new AppleRequest("code",
@@ -227,16 +249,26 @@ public class AppleControllerTest {
             .getAppleAccessToken(appleRequest, "login");
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        AppleController appleController = new AppleController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
@@ -267,8 +299,6 @@ public class AppleControllerTest {
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         MultiValueMap<String, String> formData = null;
 
@@ -294,20 +324,30 @@ public class AppleControllerTest {
         Mockito.doReturn(object).when(appleService).revokeAppleAccount(appleTokenDTO);
 
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        AppleController appleController = new AppleController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
-            appleController.deleteAppleLogin(formData, response);
+            appleController.postAppleRevoke(formData, response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -329,8 +369,6 @@ public class AppleControllerTest {
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         MultiValueMap<String, String> formData = null;
 
@@ -353,22 +391,32 @@ public class AppleControllerTest {
             .verifyIdentityToken(appleRequest, appleKeyListDTO);
         Mockito.doThrow(new BadRequestException(ErrorCode.APPLE_ACCESS_TOKEN_ERROR.getErrorCode()))
             .when(appleService).getAppleAccessToken(appleRequest, "revoke");
-     
+
         // when
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        AppleController appleController = new AppleController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        AppleMapper appleMapper = new AppleMapper(
             appleService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        AppleController appleController = new AppleController(appleMapper, userMapper);
 
         // then
         try {
-            appleController.deleteAppleLogin(formData, response);
+            appleController.postAppleRevoke(formData, response);
         } catch (IOException e) {
             e.printStackTrace();
         }

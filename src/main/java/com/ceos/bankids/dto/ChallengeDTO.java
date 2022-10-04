@@ -4,7 +4,6 @@ import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.domain.Challenge;
 import com.ceos.bankids.domain.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.sql.Timestamp;
 import java.util.List;
@@ -12,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "돈길 관련 API response DTO")
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -56,7 +54,7 @@ public class ChallengeDTO {
     private Long weeks;
 
     @ApiModelProperty(example = "2022/07/05 05:05:05")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd kk:mm:ss", timezone = "Asia/Seoul")
     private Timestamp createdAt;
 
     @ApiModelProperty(example = "true")

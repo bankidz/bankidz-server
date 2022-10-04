@@ -1,12 +1,9 @@
 package com.ceos.bankids.controller;
 
-import com.ceos.bankids.controller.request.AppleRequest;
+import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
-import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
-import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
-import com.ceos.bankids.dto.oauth.AppleTokenDTO;
-import com.ceos.bankids.service.AppleServiceImpl;
-import com.ceos.bankids.service.UserServiceImpl;
+import com.ceos.bankids.mapper.AppleMapper;
+import com.ceos.bankids.mapper.UserMapper;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
@@ -26,28 +23,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class AppleController {
 
-    private final AppleServiceImpl appleService;
-    private final UserServiceImpl userService;
+    private final AppleMapper appleMapper;
+    private final UserMapper userMapper;
 
     @ApiOperation(value = "애플 로그인")
     @PostMapping(value = "/login", produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseBody
-    public void postAppleLogin(
-        @RequestBody MultiValueMap<String, String> formData, HttpServletResponse response)
+    public void postAppleLogin(@RequestBody MultiValueMap<String, String> formData,
+        HttpServletResponse response)
         throws IOException {
 
         log.info("api = 애플 로그인");
-        AppleRequest appleRequest = appleService.getAppleRequest(formData);
 
-        AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
+        User user = appleMapper.postAppleLogin(formData);
 
-        AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
-            appleKeyListDTO);
-
-        AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
-
-        LoginDTO loginDTO = userService.loginWithAppleAuthenticationCode(
-            appleSubjectDTO.getAuthenticationCode(), appleRequest);
+        LoginDTO loginDTO = userMapper.updateUserToken(user);
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
@@ -58,26 +48,13 @@ public class AppleController {
     @ApiOperation(value = "애플 연동해제")
     @PostMapping(value = "/revoke", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public void deleteAppleLogin(
-        @RequestBody MultiValueMap<String, String> formData, HttpServletResponse response)
+    public void postAppleRevoke(@RequestBody MultiValueMap<String, String> formData,
+        HttpServletResponse response)
         throws IOException {
 
         log.info("api = 애플 연동해제");
 
-        try {
-            AppleRequest appleRequest = appleService.getAppleRequest(formData);
-
-            AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
-
-            AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
-                appleKeyListDTO);
-
-            AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "revoke");
-
-            Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
-        } catch (Exception e) {
-            response.sendRedirect("https://bankidz.com/manage/withdraw/callback?isError=true");
-        }
+        appleMapper.postAppleRevoke(formData, response);
 
         response.sendRedirect("https://bankidz.com/manage/withdraw/callback?isError=false");
     }

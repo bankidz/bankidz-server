@@ -1,44 +1,35 @@
 package com.ceos.bankids.service;
 
-import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.controller.request.ExpoRequest;
 import com.ceos.bankids.controller.request.UserTypeRequest;
 import com.ceos.bankids.domain.User;
-import com.ceos.bankids.dto.LoginDTO;
-import com.ceos.bankids.dto.MyPageDTO;
 import com.ceos.bankids.dto.OptInDTO;
 import com.ceos.bankids.dto.UserDTO;
-import com.ceos.bankids.dto.oauth.KakaoUserDTO;
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
 
-    public LoginDTO loginWithKakaoAuthenticationCode(KakaoUserDTO kakaoUserDTO);
+    public Optional<User> findUserByAuthenticationCodeNullable(String code);
 
-    public LoginDTO loginWithAppleAuthenticationCode(String authenticationCode,
-        AppleRequest appleRequest);
+    public User createNewUser(String username, String code, String provider);
 
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest);
 
-    public LoginDTO issueNewTokens(User user, String provider);
+    public User updateRefreshToken(User user, String newRefreshToken);
 
-    public void setNewCookie(User user, HttpServletResponse response);
+    public void updateUserLogout(User user);
 
-    public MyPageDTO getUserInformation(User user);
+    public void deleteUser(User user);
 
-    public User getUserByRefreshToken(String refreshToken);
-
-    public UserDTO updateUserLogout(User user);
-
-    public UserDTO deleteUser(User user);
-
-    public User updateUserExpoToken(User user, ExpoRequest expoRequest);
+    public void updateUserExpoToken(User user, ExpoRequest expoRequest);
 
     public OptInDTO updateNoticeOptIn(User user);
 
     public OptInDTO updateServiceOptIn(User user);
 
-    public OptInDTO getOptIn(User user);
+    public List<User> getAllUserList();
+
 }

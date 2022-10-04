@@ -1,12 +1,10 @@
 package com.ceos.bankids.dto;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "읽지 않은 알림 확인 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode

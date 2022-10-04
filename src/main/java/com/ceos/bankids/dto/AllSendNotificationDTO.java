@@ -1,12 +1,10 @@
 package com.ceos.bankids.dto;
 
-import io.swagger.annotations.ApiModel;
 import java.util.HashMap;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "allSendNotification 내부 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode

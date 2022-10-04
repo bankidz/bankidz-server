@@ -5,8 +5,7 @@ import com.ceos.bankids.controller.request.FamilyRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.FamilyDTO;
 import com.ceos.bankids.dto.KidListDTO;
-import com.ceos.bankids.service.ChallengeServiceImpl;
-import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.mapper.FamilyMapper;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
@@ -27,16 +26,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class FamilyController {
 
-    private final FamilyServiceImpl familyService;
-    private final ChallengeServiceImpl challengeService;
+    private final FamilyMapper familyMapper;
 
     @ApiOperation(value = "가족 생성하기")
     @PostMapping(value = "", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public CommonResponse<FamilyDTO> postFamily(@AuthenticationPrincipal User authUser) {
+    public CommonResponse<FamilyDTO> postNewFamily(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 생성하기, user = {}", authUser.getUsername());
-        FamilyDTO familyDTO = familyService.postNewFamily(authUser);
+
+        FamilyDTO familyDTO = familyMapper.createFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
     }
@@ -47,7 +46,8 @@ public class FamilyController {
     public CommonResponse<FamilyDTO> getFamily(@AuthenticationPrincipal User authUser) {
 
         log.info("api = 가족 정보 조회하기, user = {}", authUser.getUsername());
-        FamilyDTO familyDTO = familyService.getFamily(authUser);
+
+        FamilyDTO familyDTO = familyMapper.readFamily(authUser);
 
         return CommonResponse.onSuccess(familyDTO);
     }
@@ -59,7 +59,8 @@ public class FamilyController {
         @AuthenticationPrincipal User authUser) {
 
         log.info("api = 아이들 목록 조회하기, user = {}", authUser.getUsername());
-        List<KidListDTO> kidListDTOList = familyService.getKidListFromFamily(authUser);
+
+        List<KidListDTO> kidListDTOList = familyMapper.readFamilyKidList(authUser);
 
         return CommonResponse.onSuccess(kidListDTOList);
     }
@@ -71,7 +72,8 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 참여하기, user = {}", authUser.getUsername());
-        FamilyDTO familyDTO = familyService.postNewFamilyUser(authUser, familyRequest.getCode());
+
+        FamilyDTO familyDTO = familyMapper.createFamilyUser(authUser, familyRequest);
 
         return CommonResponse.onSuccess(familyDTO);
     }
@@ -83,12 +85,8 @@ public class FamilyController {
         @Valid @RequestBody FamilyRequest familyRequest) {
 
         log.info("api = 가족 나가기, user = {}", authUser.getUsername());
-        if (authUser.getIsKid()) {
-            challengeService.challengeCompleteDeleteByKid(authUser, familyRequest);
-        } else {
-            challengeService.challengeCompleteDeleteByParent(authUser, familyRequest);
-        }
-        FamilyDTO familyDTO = familyService.deleteFamilyUser(authUser, familyRequest.getCode());
+
+        FamilyDTO familyDTO = familyMapper.deleteFamilyUser(authUser, familyRequest);
 
         return CommonResponse.onSuccess(familyDTO);
     }

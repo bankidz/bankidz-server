@@ -18,5 +18,5 @@ public class WithdrawalRequest {
     @ApiModelProperty(example = "나 탈퇴하겠어!")
     @NotNull(message = "message may not be null")
     private String message;
-    
+
 }

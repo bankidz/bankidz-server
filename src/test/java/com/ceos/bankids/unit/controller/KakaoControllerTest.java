@@ -2,7 +2,6 @@ package com.ceos.bankids.unit.controller;
 
 import com.ceos.bankids.config.CommonResponse;
 import com.ceos.bankids.controller.KakaoController;
-import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.domain.Kid;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
@@ -12,11 +11,20 @@ import com.ceos.bankids.dto.oauth.KakaoProfileDTO;
 import com.ceos.bankids.dto.oauth.KakaoTokenDTO;
 import com.ceos.bankids.dto.oauth.KakaoUserDTO;
 import com.ceos.bankids.exception.BadRequestException;
-import com.ceos.bankids.repository.KidRepository;
-import com.ceos.bankids.repository.ParentRepository;
+import com.ceos.bankids.mapper.KakaoMapper;
+import com.ceos.bankids.mapper.UserMapper;
+import com.ceos.bankids.controller.request.KakaoRequest;
 import com.ceos.bankids.repository.UserRepository;
+import com.ceos.bankids.service.ChallengeUserServiceImpl;
+import com.ceos.bankids.service.ExpoNotificationServiceImpl;
+import com.ceos.bankids.service.FamilyServiceImpl;
+import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.JwtTokenServiceImpl;
 import com.ceos.bankids.service.KakaoServiceImpl;
+import com.ceos.bankids.service.KidBackupServiceImpl;
+import com.ceos.bankids.service.ParentBackupServiceImpl;
+import com.ceos.bankids.service.ParentServiceImpl;
+import com.ceos.bankids.service.SlackServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -40,8 +48,6 @@ public class KakaoControllerTest {
         // given
         HttpServletResponse response = null;
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         WebClient mockWebClient = Mockito.mock(WebClient.class);
 
@@ -49,20 +55,30 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
 
         // then
         Assertions.assertThrows(NullPointerException.class, () -> {
-            kakaoController.postKakaoLogin(null, response);
+            kakaoController.postKakaoLogin(null);
         });
     }
 
@@ -73,9 +89,6 @@ public class KakaoControllerTest {
         HttpServletResponse response = null;
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         WebClient mockWebClient = Mockito.mock(WebClient.class);
-        UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         KakaoRequest kakaoRequest = new KakaoRequest("code");
 
@@ -83,20 +96,30 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
 
         // then
         Assertions.assertThrows(NullPointerException.class, () -> {
-            kakaoController.postKakaoLogin(kakaoRequest, null);
+            kakaoController.postKakaoLogin(kakaoRequest);
         });
     }
 
@@ -128,8 +151,6 @@ public class KakaoControllerTest {
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -164,17 +185,27 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
-        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
+        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest);
 
         // then
         LoginDTO loginDTO = new LoginDTO(true, "aT", 1L, "kakao");
@@ -205,9 +236,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, "kakao")).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
+        Mockito.when(mockUserService.updateRefreshToken(user, "rT")).thenReturn(user);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
         Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
@@ -242,17 +271,27 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
-        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
+        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest);
 
         // then
         LoginDTO loginDTO = new LoginDTO(false, "aT", "kakao");
@@ -278,17 +317,15 @@ public class KakaoControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         WebClient mockWebClient = Mockito.mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
 
-        JwtTokenServiceImpl mockJwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        Mockito.doReturn("rT").when(mockJwtTokenServiceImpl).encodeJwtRefreshToken(1L);
-        Mockito.doReturn("aT").when(mockJwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
         KakaoTokenDTO kakaoTokenDTO = new KakaoTokenDTO("aT", "rT");
@@ -321,18 +358,28 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
-            mockJwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
 
-        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
+        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest);
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(mockUserRepository, Mockito.times(2)).save(uCaptor.capture());
         Assertions.assertEquals(user, uCaptor.getValue());
@@ -362,8 +409,6 @@ public class KakaoControllerTest {
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findByAuthenticationCode("1234")).thenReturn(
             Optional.ofNullable(null));
-        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
 
         WebClient mockWebClient = Mockito.mock(WebClient.class);
         WebClient.RequestBodyUriSpec requestBodyUriSpec = Mockito.mock(
@@ -377,10 +422,10 @@ public class KakaoControllerTest {
         Timestamp timeStamp = Timestamp.valueOf(LocalDateTime.now());
         KakaoUserDTO kakaoUserDTO = new KakaoUserDTO("1234", timeStamp, kakaoAccountDTO);
 
-        JwtTokenServiceImpl mockJwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
-        Mockito.doReturn("rT").when(mockJwtTokenServiceImpl).encodeJwtRefreshToken(1L);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+        Mockito.doReturn("rT").when(jwtTokenServiceImpl).encodeJwtRefreshToken(1L);
         user.setUsername(user.getUsername().substring(0, 3));
-        Mockito.doReturn("aT").when(mockJwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
+        Mockito.doReturn("aT").when(jwtTokenServiceImpl).encodeJwtToken(new TokenDTO(user));
 
         String getTokenURL =
             "https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id="
@@ -406,18 +451,28 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            mockKidRepository,
-            mockParentRepository,
-            mockJwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
 
-        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest, response);
+        CommonResponse<LoginDTO> result = kakaoController.postKakaoLogin(kakaoRequest);
         ArgumentCaptor<User> uCaptor = ArgumentCaptor.forClass(User.class);
         Mockito.verify(mockUserRepository, Mockito.times(2)).save(uCaptor.capture());
         Assertions.assertEquals(user, uCaptor.getValue());
@@ -451,9 +506,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, "kakao")).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
+        Mockito.when(mockUserService.updateRefreshToken(user, "rT")).thenReturn(user);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
@@ -486,20 +539,30 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
 
         // then
         Assertions.assertThrows(BadRequestException.class, () -> {
-            kakaoController.postKakaoLogin(kakaoRequest, response);
+            kakaoController.postKakaoLogin(kakaoRequest);
         });
     }
 
@@ -526,9 +589,7 @@ public class KakaoControllerTest {
             RequestBodyUriSpec.class);
         WebClient.ResponseSpec responseSpec = Mockito.mock(ResponseSpec.class);
         UserServiceImpl mockUserService = Mockito.mock(UserServiceImpl.class);
-        Mockito.when(mockUserService.issueNewTokens(user, "kakao")).thenReturn(login);
-        KidRepository kidRepository = Mockito.mock(KidRepository.class);
-        ParentRepository parentRepository = Mockito.mock(ParentRepository.class);
+        Mockito.when(mockUserService.updateRefreshToken(user, "rT")).thenReturn(user);
         JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
 
         KakaoRequest kakaoRequest = new KakaoRequest("aT");
@@ -561,20 +622,30 @@ public class KakaoControllerTest {
         KakaoServiceImpl kakaoService = new KakaoServiceImpl(
             mockWebClient
         );
-        UserServiceImpl userService = new UserServiceImpl(
-            mockUserRepository,
-            kidRepository,
-            parentRepository,
-            jwtTokenServiceImpl
-        );
-        KakaoController kakaoController = new KakaoController(
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        KakaoMapper kakaoMapper = new KakaoMapper(
             kakaoService,
             userService
         );
+        UserMapper userMapper = new UserMapper(
+            new UserServiceImpl(mockUserRepository),
+            new FamilyServiceImpl(null),
+            new FamilyUserServiceImpl(null),
+            null,
+            new KidBackupServiceImpl(null),
+            new ParentBackupServiceImpl(null),
+            null,
+            new ParentServiceImpl(null),
+            new SlackServiceImpl(),
+            new ExpoNotificationServiceImpl(null),
+            jwtTokenServiceImpl,
+            new ChallengeUserServiceImpl(null)
+        );
+        KakaoController kakaoController = new KakaoController(kakaoMapper, userMapper);
 
         // then
         Assertions.assertThrows(BadRequestException.class, () -> {
-            kakaoController.postKakaoLogin(kakaoRequest, response);
+            kakaoController.postKakaoLogin(kakaoRequest);
         });
     }
 }

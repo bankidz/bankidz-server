@@ -10,4 +10,6 @@ public interface ChallengeUserRepository extends JpaRepository<ChallengeUser, Lo
     public Optional<ChallengeUser> findByChallengeId(Long challengeId);
 
     public List<ChallengeUser> findByUserId(Long userId);
+
+    public List<ChallengeUser> findByChallenge_ContractUserId(Long contractUserId);
 }

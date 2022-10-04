@@ -4,6 +4,7 @@ import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.exception.BadRequestException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -92,7 +93,7 @@ public class Challenge extends AbstractTimestamp {
     private List<Progress> progressList;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ChallengeUser challengeUser;
 
     @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)

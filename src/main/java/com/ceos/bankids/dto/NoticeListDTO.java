@@ -2,14 +2,12 @@ package com.ceos.bankids.dto;
 
 import com.ceos.bankids.domain.Notice;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.sql.Timestamp;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@ApiModel(value = "공지사항 리스트로 줄 때 DTO")
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -22,7 +20,7 @@ public class NoticeListDTO {
     private String title;
 
     @ApiModelProperty(example = "2022/07/05 05:05:05")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd hh:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd kk:mm:ss", timezone = "Asia/Seoul")
     private Timestamp createdAt;
 
     public NoticeListDTO(Notice notice) {

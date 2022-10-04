@@ -60,19 +60,19 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
     @Override
-    public String getUserIdFromJwtToken(String token) {
+    public Long getUserIdFromJwtToken(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(Base64.getEncoder().encodeToString(("" + JWT_SECRET).getBytes(
                 StandardCharsets.UTF_8)))
             .parseClaimsJws(token)
             .getBody();
-        return claims.getSubject();
+        return Long.parseLong(claims.getSubject());
     }
 
     @Override
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(
-            this.getUserIdFromJwtToken(token));
+            this.getUserIdFromJwtToken(token).toString());
         return new UsernamePasswordAuthenticationToken(userDetails, "",
             userDetails.getAuthorities());
     }
