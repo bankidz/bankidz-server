@@ -55,14 +55,6 @@ public class FamilyUserServiceImpl implements FamilyUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public FamilyUser findByUser(User user) {
-        return familyUserRepository.findByUser(user)
-            .orElseThrow(
-                () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public FamilyUser findByUserAndCheckCode(User user, String code) {
         FamilyUser familyUser = familyUserRepository.findByUser(user).orElseThrow(
             () -> new BadRequestException(ErrorCode.USER_NOT_IN_ANY_FAMILY.getErrorCode()));
