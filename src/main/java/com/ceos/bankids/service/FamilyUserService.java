@@ -18,8 +18,6 @@ public interface FamilyUserService {
 
     public Optional<FamilyUser> findByUserNullable(User user);
 
-    public FamilyUser findByUser(User user);
-
     public FamilyUser findByUserAndCheckCode(User user, String code);
 
     public List<FamilyUser> getFamilyUserList(Family family, User user);

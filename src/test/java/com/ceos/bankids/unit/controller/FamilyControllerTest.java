@@ -632,8 +632,8 @@ public class FamilyControllerTest {
     }
 
     @Test
-    @DisplayName("아이 조회 시 가족 없을 때, 에러 처리 하는지 확인")
-    public void testIfFamilyNotExistThenThrowBadRequestException() {
+    @DisplayName("아이 조회 시 가족 없을 때, 빈 리스트 결과 반환 하는지 확인")
+    public void testIfFamilyNotExistThenReturnEmptyListResult() {
         // given
         User user1 = User.builder()
             .id(1L)
@@ -674,10 +674,10 @@ public class FamilyControllerTest {
         );
         FamilyController familyController = new FamilyController(familyMapper);
 
+        CommonResponse<List<KidListDTO>> result = familyController.getFamilyKidList(user1);
+
         // then
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            familyController.getFamilyKidList(user1);
-        });
+        Assertions.assertEquals(CommonResponse.onSuccess(new ArrayList()), result);
     }
 
     @Test

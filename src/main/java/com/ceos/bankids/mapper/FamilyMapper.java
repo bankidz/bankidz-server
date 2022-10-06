@@ -20,6 +20,7 @@ import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentServiceImpl;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -76,16 +77,21 @@ public class FamilyMapper {
             throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
         }
 
-        FamilyUser familyUser = familyUserService.findByUser(user);
-        List<FamilyUser> familyUserList = familyUserService.getFamilyUserList(
-            familyUser.getFamily(), user);
+        Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(user);
 
-        List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .filter(User::getIsKid).map(KidListDTO::new).collect(
-                Collectors.toList());
-        Collections.sort(kidListDTOList, new KidListDTOComparator());
+        if (familyUser.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            List<FamilyUser> familyUserList = familyUserService.getFamilyUserList(
+                familyUser.get().getFamily(), user);
 
-        return kidListDTOList;
+            List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
+                .filter(User::getIsKid).map(KidListDTO::new).collect(
+                    Collectors.toList());
+            Collections.sort(kidListDTOList, new KidListDTOComparator());
+
+            return kidListDTOList;
+        }
     }
 
     @Transactional
