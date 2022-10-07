@@ -153,7 +153,6 @@ public class ChallengeMapper {
                 challengeDTOList.add(challengeDTO);
             });
         }
-
         return challengeDTOList;
     }
 
@@ -177,7 +176,7 @@ public class ChallengeMapper {
                     notificationService.challengeAchievedNotification(authUser,
                         challenge.getContractUser(), challenge);
                     kidService.userLevelUp(challenge.getContractUser(),
-                        authUser);
+                        kidUser);
                 } else if (challengeListMapperDTO.getChangeStatus()
                     && challenge.getChallengeStatus() == ChallengeStatus.FAILED) {
                     notificationService.challengeFailedNotification(challenge.getContractUser(),

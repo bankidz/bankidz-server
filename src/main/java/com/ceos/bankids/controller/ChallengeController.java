@@ -1,6 +1,8 @@
 package com.ceos.bankids.controller;
 
 import com.ceos.bankids.config.CommonResponse;
+import com.ceos.bankids.controller.request.ChallengeRequest;
+import com.ceos.bankids.controller.request.KidChallengeRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.AchievedChallengeDTO;
 import com.ceos.bankids.dto.AchievedChallengeListDTO;
@@ -11,8 +13,6 @@ import com.ceos.bankids.dto.KidWeekDTO;
 import com.ceos.bankids.dto.ProgressDTO;
 import com.ceos.bankids.dto.WeekDTO;
 import com.ceos.bankids.mapper.ChallengeMapper;
-import com.ceos.bankids.controller.request.ChallengeRequest;
-import com.ceos.bankids.controller.request.KidChallengeRequest;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.validation.Valid;
