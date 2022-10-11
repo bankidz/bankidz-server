@@ -310,9 +310,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (progress.getIsAchieved()) {
             throw new BadRequestException(ErrorCode.ALREADY_WALK_PROGRESS.getErrorCode());
         }
-        if (diffWeeks > challenge.getWeeks()) {
-            throw new BadRequestException(ErrorCode.NOT_EXIST_PROGRESS.getErrorCode());
-        } else if (diffWeeks.equals(challenge.getWeeks())) {
+        if (diffWeeks.equals(challenge.getWeeks())) {
             challenge.setChallengeStatus(achieved);
         }
         progress.setIsAchieved(true);
