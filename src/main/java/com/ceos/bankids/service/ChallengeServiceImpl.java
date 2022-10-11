@@ -68,7 +68,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     // 돈길 생성 API
     @Transactional
     @Override
-    public ChallengeDTO createChallenge(User user, ChallengePostDTO challengeRequest) {
+    public Challenge createChallenge(User user, ChallengePostDTO challengeRequest) {
 
         String category = challengeRequest.getChallengeCategory();
         String name = challengeRequest.getItemName();
@@ -93,7 +93,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             .filename(challengeRequest.getFileName()).build();
         challengeRepository.save(newChallenge);
 
-        return new ChallengeDTO(newChallenge, null, null);
+        return newChallenge;
     }
 
     // 돈길 삭제 API (2주에 한번)
@@ -242,7 +242,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else if (Objects.equals(interestPayment, "unPaid")) {
                 return !challenge.getIsInterestPayment();
             } else {
-                return challenge.getChallengeStatus() == achieved;
+                throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
             }
         }).collect(Collectors.toList());
         List<AchievedChallengeDTO> achievedChallengeDTOList = challengeList.stream()
@@ -310,9 +310,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (progress.getIsAchieved()) {
             throw new BadRequestException(ErrorCode.ALREADY_WALK_PROGRESS.getErrorCode());
         }
-        if (diffWeeks > challenge.getWeeks()) {
-            throw new BadRequestException(ErrorCode.NOT_EXIST_PROGRESS.getErrorCode());
-        } else if (diffWeeks.equals(challenge.getWeeks())) {
+        if (diffWeeks.equals(challenge.getWeeks())) {
             challenge.setChallengeStatus(achieved);
         }
         progress.setIsAchieved(true);

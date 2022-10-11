@@ -402,7 +402,8 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     private Boolean checkServiceOptIn(User user, String title, String body,
         NotificationCategory notificationCategory, String linkUrl) {
-        if (!user.getServiceOptIn() || !user.getExpoToken().startsWith("ExponentPushToken")) {
+        if ((!user.getServiceOptIn() || !user.getExpoToken().startsWith("ExponentPushToken"))
+            || user.getExpoToken() == null) {
             Notification notification = Notification.builder().user(user).title(title).message(body)
                 .notificationCategory(notificationCategory).linkUrl(linkUrl)
                 .build();
