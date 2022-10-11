@@ -20,9 +20,11 @@ import com.ceos.bankids.service.FamilyServiceImpl;
 import com.ceos.bankids.service.FamilyUserServiceImpl;
 import com.ceos.bankids.service.KidServiceImpl;
 import com.ceos.bankids.service.ParentServiceImpl;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,14 +56,19 @@ public class FamilyMapper {
 
     @Transactional(readOnly = true)
     public FamilyDTO readFamily(User user) {
-        FamilyUser familyUser = familyUserService.findByUser(user);
-        Family family = familyUser.getFamily();
-        List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
-            user);
+        Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(user);
 
-        return new FamilyDTO(family, familyUserList.stream()
-            .map(FamilyUserDTO::new)
-            .collect(Collectors.toList()));
+        if (familyUser.isEmpty()) {
+            return new FamilyDTO(new Family(), List.of());
+        } else {
+            Family family = familyUser.get().getFamily();
+            List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
+                user);
+
+            return new FamilyDTO(family, familyUserList.stream()
+                .map(FamilyUserDTO::new)
+                .collect(Collectors.toList()));
+        }
     }
 
     @Transactional(readOnly = true)
@@ -70,16 +77,21 @@ public class FamilyMapper {
             throw new ForbiddenException(ErrorCode.KID_FORBIDDEN.getErrorCode());
         }
 
-        FamilyUser familyUser = familyUserService.findByUser(user);
-        List<FamilyUser> familyUserList = familyUserService.getFamilyUserList(
-            familyUser.getFamily(), user);
+        Optional<FamilyUser> familyUser = familyUserService.findByUserNullable(user);
 
-        List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
-            .filter(User::getIsKid).map(KidListDTO::new).collect(
-                Collectors.toList());
-        Collections.sort(kidListDTOList, new KidListDTOComparator());
+        if (familyUser.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            List<FamilyUser> familyUserList = familyUserService.getFamilyUserList(
+                familyUser.get().getFamily(), user);
 
-        return kidListDTOList;
+            List<KidListDTO> kidListDTOList = familyUserList.stream().map(FamilyUser::getUser)
+                .filter(User::getIsKid).map(KidListDTO::new).collect(
+                    Collectors.toList());
+            Collections.sort(kidListDTOList, new KidListDTOComparator());
+
+            return kidListDTOList;
+        }
     }
 
     @Transactional
