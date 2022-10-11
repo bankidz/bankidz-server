@@ -1,5 +1,6 @@
 package com.ceos.bankids.repository;
 
+import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.domain.ChallengeUser;
 import java.util.List;
 import java.util.Optional;
@@ -12,4 +13,7 @@ public interface ChallengeUserRepository extends JpaRepository<ChallengeUser, Lo
     public List<ChallengeUser> findByUserId(Long userId);
 
     public List<ChallengeUser> findByChallenge_ContractUserId(Long contractUserId);
+
+    public List<ChallengeUser> findByUserIdAndChallenge_ChallengeStatus(Long userId,
+        ChallengeStatus challengeStatus);
 }

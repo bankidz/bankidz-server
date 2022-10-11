@@ -66,16 +66,15 @@ public class ChallengeMapper {
 
         // 실제 돈길 저장로직
         ChallengePostDTO challengePostDTO = new ChallengePostDTO(challengeRequest, contractUser);
-        ChallengeDTO challengeDTO = challengeService.createChallenge(authUser, challengePostDTO);
-        Challenge challenge = challengeService.readChallenge(challengeDTO.getId());
+        Challenge newChallenge = challengeService.createChallenge(authUser, challengePostDTO);
         ChallengeUser challengeUser = challengeUserService.createdChallengeUser(authUser,
-            challenge);
+            newChallenge);
         parentService.updateParentForCreateChallenge(contractUser);
 
         // 저장로직 성공시 알림 로직
         notificationService.createPendingChallengeNotification(contractUser, challengeUser);
 
-        return challengeDTO;
+        return new ChallengeDTO(newChallenge, null, null);
     }
 
     // 돈길 삭제 API Mapper
@@ -154,7 +153,6 @@ public class ChallengeMapper {
                 challengeDTOList.add(challengeDTO);
             });
         }
-
         return challengeDTOList;
     }
 
@@ -178,7 +176,7 @@ public class ChallengeMapper {
                     notificationService.challengeAchievedNotification(authUser,
                         challenge.getContractUser(), challenge);
                     kidService.userLevelUp(challenge.getContractUser(),
-                        authUser);
+                        kidUser);
                 } else if (challengeListMapperDTO.getChangeStatus()
                     && challenge.getChallengeStatus() == ChallengeStatus.FAILED) {
                     notificationService.challengeFailedNotification(challenge.getContractUser(),
@@ -293,8 +291,10 @@ public class ChallengeMapper {
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
-        List<Challenge> achievedChallengeUserList = challengeUserService.readAchievedChallengeUserList(
-            kidUser);
+        List<Challenge> achievedChallengeUserList = challengeUserService.readKidAchievedChallengeUserList(
+            authUser, kidUser);
+        System.out.println(
+            "achievedChallengeUserList.size() = " + achievedChallengeUserList.size());
 
         return challengeService.readKidAchievedChallenge(
             authUser, achievedChallengeUserList, interestPayment, kidId);

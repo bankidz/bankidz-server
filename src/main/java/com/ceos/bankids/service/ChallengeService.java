@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ChallengeService {
 
-    public ChallengeDTO createChallenge(User user, ChallengePostDTO challengePostDTO);
+    public Challenge createChallenge(User user, ChallengePostDTO challengePostDTO);
 
     public ChallengeDTO deleteWalkingChallenge(User user, ChallengeUser challengeUser);
 

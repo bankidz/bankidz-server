@@ -56,6 +56,6 @@ public class AppleController {
 
         appleMapper.postAppleRevoke(formData, response);
 
-        response.sendRedirect("https://bankidz.com/manage/withdraw/callback?isError=false");
+        response.sendRedirect("https://bankidz.com/mypage/manage/withdraw/callback?isError=false");
     }
 }

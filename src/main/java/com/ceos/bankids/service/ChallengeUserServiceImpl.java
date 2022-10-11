@@ -70,6 +70,17 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
                 Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<Challenge> readKidAchievedChallengeUserList(User authUser, User kidUser) {
+        return cuRepo.findByUserId(kidUser.getId())
+            .stream().map(ChallengeUser::getChallenge)
+            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED
+                && challenge.getContractUser().getId() == authUser.getId())
+            .collect(
+                Collectors.toList());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Challenge> readAllChallengeUserListToChallengeList(User authUser) {
@@ -87,10 +98,12 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
 
     @Transactional(readOnly = true)
     public void checkMaxChallengeCount(User user) {
-        List<Challenge> walkingChallengeList = cuRepo.findByUserId(user.getId()).stream()
-            .map(ChallengeUser::getChallenge)
-            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
-                Collectors.toList());
+//        List<Challenge> walkingChallengeList = cuRepo.findByUserId(user.getId()).stream()
+//            .map(ChallengeUser::getChallenge)
+//            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.WALKING).collect(
+//                Collectors.toList());
+        List<ChallengeUser> walkingChallengeList = cuRepo.findByUserIdAndChallenge_ChallengeStatus(
+            user.getId(), ChallengeStatus.WALKING);
         if (walkingChallengeList.size() >= 5) {
             throw new ForbiddenException(ErrorCode.CHALLENGE_COUNT_OVER_FIVE.getErrorCode());
         }
