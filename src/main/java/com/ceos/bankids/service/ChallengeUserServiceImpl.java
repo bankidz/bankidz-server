@@ -70,6 +70,17 @@ public class ChallengeUserServiceImpl implements ChallengeUserService {
                 Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<Challenge> readKidAchievedChallengeUserList(User authUser, User kidUser) {
+        return cuRepo.findByUserId(kidUser.getId())
+            .stream().map(ChallengeUser::getChallenge)
+            .filter(challenge -> challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED
+                && challenge.getContractUser().getId() == authUser.getId())
+            .collect(
+                Collectors.toList());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Challenge> readAllChallengeUserListToChallengeList(User authUser) {

@@ -242,7 +242,7 @@ public class ChallengeServiceImpl implements ChallengeService {
             } else if (Objects.equals(interestPayment, "unPaid")) {
                 return !challenge.getIsInterestPayment();
             } else {
-                return challenge.getChallengeStatus() == achieved;
+                throw new BadRequestException(ErrorCode.QUERY_PARAM_ERROR.getErrorCode());
             }
         }).collect(Collectors.toList());
         List<AchievedChallengeDTO> achievedChallengeDTOList = challengeList.stream()

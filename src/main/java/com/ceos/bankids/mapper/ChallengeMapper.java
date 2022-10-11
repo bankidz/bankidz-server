@@ -291,8 +291,10 @@ public class ChallengeMapper {
         Kid kid = kidService.getKid(kidId);
         User kidUser = kid.getUser();
         familyUserService.checkSameFamily(authUser, kidUser);
-        List<Challenge> achievedChallengeUserList = challengeUserService.readAchievedChallengeUserList(
-            kidUser);
+        List<Challenge> achievedChallengeUserList = challengeUserService.readKidAchievedChallengeUserList(
+            authUser, kidUser);
+        System.out.println(
+            "achievedChallengeUserList.size() = " + achievedChallengeUserList.size());
 
         return challengeService.readKidAchievedChallenge(
             authUser, achievedChallengeUserList, interestPayment, kidId);

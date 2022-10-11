@@ -17,6 +17,8 @@ public interface ChallengeUserService {
 
     public List<Challenge> readAchievedChallengeUserList(User authUser);
 
+    public List<Challenge> readKidAchievedChallengeUserList(User authUser, User kidUser);
+
     public List<Challenge> readAllChallengeUserListToChallengeList(User authUser);
 
     public void deleteAllChallengeUserOfUser(User authUser);
