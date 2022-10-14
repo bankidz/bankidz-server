@@ -2,7 +2,9 @@ package com.ceos.bankids.domain;
 
 import com.ceos.bankids.constant.ChallengeStatus;
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.sql.Timestamp;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -75,6 +77,10 @@ public class Challenge extends AbstractTimestamp {
 
     @Column(nullable = false)
     private String fileName;
+
+    @Column()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Timestamp deleted_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "targetItemId", nullable = false)
