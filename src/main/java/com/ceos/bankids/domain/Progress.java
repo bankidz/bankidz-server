@@ -1,6 +1,8 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,6 +43,10 @@ public class Progress extends AbstractTimestamp {
     @Column()
     @ColumnDefault("false") //default value: false
     private Boolean isAchieved;
+
+    @Column()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Timestamp deleted_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeId", nullable = false)

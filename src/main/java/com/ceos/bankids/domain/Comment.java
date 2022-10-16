@@ -1,7 +1,9 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,6 +40,10 @@ public class Comment {
 
     @Column(nullable = false)
     private String content;
+
+    @Column()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Timestamp deleted_at;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challengeId", nullable = false)
