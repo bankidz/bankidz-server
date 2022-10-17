@@ -1,6 +1,8 @@
 package com.ceos.bankids.domain;
 
 import com.ceos.bankids.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +18,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
@@ -23,6 +27,8 @@ import lombok.Setter;
 @Table(name = "ChallengeUser")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Where(clause = "deleted_at is Null")
+@SQLDelete(sql = "UPDATE challenge_user SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class ChallengeUser extends AbstractTimestamp {
 
     @Id
@@ -31,6 +37,10 @@ public class ChallengeUser extends AbstractTimestamp {
 
     @Column(nullable = false)
     private String member;
+
+    @Column()
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Timestamp deleted_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

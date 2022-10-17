@@ -47,6 +47,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    // Pagenation
     @Transactional
     @Override
     public NotificationListDTO readNotificationList(User user, Long lastId) {
