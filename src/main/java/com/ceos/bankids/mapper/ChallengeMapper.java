@@ -336,6 +336,14 @@ public class ChallengeMapper {
         return progressDTO;
     }
 
+    // Todo: 자녀 측 돈길 히스토리 API Mapper
+    @Transactional
+    public List<ChallengeDTO> readChallengeHistoryMapper(User authUser, String status) {
+
+        userRoleValidation(authUser, true);
+        return challengeService.readChallengeHistory(status);
+    }
+
     // 일요일 처리 validation
     private void sundayValidation() {
         LocalDateTime now = LocalDateTime.now();
