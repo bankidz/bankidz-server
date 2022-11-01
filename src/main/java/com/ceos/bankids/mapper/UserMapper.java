@@ -67,21 +67,23 @@ public class UserMapper {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
         }
 
-        // 날짜 자체가 유효한지 검사
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        dateFormat.setLenient(false);
-        try {
-            dateFormat.parse(userTypeRequest.getBirthday());
-        } catch (ParseException e) {
-            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
-        }
+        // 날짜가 입력됐다면 유효한지 검사
+        if (userTypeRequest.getBirthday() != "") {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            dateFormat.setLenient(false);
+            try {
+                dateFormat.parse(userTypeRequest.getBirthday());
+            } catch (ParseException e) {
+                throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
+            }
 
-        // 가입이 유효한 범위의 날짜인지 검사
-        Calendar cal = Calendar.getInstance();
-        Integer currYear = cal.get(Calendar.YEAR);
-        Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
-        if (birthYear >= currYear || birthYear <= currYear - 100) {
-            throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
+            // 가입이 유효한 범위의 날짜인지 검사
+            Calendar cal = Calendar.getInstance();
+            Integer currYear = cal.get(Calendar.YEAR);
+            Integer birthYear = Integer.parseInt(userTypeRequest.getBirthday()) / 10000;
+            if (birthYear >= currYear || birthYear <= currYear - 100) {
+                throw new BadRequestException(ErrorCode.INVALID_BIRTHDAY.getErrorCode());
+            }
         }
 
         UserDTO userDTO = userService.updateUserType(user, userTypeRequest);
