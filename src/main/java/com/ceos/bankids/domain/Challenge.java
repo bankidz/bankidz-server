@@ -29,8 +29,6 @@ import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
@@ -41,8 +39,8 @@ import org.hibernate.annotations.Where;
 @DynamicInsert
 @DynamicUpdate
 @ToString(exclude = {"progressList", "challengeUserList"})
-@Where(clause = "deleted_at is Null")
-@SQLDelete(sql = "UPDATE challenge SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+//@Where(clause = "deleted_at is Null")
+//@SQLDelete(sql = "UPDATE challenge SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class Challenge extends AbstractTimestamp {
 
     @Id
