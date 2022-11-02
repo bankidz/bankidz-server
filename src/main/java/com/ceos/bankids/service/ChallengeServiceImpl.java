@@ -386,8 +386,8 @@ public class ChallengeServiceImpl implements ChallengeService {
     public List<ChallengeDTO> readChallengeHistory(String status) {
 
         List<Challenge> challengeHistoryList =
-            status == null ? challengeRepository.findAllByDeleted_atIsNotNullOrderByIdDesc()
-                : challengeRepository.findByChallengeStatusAndDeleted_atIsNotNullOrderByIdDesc(
+            status == null ? challengeRepository.findAllByDeletedAtIsNotNullOrderByIdDesc()
+                : challengeRepository.findByChallengeStatusAndDeletedAtIsNotNullOrderByIdDesc(
                     status);
         return challengeHistoryList.stream().map(challenge -> {
             if (challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED
