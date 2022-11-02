@@ -68,7 +68,7 @@ public class UserMapper {
         }
 
         // 날짜가 입력됐다면 유효한지 검사
-        if (userTypeRequest.getBirthday() != "99999999") {
+        if (!userTypeRequest.getBirthday().equals("99999999")) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             dateFormat.setLenient(false);
             try {
