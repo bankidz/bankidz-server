@@ -109,6 +109,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeDTO(deleteChallenge, null, null);
     }
 
+    @Transactional
     @Override
     public ChallengeDTO deleteRejectedChallenge(User user, ChallengeUser challengeUser) {
         Challenge deleteChallenge = challengeUser.getChallenge();
@@ -119,6 +120,7 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeDTO(deleteChallenge, null, null);
     }
 
+    @Transactional
     @Override
     public ChallengeDTO deletePendingChallenge(User user, ChallengeUser challengeUser) {
         Challenge deleteChallenge = challengeUser.getChallenge();
@@ -377,6 +379,27 @@ public class ChallengeServiceImpl implements ChallengeService {
         });
         return new ChallengeCompleteDeleteByKidMapperDTO(momRequest[0], momRequest[1],
             dadRequest[0], dadRequest[1]);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ChallengeDTO> readChallengeHistory(String status) {
+
+        List<Challenge> challengeHistoryList =
+            status == null ? challengeRepository.findAllByDeletedAtIsNotNullOrderByIdDesc()
+                : challengeRepository.findByChallengeStatusAndDeletedAtIsNotNullOrderByIdDesc(
+                    status);
+        return challengeHistoryList.stream().map(challenge -> {
+            if (challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED
+                || challenge.getChallengeStatus() == ChallengeStatus.FAILED) {
+                List<ProgressDTO> progressDTOList = challenge.getProgressList().stream()
+                    .map(progress -> new ProgressDTO(progress, challenge)).collect(
+                        Collectors.toList());
+                return new ChallengeDTO(challenge, progressDTOList, null);
+            } else {
+                return new ChallengeDTO(challenge, null, challenge.getComment());
+            }
+        }).collect(Collectors.toList());
     }
 
     @Transactional

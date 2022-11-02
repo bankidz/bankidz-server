@@ -186,4 +186,18 @@ public class ChallengeController {
 
         return CommonResponse.onSuccess(progressDTO);
     }
+
+//    @ApiOperation(value = "자녀 측 돈길 히스토리")
+//    @GetMapping(value = "/history", produces = "application/json; charset=utf-8")
+//    public CommonResponse<List<ChallengeDTO>> getChallengeHistory(
+//        @AuthenticationPrincipal User authUser, @RequestParam String status) {
+//
+//        log.info("api = 자녀 측 돈길 히스토리 가져오기, user = {}, status = {}", authUser, status);
+//
+//        List<ChallengeDTO> challengeHistoryDTOList = challengeMapper.readChallengeHistoryMapper(
+//            authUser,
+//            status);
+//
+//        return CommonResponse.onSuccess(challengeHistoryDTOList);
+//    }
 }

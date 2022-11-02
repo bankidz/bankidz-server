@@ -54,4 +54,5 @@ public interface ChallengeService {
     public ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKid(
         List<Challenge> challengeList);
 
+    public List<ChallengeDTO> readChallengeHistory(String status);
 }
