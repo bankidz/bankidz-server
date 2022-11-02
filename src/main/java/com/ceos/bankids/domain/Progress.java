@@ -19,8 +19,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
@@ -29,8 +27,8 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @DynamicInsert
 @EqualsAndHashCode(of = "id")
-@Where(clause = "deleted_at is Null")
-@SQLDelete(sql = "UPDATE progress SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+//@Where(clause = "deleted_at is Null")
+//@SQLDelete(sql = "UPDATE progress SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class Progress extends AbstractTimestamp {
 
     @Id

@@ -20,8 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
@@ -30,8 +28,8 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @DynamicUpdate
 @EqualsAndHashCode(of = "id")
-@Where(clause = "deleted_at is Null")
-@SQLDelete(sql = "UPDATE comment SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+//@Where(clause = "deleted_at is Null")
+//@SQLDelete(sql = "UPDATE comment SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class Comment {
 
     @Id

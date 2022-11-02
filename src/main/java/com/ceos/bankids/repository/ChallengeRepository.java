@@ -10,4 +10,9 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     public Optional<Challenge> findById(Long id);
 
     public List<Challenge> findByContractUserId(Long contractUserId);
+
+    public List<Challenge> findAllByDeleted_atIsNotNullOrderByIdDesc();
+
+    public List<Challenge> findByChallengeStatusAndDeleted_atIsNotNullOrderByIdDesc(
+        String challengeStatus);
 }
