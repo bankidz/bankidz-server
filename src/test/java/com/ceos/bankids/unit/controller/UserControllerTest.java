@@ -55,8 +55,8 @@ import org.mockito.Mockito;
 public class UserControllerTest {
 
     @Test
-    @DisplayName("유저 타입 패치 성공시, 결과 반환 하는지 확인")
-    public void testIfUserTypePatchSucceedReturnResult() {
+    @DisplayName("생년월일 입력한 유저 타입 패치 성공시, 결과 반환 하는지 확인")
+    public void testIfUserTypePatchWithBirthdaySucceedReturnResult() {
         // given
         User user = User.builder()
             .id(1L)
@@ -109,6 +109,65 @@ public class UserControllerTest {
         user.setIsFemale(false);
         user.setIsKid(true);
         UserDTO userDTO = new UserDTO(user);
+        Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
+    }
+
+    @Test
+    @DisplayName("생년월일 입력하지 않은 유저 타입 패치 성공시, 결과 반환 하는지 확인")
+    public void testIfUserTypePatchWithoutBirthdaySucceedReturnResult() {
+        // given
+        User user = User.builder()
+            .id(1L)
+            .username("user1")
+            .authenticationCode("code")
+            .provider("kakao")
+            .refreshToken("token")
+            .build();
+        UserTypeRequest userTypeRequest = new UserTypeRequest("", false, true);
+        UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
+        Mockito.when(mockUserRepository.findById(1L))
+            .thenReturn(Optional.ofNullable(user));
+        KidRepository mockKidRepository = Mockito.mock(KidRepository.class);
+        ParentRepository mockParentRepository = Mockito.mock(ParentRepository.class);
+        JwtTokenServiceImpl jwtTokenServiceImpl = Mockito.mock(JwtTokenServiceImpl.class);
+
+        // when
+        UserServiceImpl userService = new UserServiceImpl(mockUserRepository);
+        FamilyServiceImpl familyService = null;
+        FamilyUserServiceImpl familyUserService = null;
+        ChallengeServiceImpl challengeService = null;
+        KidBackupServiceImpl kidBackupService = null;
+        ParentBackupServiceImpl parentBackupService = null;
+        ExpoNotificationServiceImpl expoNotificationService = null;
+        KidServiceImpl kidService = new KidServiceImpl(mockKidRepository, expoNotificationService);
+        ParentServiceImpl parentService = null;
+        SlackServiceImpl slackService = null;
+        ExpoNotificationServiceImpl notificationService = null;
+        ChallengeUserServiceImpl challengeUserService = null;
+        UserMapper userMapper = new UserMapper(
+            userService,
+            familyService,
+            familyUserService,
+            challengeService,
+            kidBackupService,
+            parentBackupService,
+            kidService,
+            parentService,
+            slackService,
+            notificationService,
+            jwtTokenServiceImpl,
+            challengeUserService
+        );
+        UserController userController = new UserController(userMapper);
+
+        CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
+
+        // then
+        user.setBirthday("");
+        user.setIsFemale(false);
+        user.setIsKid(true);
+        UserDTO userDTO = new UserDTO(user);
+        Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
         Assertions.assertEquals(CommonResponse.onSuccess(userDTO), result);
     }
 
