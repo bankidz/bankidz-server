@@ -123,7 +123,7 @@ public class UserControllerTest {
             .provider("kakao")
             .refreshToken("token")
             .build();
-        UserTypeRequest userTypeRequest = new UserTypeRequest("", false, true);
+        UserTypeRequest userTypeRequest = new UserTypeRequest("99999999", false, true);
         UserRepository mockUserRepository = Mockito.mock(UserRepository.class);
         Mockito.when(mockUserRepository.findById(1L))
             .thenReturn(Optional.ofNullable(user));
@@ -163,7 +163,7 @@ public class UserControllerTest {
         CommonResponse<UserDTO> result = userController.patchUserType(user, userTypeRequest);
 
         // then
-        user.setBirthday("");
+        user.setBirthday("99999999");
         user.setIsFemale(false);
         user.setIsKid(true);
         UserDTO userDTO = new UserDTO(user);
