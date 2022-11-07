@@ -33,7 +33,7 @@ public class NotificationDTO {
     private String linkUrl;
 
     @ApiModelProperty(example = "2022/07/05 05:05:05")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd kk:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp createdAt;
 
     public NotificationDTO(Notification notification) {
