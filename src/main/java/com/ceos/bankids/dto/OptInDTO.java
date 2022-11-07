@@ -18,7 +18,7 @@ public class OptInDTO {
     @ApiModelProperty(example = "true")
     private Boolean serviceOptIn;
     @ApiModelProperty(example = "2022/07/05 05:05:05")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd kk:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp updatedAt;
 
     public OptInDTO(User user) {
