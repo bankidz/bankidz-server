@@ -106,7 +106,7 @@ public class AppleServiceImpl implements AppleService {
                     appleHeaderDTO.getAlg())
                 .orElseThrow(
                     () -> new BadRequestException(ErrorCode.APPLE_KEY_UNAVAILABLE.getErrorCode()));
-
+            
             byte[] nBytes = Base64.getUrlDecoder().decode(appleKeyDTO.getN());
             byte[] eBytes = Base64.getUrlDecoder().decode(appleKeyDTO.getE());
 
