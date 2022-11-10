@@ -156,6 +156,15 @@ public class ChallengeMapper {
         return challengeDTOList;
     }
 
+    @Transactional
+    public ChallengeDTO readChallengeDetail(User authUser, Long challengeId) {
+        ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
+        if (authUser.getId() != challengeUser.getUser().getId()) {
+            throw new BadRequestException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
+        }
+        return challengeService.readChallengeDetail(challengeId);
+    }
+
     // 자녀의 돈길 리스트 가져오기 API Mapper
     @Transactional
     public KidChallengeListDTO readKidChallengeListMapper(User authUser, Long kidId,
