@@ -226,10 +226,10 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         newMap.put("challenge", challengeUser.getChallenge().getId());
         NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory, "");
+            notificationCategory, "/");
         if (checkServiceOptIn) {
             this.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory, "");
+                notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {} 돈길 id = {} 의 돈길 제안", contractUser.getId(),
             challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
@@ -288,10 +288,10 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         newMap.put("user", user.getId());
         NotificationCategory notificationCategory = NotificationCategory.LEVEL;
         Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
-            notificationCategory, "");
+            notificationCategory, "/");
         if (checkServiceOptIn) {
             this.sendMessage(contractUser, title, notificationBody, newMap,
-                notificationCategory, "");
+                notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 레벨업 알림 전송", contractUser.getId(), user.getId());
     }
@@ -391,10 +391,10 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         familyUserList.forEach(familyUser -> {
             User user = familyUser.getUser();
             Boolean checkServiceOptIn = checkServiceOptIn(user, title, notificationBody,
-                notificationCategory, "");
+                notificationCategory, "/newFamily");
             if (checkServiceOptIn) {
                 this.sendMessage(user, title, notificationBody, newMap,
-                    notificationCategory, "");
+                    notificationCategory, "/newFamily");
             }
             log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
                 newFamilyUser.getId());
