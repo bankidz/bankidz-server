@@ -63,7 +63,7 @@ public class UserMapper {
     @Transactional
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
         // 이미 로그인한 유저인지 검사
-        if (user.getExpoToken().contains("ExponentPushToken")) {
+        if (user.getExpoToken() != null && user.getExpoToken().contains("ExponentPushToken")) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_LOGINED.getErrorCode());
         }
 
