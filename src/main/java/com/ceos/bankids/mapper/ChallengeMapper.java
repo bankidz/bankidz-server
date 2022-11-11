@@ -93,6 +93,7 @@ public class ChallengeMapper {
             ChallengeDTO challengeDTO = challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
+            kidService.updateKidDecreaseTotalChallenge(authUser);
             notificationService.deleteChallengeNotification(authUser,
                 deleteChallenge.getContractUser(), deleteChallenge);
             return challengeDTO;
@@ -159,6 +160,7 @@ public class ChallengeMapper {
         return challengeDTOList;
     }
 
+    // 돈길 상세 가져오기 API Mapper
     @Transactional
     public ChallengeDTO readChallengeDetail(User authUser, Long challengeId) {
         ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);

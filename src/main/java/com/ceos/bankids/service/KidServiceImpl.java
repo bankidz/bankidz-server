@@ -148,6 +148,15 @@ public class KidServiceImpl implements KidService {
 
     @Transactional
     @Override
+    public void updateKidDecreaseTotalChallenge(User user) {
+        Kid kid = user.getKid();
+        Long totalChallenge = kid.getTotalChallenge();
+        kid.setTotalChallenge(totalChallenge - 1L);
+        kidRepository.save(kid);
+    }
+
+    @Transactional
+    @Override
     public void updateInitKid(User user) {
         Kid kid = user.getKid();
         kid.setSavings(0L);
