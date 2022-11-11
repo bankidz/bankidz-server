@@ -381,6 +381,26 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
     }
 
     @Async
+    @ApiOperation(value = "자녀가 돈길을 포기했을 때 부모 알림")
+    public void deleteChallengeNotification(User user, User contractUser, Challenge challenge) {
+
+        String title = "🚨자녀가 돈길을 포기했어요";
+        String notificationBody = "포기한 돈길은 무엇인지 확인해볼까요?\uD83D\uDE1F\n포기한 돈길들은 마이페이지 - 돈길 기록에서 확인가능해요";
+        HashMap<String, Object> newMap = new HashMap<>();
+        newMap.put("user", user.getId());
+        newMap.put("challenge", challenge.getId());
+        NotificationCategory notificationCategory = NotificationCategory.CHALLENGE;
+        Boolean checkServiceOptIn = checkServiceOptIn(contractUser, title, notificationBody,
+            notificationCategory, "/");
+        if (checkServiceOptIn) {
+            this.sendMessage(contractUser, title, notificationBody, newMap, notificationCategory,
+                "/");
+        }
+        log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 포기 알림 전송", contractUser.getId(),
+            user.getId(), challenge.getId());
+    }
+
+    @Async
     public void newFamilyUserNotification(User newFamilyUser, List<FamilyUser> familyUserList) {
 
         String title = "가족그룹\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D\uD83D\uDC66에 새로 참여했어요";

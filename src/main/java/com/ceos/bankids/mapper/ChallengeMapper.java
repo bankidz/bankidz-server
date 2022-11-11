@@ -90,9 +90,12 @@ public class ChallengeMapper {
         }
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
             kidService.checkKidDeleteChallenge(authUser, deleteChallenge);
-            return challengeService.deleteWalkingChallenge(
+            ChallengeDTO challengeDTO = challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
+            notificationService.deleteChallengeNotification(authUser,
+                deleteChallenge.getContractUser(), deleteChallenge);
+            return challengeDTO;
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.FAILED) {
             return challengeService.deleteWalkingChallenge(
                 authUser,
@@ -160,7 +163,7 @@ public class ChallengeMapper {
     public ChallengeDTO readChallengeDetail(User authUser, Long challengeId) {
         ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
         if (authUser.getId() != challengeUser.getUser().getId()) {
-            throw new BadRequestException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
         }
         return challengeService.readChallengeDetail(challengeId);
     }
