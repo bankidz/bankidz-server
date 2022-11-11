@@ -55,6 +55,16 @@ public class ParentServiceImpl implements ParentService {
 
     @Transactional
     @Override
+    public void parentAcceptedChallengeDecrease(User contractUser) {
+
+        Parent parent = contractUser.getParent();
+        Long acceptedRequest = parent.getAcceptedRequest();
+        parent.setAcceptedRequest(acceptedRequest - 1L);
+        parentRepository.save(parent);
+    }
+
+    @Transactional
+    @Override
     public void updateParentForDeleteFamilyUserByKid(List<FamilyUser> familyUserList,
         ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO) {
 
