@@ -17,6 +17,8 @@ public interface ParentService {
 
     public void updateParentAcceptedChallenge(User contractUser);
 
+    public void parentAcceptedChallengeDecrease(User contractUser);
+
     public void updateParentForDeleteFamilyUserByKid(List<FamilyUser> familyUserList,
         ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO);
 

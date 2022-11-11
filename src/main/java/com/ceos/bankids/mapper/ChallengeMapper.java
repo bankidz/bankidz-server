@@ -94,6 +94,7 @@ public class ChallengeMapper {
                 authUser,
                 challengeUser);
             kidService.updateKidDecreaseTotalChallenge(authUser);
+            parentService.parentAcceptedChallengeDecrease(deleteChallenge.getContractUser());
             notificationService.deleteChallengeNotification(authUser,
                 deleteChallenge.getContractUser(), deleteChallenge);
             return challengeDTO;
