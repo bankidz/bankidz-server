@@ -90,9 +90,13 @@ public class ChallengeMapper {
         }
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
             kidService.checkKidDeleteChallenge(authUser, deleteChallenge);
-            return challengeService.deleteWalkingChallenge(
+            ChallengeDTO challengeDTO = challengeService.deleteWalkingChallenge(
                 authUser,
                 challengeUser);
+            kidService.updateKidDecreaseTotalChallenge(authUser);
+            notificationService.deleteChallengeNotification(authUser,
+                deleteChallenge.getContractUser(), deleteChallenge);
+            return challengeDTO;
         } else if (deleteChallenge.getChallengeStatus() == ChallengeStatus.FAILED) {
             return challengeService.deleteWalkingChallenge(
                 authUser,
@@ -154,6 +158,16 @@ public class ChallengeMapper {
             });
         }
         return challengeDTOList;
+    }
+
+    // 돈길 상세 가져오기 API Mapper
+    @Transactional
+    public ChallengeDTO readChallengeDetail(User authUser, Long challengeId) {
+        ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
+        if (authUser.getId() != challengeUser.getUser().getId()) {
+            throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
+        }
+        return challengeService.readChallengeDetail(challengeId);
     }
 
     // 자녀의 돈길 리스트 가져오기 API Mapper
