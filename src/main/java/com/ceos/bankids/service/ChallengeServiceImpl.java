@@ -174,6 +174,16 @@ public class ChallengeServiceImpl implements ChallengeService {
         return new ChallengeListMapperDTO(challenge, null, false);
     }
 
+    @Transactional
+    @Override
+    public ChallengeDTO readChallengeDetail(Long challengeId) {
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(
+            () -> new BadRequestException(ErrorCode.NOT_EXIST_CHALLENGE.getErrorCode()));
+        return new ChallengeDTO(challenge, challenge.getProgressList().stream()
+            .map(progress -> new ProgressDTO(progress, challenge)).collect(
+                Collectors.toList()), challenge.getComment());
+    }
+
     // 돈길 수락 / 거절 API
     @Transactional
     @Override

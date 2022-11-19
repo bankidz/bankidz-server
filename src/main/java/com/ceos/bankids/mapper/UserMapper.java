@@ -62,6 +62,11 @@ public class UserMapper {
 
     @Transactional
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
+        // 이미 로그인한 유저인지 검사
+        if (user.getExpoToken() != null && user.getExpoToken().contains("ExponentPushToken")) {
+            throw new BadRequestException(ErrorCode.USER_ALREADY_LOGINED.getErrorCode());
+        }
+
         // 유저 타입이 이미 선택되었는지 검사
         if (user.getIsFemale() != null) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
@@ -106,11 +111,11 @@ public class UserMapper {
         LoginDTO loginDTO;
         if (updatedUser.getIsKid() == null || updatedUser.getIsKid() == false) {
             loginDTO = new LoginDTO(updatedUser.getIsKid(), newAccessToken,
-                updatedUser.getProvider());
+                    updatedUser.getProvider());
         } else {
             loginDTO = new LoginDTO(updatedUser.getIsKid(), newAccessToken,
-                updatedUser.getKid().getLevel(),
-                updatedUser.getProvider());
+                    updatedUser.getKid().getLevel(),
+                    updatedUser.getProvider());
         }
         return loginDTO;
     }
@@ -144,20 +149,20 @@ public class UserMapper {
         if (familyUser.isPresent()) {
             Family family = familyUser.get().getFamily();
             List<FamilyUser> familyUserList = familyUserService.getFamilyUserListExclude(family,
-                user);
+                    user);
 
             if (user.getIsKid()) {
                 List<Challenge> challengeList = challengeUserService.readAllChallengeUserListToChallengeList(
-                    user);
+                        user);
                 challengeUserService.deleteAllChallengeUserOfUser(user);
                 ChallengeCompleteDeleteByKidMapperDTO challengeCompleteDeleteByKidMapperDTO = challengeService.challengeCompleteDeleteByKid(
-                    challengeList);
+                        challengeList);
                 kidService.updateInitKid(user);
                 parentService.updateParentForDeleteFamilyUserByKid(familyUserList,
-                    challengeCompleteDeleteByKidMapperDTO);
+                        challengeCompleteDeleteByKidMapperDTO);
             } else {
                 List<ChallengeUser> challengeUserList = challengeUserService.getChallengeUserListByContractUser(
-                    user);
+                        user);
                 kidService.updateKidForDeleteFamilyUserByParent(challengeUserList);
                 parentService.updateInitParent(user);
                 challengeService.challengeCompleteDeleteByParent(challengeUserList);
@@ -175,12 +180,12 @@ public class UserMapper {
         if (user.getIsKid()) {
             KidBackupDTO kidBackupDTO = kidBackupService.backupKidUser(user);
             slackService.sendWithdrawalMessage("KidBackup ", kidBackupDTO.getId(),
-                withdrawalRequest.getMessage());
+                    withdrawalRequest.getMessage());
             kidService.deleteKid(user);
         } else {
             ParentBackupDTO parentBackupDTO = parentBackupService.backupParentUser(user);
             slackService.sendWithdrawalMessage("ParentBackup ", parentBackupDTO.getId(),
-                withdrawalRequest.getMessage());
+                    withdrawalRequest.getMessage());
             parentService.deleteParent(user);
         }
 

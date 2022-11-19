@@ -55,4 +55,6 @@ public interface ChallengeService {
         List<Challenge> challengeList);
 
     public List<ChallengeDTO> readChallengeHistory(String status);
+
+    public ChallengeDTO readChallengeDetail(Long challengeId);
 }

@@ -23,4 +23,6 @@ public interface KidService {
     public void updateInitKid(User user);
 
     public void updateKidByPatchProgress(User user, Challenge challenge);
+
+    public void updateKidDecreaseTotalChallenge(User user);
 }
