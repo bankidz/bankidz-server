@@ -8,6 +8,13 @@ services:
     expose:
       - "8080"
 
+  vote-dev:
+    image: sanbonai06/vote-server:master
+    container_name: vote-dev
+    hostname: vote-dev
+    expose:
+      - "5050"
+
   nginx:
     depends_on:
       - backend-dev
