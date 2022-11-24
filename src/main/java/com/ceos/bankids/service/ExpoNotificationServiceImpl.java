@@ -411,10 +411,10 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
         familyUserList.forEach(familyUser -> {
             User user = familyUser.getUser();
             Boolean checkServiceOptIn = checkServiceOptIn(user, title, notificationBody,
-                notificationCategory, "/newFamily");
+                notificationCategory, "/mypage/new");
             if (checkServiceOptIn) {
                 this.sendMessage(user, title, notificationBody, newMap,
-                    notificationCategory, "/newFamily");
+                    notificationCategory, "/mypage/new");
             }
             log.info("기존 가족 구성원 id = {}에게 유저 id = {}의 가족 참여 알림 전송", familyUser.getUser().getId(),
                 newFamilyUser.getId());

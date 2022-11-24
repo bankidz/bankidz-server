@@ -164,7 +164,7 @@ public class FamilyMapper {
         if (familyUserList.size() == 0) {
             familyService.deleteFamily(family);
         }
-
+        notificationService.deleteAllNotification(user);
         return null;
     }
 
