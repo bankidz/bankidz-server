@@ -62,11 +62,6 @@ public class UserMapper {
 
     @Transactional
     public UserDTO updateUserType(User user, UserTypeRequest userTypeRequest) {
-        // 이미 로그인한 유저인지 검사
-        if (user.getExpoToken() != null && user.getExpoToken().contains("ExponentPushToken")) {
-            throw new BadRequestException(ErrorCode.USER_ALREADY_LOGINED.getErrorCode());
-        }
-
         // 유저 타입이 이미 선택되었는지 검사
         if (user.getIsFemale() != null) {
             throw new BadRequestException(ErrorCode.USER_ALREADY_HAS_TYPE.getErrorCode());
