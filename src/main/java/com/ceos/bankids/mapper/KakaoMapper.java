@@ -29,7 +29,7 @@ public class KakaoMapper {
         KakaoUserDTO kakaoUserDTO = kakaoService.getKakaoUserCode(kakaoTokenDTO);
 
         Optional<User> registeredUser = userService.findUserByAuthenticationCodeNullable(
-                kakaoUserDTO.getAuthenticationCode());
+            kakaoUserDTO.getAuthenticationCode());
 
         User user;
         if (registeredUser.isPresent()) {
@@ -40,9 +40,9 @@ public class KakaoMapper {
             }
         } else {
             user = userService.createNewUser(
-                    kakaoUserDTO.getKakaoAccount().getProfile().getNickname(),
-                    kakaoUserDTO.getAuthenticationCode(),
-                    "kakao");
+                kakaoUserDTO.getKakaoAccount().getProfile().getNickname(),
+                kakaoUserDTO.getAuthenticationCode(),
+                "kakao");
         }
 
         return user;
