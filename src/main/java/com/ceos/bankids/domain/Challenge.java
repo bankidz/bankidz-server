@@ -29,6 +29,7 @@ import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
 
 @Getter
 @Setter
@@ -39,8 +40,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @ToString(exclude = {"progressList", "challengeUserList"})
-//@Where(clause = "deleted_at is Null")
-//@SQLDelete(sql = "UPDATE challenge SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+@SQLDelete(sql = "UPDATE challenge SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class Challenge extends AbstractTimestamp {
 
     @Id
@@ -96,14 +96,14 @@ public class Challenge extends AbstractTimestamp {
     @JoinColumn(name = "contractUserId", nullable = false)
     private User contractUser;
 
-    @OneToMany(mappedBy = "challenge")
+    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Progress> progressList;
 
     @JsonIgnore
     @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ChallengeUser challengeUser;
 
-    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Comment comment;
 
     @Builder

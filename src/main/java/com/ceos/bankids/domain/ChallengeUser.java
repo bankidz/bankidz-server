@@ -18,6 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Getter
@@ -25,8 +26,7 @@ import lombok.Setter;
 @Table(name = "ChallengeUser")
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-//@Where(clause = "deleted_at is Null")
-//@SQLDelete(sql = "UPDATE challenge_user SET deleted_at = CURRENT_TIMESTAMP where id = ?")
+@SQLDelete(sql = "UPDATE challenge_user SET deleted_at = CURRENT_TIMESTAMP where id = ?")
 public class ChallengeUser extends AbstractTimestamp {
 
     @Id
