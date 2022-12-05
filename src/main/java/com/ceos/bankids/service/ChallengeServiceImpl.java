@@ -157,10 +157,16 @@ public class ChallengeServiceImpl implements ChallengeService {
             }
         }
         if (falseCnt >= risk) {
+            if (challenge.getChallengeStatus() == failed) {
+                return new ChallengeListMapperDTO(challenge, progressDTOList, false);
+            }
             challenge.setChallengeStatus(failed);
             challengeRepository.save(challenge);
             return new ChallengeListMapperDTO(challenge, progressDTOList, true);
         } else if (diffWeeks > challenge.getWeeks()) {
+            if (challenge.getChallengeStatus() == achieved) {
+                return new ChallengeListMapperDTO(challenge, progressDTOList, false);
+            }
             challenge.setChallengeStatus(achieved);
             challengeRepository.save(challenge);
             return new ChallengeListMapperDTO(challenge, progressDTOList, true);

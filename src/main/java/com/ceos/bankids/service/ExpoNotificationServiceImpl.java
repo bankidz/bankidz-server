@@ -274,7 +274,7 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
                 notificationCategory, "/");
         }
         log.info("부모 유저 id = {}에게 유저 id = {}의 돈길 id = {} 돈길 실패 알림 전송", contractUser.getId(),
-            challengeUser.getChallenge().getId(), challengeUser.getChallenge().getId());
+            challengeUser.getUser().getId(), challengeUser.getChallenge().getId());
     }
 
     @Async
