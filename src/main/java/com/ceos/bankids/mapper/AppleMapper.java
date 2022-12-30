@@ -1,10 +1,12 @@
 package com.ceos.bankids.mapper;
 
+import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
 import com.ceos.bankids.dto.oauth.AppleSubjectDTO;
 import com.ceos.bankids.dto.oauth.AppleTokenDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.service.AppleServiceImpl;
 import com.ceos.bankids.service.UserServiceImpl;
 import java.io.IOException;
@@ -25,7 +27,7 @@ public class AppleMapper {
     private final UserServiceImpl userService;
 
     @Transactional
-    public User postAppleLogin(MultiValueMap<String, String> formData) throws IOException {
+    public User postAppleLogin(MultiValueMap<String, String> formData) throws BadRequestException {
         AppleRequest appleRequest = appleService.getAppleRequest(formData);
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
         AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
@@ -38,6 +40,10 @@ public class AppleMapper {
         User user;
         if (registeredUser.isPresent()) {
             user = registeredUser.get();
+
+            if (user.getExpoToken() != null && user.getExpoToken().contains("ExponentPushToken")) {
+                throw new BadRequestException(ErrorCode.USER_ALREADY_LOGINED.getErrorCode());
+            }
         } else {
             user = userService.createNewUser(
                 appleRequest.getUsername(),

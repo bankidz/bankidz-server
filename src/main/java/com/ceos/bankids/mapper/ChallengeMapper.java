@@ -85,7 +85,7 @@ public class ChallengeMapper {
         userRoleValidation(authUser, true);
         ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
         Challenge deleteChallenge = challengeUser.getChallenge();
-        if (challengeUser.getUser().getId() != authUser.getId()) {
+        if (!Objects.equals(challengeUser.getUser().getId(), authUser.getId())) {
             throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
         }
         if (deleteChallenge.getChallengeStatus() == ChallengeStatus.WALKING) {
@@ -165,7 +165,7 @@ public class ChallengeMapper {
     @Transactional
     public ChallengeDTO readChallengeDetail(User authUser, Long challengeId) {
         ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
-        if (authUser.getId() != challengeUser.getUser().getId()) {
+        if (!Objects.equals(authUser.getId(), challengeUser.getUser().getId())) {
             throw new ForbiddenException(ErrorCode.NOT_MATCH_CHALLENGE_USER.getErrorCode());
         }
         return challengeService.readChallengeDetail(challengeId);
@@ -208,7 +208,7 @@ public class ChallengeMapper {
             challengeList.stream()
                 .filter(challenge -> challenge.getChallengeStatus() != ChallengeStatus.REJECTED)
                 .forEach(challenge -> {
-                    if (challenge.getContractUser().getId() == authUser.getId()) {
+                    if (Objects.equals(challenge.getContractUser().getId(), authUser.getId())) {
                         ChallengeListMapperDTO challengeListMapperDTO = challengeService.readPendingChallenge(
                             challenge);
                         ChallengeDTO challengeDTO = new ChallengeDTO(
@@ -232,7 +232,7 @@ public class ChallengeMapper {
         ChallengeUser challengeUser = challengeUserService.readChallengeUser(challengeId);
         User user = challengeUser.getUser();
         Challenge challenge = challengeService.readChallenge(challengeId);
-        if (challenge.getContractUser().getId() != authUser.getId()) {
+        if (!Objects.equals(challenge.getContractUser().getId(), authUser.getId())) {
             throw new ForbiddenException(ErrorCode.NOT_MATCH_CONTRACT_USER.getErrorCode());
         }
         if (kidChallengeRequest.getAccept()) {

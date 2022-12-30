@@ -11,7 +11,7 @@
 
 |  AD  | Instagram |                 Web                 |                           iOS App                            |                         Android App                          |
 | :--: | :-------: | :---------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|  -   |     -     | [bankidz.com](https://bankidz.com/) | <a href="https://play.google.com/store/apps/details?id="><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr?size=250x83&amp;releaseDate=1654300800&h=dd4ccd7fb22c609cf9132f37bf23c390" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;"></a> | <a href='https://play.google.com/store/apps/details?id='><img alt='다운로드하기 Google Play' width='285px' src='https://play.google.com/intl/en_us/badges/static/images/badges/ko_badge_web_generic.png'/></a> |
+|  -   |     -     | [bankidz.com](https://bankidz.com/) | <a href="https://apps.apple.com/app/%EB%B1%85%ED%82%A4%EC%A6%88/id6444064518"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ko-kr?size=250x83&amp;releaseDate=1654300800&h=dd4ccd7fb22c609cf9132f37bf23c390" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;"></a> | <a href='https://play.google.com/store/apps/details?id=com.bankidz.bankidzapp'><img alt='다운로드하기 Google Play' width='285px' src='https://play.google.com/intl/en_us/badges/static/images/badges/ko_badge_web_generic.png'/></a> |
 </div>
 
 

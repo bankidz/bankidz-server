@@ -2,6 +2,7 @@ package com.ceos.bankids.controller;
 
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.LoginDTO;
+import com.ceos.bankids.exception.BadRequestException;
 import com.ceos.bankids.mapper.AppleMapper;
 import com.ceos.bankids.mapper.UserMapper;
 import io.swagger.annotations.ApiOperation;
@@ -35,9 +36,14 @@ public class AppleController {
 
         log.info("api = 애플 로그인");
 
-        User user = appleMapper.postAppleLogin(formData);
-
-        LoginDTO loginDTO = userMapper.updateUserToken(user);
+        User user;
+        LoginDTO loginDTO;
+        try {
+            user = appleMapper.postAppleLogin(formData);
+            loginDTO = userMapper.updateUserToken(user);
+        } catch (BadRequestException e) {
+            loginDTO = new LoginDTO(null, null, null, "apple");
+        }
 
         response.sendRedirect(
             "https://bankidz.com/auth/apple/callback?isKid=" + loginDTO.getIsKid() + "&level="
