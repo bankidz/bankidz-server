@@ -1,7 +1,6 @@
 package com.ceos.bankids.controller.request;
 
 import io.swagger.annotations.ApiModelProperty;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -18,6 +17,6 @@ import lombok.Setter;
 public class ExpoRequest {
 
     @ApiModelProperty(example = "ExponentPushToken[asdfasdfasdf]")
-    @NotNull(message = "expoToken may not be null")
+//    @NotNull(message = "expoToken may not be null")
     private String expoToken;
 }
