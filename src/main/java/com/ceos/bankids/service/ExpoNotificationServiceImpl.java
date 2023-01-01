@@ -87,15 +87,17 @@ public class ExpoNotificationServiceImpl implements ExpoNotificationService {
     public NotificationDTO updateNotification(User user, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(
             () -> new BadRequestException(ErrorCode.NOT_EXIST_NOTIFICATION_ERROR.getErrorCode()));
-        if (notification.getIsRead()) {
-            throw new BadRequestException(ErrorCode.ALREADY_READ_NOTIFICATION_ERROR.getErrorCode());
-        }
+//        if (notification.getIsRead()) {
+//            throw new BadRequestException(ErrorCode.ALREADY_READ_NOTIFICATION_ERROR.getErrorCode());
+//        }
         if (!Objects.equals(notification.getUser().getId(), user.getId())) {
             throw new ForbiddenException(
                 ErrorCode.NOT_MATCH_NOTIFICATION_USER_ERROR.getErrorCode());
         }
-        notification.setIsRead(true);
-        notificationRepository.save(notification);
+        if (!notification.getIsRead()) {
+            notification.setIsRead(true);
+            notificationRepository.save(notification);
+        }
         return new NotificationDTO(notification);
     }
 

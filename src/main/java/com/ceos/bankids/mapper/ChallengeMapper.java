@@ -188,7 +188,7 @@ public class ChallengeMapper {
                     challenge);
                 if (challengeListMapperDTO.getChangeStatus()
                     && challenge.getChallengeStatus() == ChallengeStatus.ACHIEVED) {
-                    notificationService.challengeAchievedNotification(authUser,
+                    notificationService.challengeAchievedNotification(kidUser,
                         challenge.getContractUser(), challenge);
                     kidService.userLevelUp(challenge.getContractUser(),
                         kidUser);
