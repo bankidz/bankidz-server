@@ -1,6 +1,5 @@
 package com.ceos.bankids.mapper;
 
-import com.ceos.bankids.constant.ErrorCode;
 import com.ceos.bankids.controller.request.AppleRequest;
 import com.ceos.bankids.domain.User;
 import com.ceos.bankids.dto.oauth.AppleKeyListDTO;
@@ -31,36 +30,36 @@ public class AppleMapper {
         AppleRequest appleRequest = appleService.getAppleRequest(formData);
         AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
         AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
-            appleKeyListDTO);
+                appleKeyListDTO);
         AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "login");
 
         Optional<User> registeredUser = userService.findUserByAuthenticationCodeNullable(
-            appleSubjectDTO.getAuthenticationCode());
+                appleSubjectDTO.getAuthenticationCode());
 
         User user;
         if (registeredUser.isPresent()) {
             user = registeredUser.get();
 
-            if (user.getExpoToken() != null && user.getExpoToken().contains("ExponentPushToken")) {
-                throw new BadRequestException(ErrorCode.USER_ALREADY_LOGINED.getErrorCode());
-            }
+//            if (user.getExpoToken() != null && user.getExpoToken().contains("ExponentPushToken")) {
+//                throw new BadRequestException(ErrorCode.USER_ALREADY_LOGINED.getErrorCode());
+//            }
         } else {
             user = userService.createNewUser(
-                appleRequest.getUsername(),
-                appleSubjectDTO.getAuthenticationCode(),
-                "apple");
+                    appleRequest.getUsername(),
+                    appleSubjectDTO.getAuthenticationCode(),
+                    "apple");
         }
 
         return user;
     }
 
     public void postAppleRevoke(MultiValueMap<String, String> formData,
-        HttpServletResponse response) throws IOException {
+            HttpServletResponse response) throws IOException {
         try {
             AppleRequest appleRequest = appleService.getAppleRequest(formData);
             AppleKeyListDTO appleKeyListDTO = appleService.getAppleIdentityToken();
             AppleSubjectDTO appleSubjectDTO = appleService.verifyIdentityToken(appleRequest,
-                appleKeyListDTO);
+                    appleKeyListDTO);
             AppleTokenDTO appleTokenDTO = appleService.getAppleAccessToken(appleRequest, "revoke");
             Object appleResponse = appleService.revokeAppleAccount(appleTokenDTO);
 
